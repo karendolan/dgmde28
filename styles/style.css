@@ -1,0 +1,72 @@
+/* General DGMD E-28 page styles, Karen Dolan */
+
+body {
+  background-image: url("../images/IrelandClare.jpeg");
+  background-color: #cccccc;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+.container {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  padding: 2rem;
+  background-color: #fff;
+  border-radius: 50%;
+  width: 75%;
+  margin-top: 2rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  max-width: 50%;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.image {
+  border-radius: 50%;
+}
+.image-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+.skills-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+.skill-list {
+  max-width: 40%;
+}
+.who-list {
+  max-width: 60%;
+}
+.first-name {
+  color: #fc8403;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+.title {
+  color: #314c73;
+}
+
+/* HW1 specific style */
+
+.hw1-image-caption {
+  font-style: italic;
+  color: #314c73;
+  width: 200px;
+}
