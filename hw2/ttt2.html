@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>DGMD E-28 Spring 2025 Assignment 2, ttt2, Karen Dolan</title>
+    <style>
+      /* Make the body skinny to force the blocks to wrap every 3rd block */
+      body {
+        margin: 0 auto;
+        max-width: 400px;
+      }
+      .square {
+        border: 1px solid black;
+        width: 100px;
+        height: 100px;
+        margin: 5px;
+        box-sizing: border-box; /* to include border in width and height */
+        display: inline-block;
+        font-size: 7rem;
+        line-height: 6rem;
+        text-align: center;
+        vertical-align: top;
+      }
+      .square:hover {
+        color: #7B28A1;
+        background-color: #A9E101;
+      }
+      .turn, .win {
+        border: 1px solid black;
+        width: 160px;
+        height: 200px;
+        display: inline-block;
+        text-align: center;
+        margin: 5px;
+      }
+    </style>
+    <script>
+      // Add a title to the page
+      document.write( "<h1 class='title'>Assignment 2, Tic Tac Toe</h1>" );
+
+      // Code directly from ttt2 instructions
+      const NUM_SQUARES = 9;
+      for (i=0; i<NUM_SQUARES; i++)
+      {
+          id = "sq"+i;
+          document.write( "<div class='square' id='" + id + "'></div>" );
+      }
+
+      // Add a square to indicate if X or O's turn
+      document.write( "<div class='turn'>Turn Indicator</div>" );
+      document.write( "<div class='win'>Win Indicator</div>" );
+
+      // Add the X and Os to the same squares as in ttt1
+      document.getElementById('sq2').innerHTML = "X";
+      document.getElementById('sq6').innerHTML = "O";
+      document.getElementById('sq7').innerHTML = "X";
+    </script>
+  </head>
+  <body>
+  </body>
+</html>
