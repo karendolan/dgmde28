@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>DGMD E-28 Spring 2025 Assignment 3, ttt4, Karen Dolan</title>
+    <style type="text/css" media="screen">
+      /* Make the body skinny to force the blocks to wrap every 3rd block */
+      body {
+        margin: 0 auto;
+        max-width: 400px;
+      }
+      .square {
+        border: 1px solid black;
+        width: 100px;
+        height: 100px;
+        margin: 5px;
+        box-sizing: border-box; /* to include border in width and height */
+        display: inline-block;
+        font-size: 7rem;
+        line-height: 6rem;
+        text-align: center;
+        vertical-align: top;
+      }
+      .square:hover {
+        color: #7B28A1;
+        background-color: #A9E101;
+      }
+      .indicatorBox {
+        border: 1px solid black;
+        width: 160px;
+        height: 200px;
+        display: inline-block;
+        text-align: center;
+        margin: 5px;
+        font-size: 4rem;
+        background-color: #111;
+      }
+      #turn {
+        color: #fff;
+      }
+      #win {
+        color: #7B28A1;
+        background-color:  #fff;
+      }
+      #popup {
+        position: absolute;
+        top: 20%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 80%;
+        color:  #A9E101;
+        background-color:  #7B28A1;
+        font-size: 3rem;
+        z-index: 1000;
+        border-radius: 1rem;
+        text-align: center;
+      }
+    </style>
+    <script>
+        // Create 9 tic tac toe squares
+        const NUM_SQUARES = 9;
+        // Add a title to the page
+        document.write( "<h1 class='title'>Assignment 3 Tic Tac Toe</h1>" );
+        // Add a global variable randomly assign first move and to track whose turn it is
+        var turnIndicator = Math.random() % 2 == 0 ? "X" : "O";
+        // Add a hidden popup div to use for the popup message
+        document.write( "<div id='popup'></div>" );
+        // Add a global popup timeout variable to remove the popup message
+        var popupTimeout;
+        // Function to add a popup message
+        function addPopup(message)
+        {
+            // clear any existing popup timeout
+            if (popupTimeout) popupTimeout = clearTimeout(popupTimeout);
+            document.getElementById('popup').innerHTML = message;
+            popupTimeout = setTimeout(() => {
+              document.getElementById('popup').innerHTML = "";
+            }, 2000);
+        }
+        // function to add an X to a square
+        function addValue(squareNumber)
+        {
+            // Get the square of interest
+            square = document.getElementById('sq' + squareNumber);
+            // If the square is already filled, don't do anything
+            if (square.innerHTML != "") {
+                addPopup("Square " + squareNumber + " is already filled with " + square.innerHTML);
+                return;
+            };
+            // Add the correct value into the square
+            square.innerHTML = turnIndicator;
+            // Set the popup text
+            addPopup("Added an " + turnIndicator + " to square " + squareNumber);
+            // Toggle the turn indicator
+            turnIndicator = turnIndicator == "X" ? "O" : "X";
+            // Show whos turn is next
+            document.getElementById('turn').innerHTML = turnIndicator + "'s Turn";
+        }
+
+        // Create 9 tic tac toe squares
+        for (let i=0; i<NUM_SQUARES; i++)
+        {
+            id = "sq"+i;
+            document.write( "<div class='square' id='" + id + "'></div>" );
+        }
+
+        // Add a square to indicate if X or O's turn
+        document.write( "<div class='indicatorBox' id='turn'>Turn Indicator</div>" );
+        // Add a square to indicate who won
+        document.write( "<div class='indicatorBox' id='win'>In Play</div>" );
+        // Show who's turn it is to start the game
+        document.getElementById('turn').innerHTML = turnIndicator + "'s Turn";
+
+        // Add a click event handler to each square
+        for (let i=0; i<NUM_SQUARES; i++)
+        {
+            square = document.getElementById('sq' + i);
+            square.addEventListener("click", () => addValue(i));
+        }
+    </script>
+  </head>
+  <body id="body">
+  </body>
+</html>
