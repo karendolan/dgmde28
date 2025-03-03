@@ -159,10 +159,23 @@
           var maxWinConditions = 8;
 
           // ---------------------------- //
-          // Re-wrote my previous brute force winConditions array
-          // to track the square position
-          // so that the winning squares can be highlighted
-          var winConditions = [
+          // Rewriting this so that the winning squares can be tracked
+          // As required in the homework spec
+          // var winConditions = [
+          //   // Horizontal wins
+          //   `${moves[0]}${moves[1]}${moves[2]}`,
+          //   `${moves[3]}${moves[4]}${moves[5]}`,
+          //   `${moves[6]}${moves[7]}${moves[8]}`,
+          //   // Diagonal wins
+          //   `${moves[0]}${moves[4]}${moves[8]}`,
+          //   `${moves[2]}${moves[4]}${moves[6]}`,
+          //   // Vertical wins
+          //   `${moves[0]}${moves[3]}${moves[6]}`,
+          //   `${moves[1]}${moves[4]}${moves[7]}`,
+          //   `${moves[2]}${moves[5]}${moves[8]}`
+          // ];
+
+          var winConditionsIndex = [
             // Horizontal 1-3
             [0,1,2],
             [3,4,5],
@@ -175,17 +188,22 @@
             [1,4,7],
             [2,5,8]
           ];
+          // Create the winContitions array but using the winConditionsIndex
+          var winConditions = winConditionsIndex.map(winCondition => {
+            return winCondition.map(index => moves[index]).join("");
+          });
+          // console.log(winConditions);
 
           // ---------------------------- //
           // Iterate over each type of win condition to check for a winner
-          winConditions.find(winCondition => {
-            // Get the string of the square values for the square numbers in this win condition
-            var value = winCondition.map(index => moves[index]).join("");
-            isXwin = value === "XXX";
-            isOwin = value === "OOO";
+          winConditions.find((winCondition, index) => {
+            isXwin = winCondition === "XXX";
+            isOwin = winCondition === "OOO";
             // Set the winning squares to have a different style
             if (isXwin || isOwin) {
-              winCondition.forEach(i => {
+              // Get the index of the winning squares and set the class to winner
+              var winConditionIn = winConditionsIndex[index];
+              winConditionIn.forEach(i => {
                 var square = document.getElementById('sq' + i);
                 square.classList.add("winner");
               });
