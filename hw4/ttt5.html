@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>DGMD E-28 Spring 2025 Assignment 4, ttt5, Karen Dolan</title>
+    <style type="text/css" media="screen">
+      /* Make the body skinny to force the blocks to wrap every 3rd block */
+      body {
+        margin: 0 auto;
+        max-width: 400px;
+      }
+      h1, h2 {
+        text-align: center;
+      }
+      .square {
+        border: 1px solid black;
+        width: 100px;
+        height: 100px;
+        margin: 5px;
+        box-sizing: border-box; /* to include border in width and height */
+        display: inline-block;
+        font-size: 7rem;
+        line-height: 6rem;
+        text-align: center;
+        vertical-align: top;
+      }
+      .square:hover {
+        color: #7B28A1;
+        background-color: #A9E101;
+      }
+      .indicatorBox {
+        border: 1px solid black;
+        width: 160px;
+        height: 200px;
+        display: inline-block;
+        text-align: center;
+        margin: 5px;
+        font-size: 3rem;
+        background-color: #111;
+      }
+      #turn {
+        color: #fff;
+      }
+      #win {
+        color: #7B28A1;
+        background-color:  #fff;
+      }
+      #popup {
+        position: absolute;
+        top: 20%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 80%;
+        color:  #A9E101;
+        background-color:  #7B28A1;
+        font-size: 3rem;
+        z-index: 1000;
+        border-radius: 1rem;
+        text-align: center;
+      }
+    </style>
+    <script>
+        // ---------------------------- //
+        // Build the Game board
+        // ---------------------------- //
+        // Create 9 tic tac toe squares
+        const NUM_SQUARES = 9;
+        // Create an initial status for the game
+        var isGameOver = false;
+        // Create a variable to track whose turn it is
+        var turnIndicator;
+        // Add a title to the page
+        document.write( "<h1 class='title'>Assignment 4</h1><h2> Tic Tac Toe part C</h2>" );
+        // Add a hidden popup div to use for the popup message
+        document.write( "<div id='popup'></div>" );
+        // Create 9 tic tac toe squares
+        for (let i=0; i<NUM_SQUARES; i++)
+        {
+            id = "sq"+i;
+            document.write( "<div class='square' id='" + id + "'></div>" );
+        }
+        // Add a box to indicate if it's X or O's turn
+        document.write( "<div class='indicatorBox' id='turn'></div>" );
+        // Add a box to indicate who won
+        document.write( "<div class='indicatorBox' id='win'></div>" );
+        // Initialize game play text
+        initiateGame();
+
+
+        // ---------------------------- //
+        // Function to set the start of the game
+        // ---------------------------- //
+        function initiateGame() {
+          // Clear all the square values
+          var squares = document.querySelectorAll(".square");
+          Array.from(squares).map(square => {
+            square.innerHTML = "";
+          });
+          // Randomly assign first move and tracks whose turn it is (Fixed from HW3)
+          var randomInt = Number.parseInt(Math.random() * 100);
+          turnIndicator = randomInt % 2 == 0 ? "X" : "O";
+          // Show who's turn it is to start the game
+          document.getElementById('turn').innerHTML = turnIndicator + "'s Turn";
+          // Set the In play text in the status indicator box
+          document.getElementById('win').innerHTML = "In Play";
+          // Set the game over status
+          isGameOver = false;
+        }
+
+        // -------------------------------- //
+        // Function to check game status
+        // ---------------------------- //
+        function checkStatusOfGame() {
+          // Placeholder for the moves
+          var moves = [];
+          // Get all the squares
+          var squares = document.querySelectorAll(".square");
+          // Map the contents of the square into the moves array
+          var moves =  Array.from(squares).map(square => {
+            var move = square.innerHTML;
+            // Return the value or a dash if there is no move in this square
+            var value = ["X", "O"].includes(move) ? move : "-";
+            return value;
+          })
+          console.log('moves', moves);
+          // ---------------------------- //
+          // Check all the possible win conditions
+          var winConditionCount = 0;
+          var maxWinConditions = 8;
+          var winConditions = [];
+          // Horizontal wins
+          winConditions[0] = `${moves[0]}${moves[1]}${moves[2]}`;
+          winConditions[1] = `${moves[3]}${moves[4]}${moves[5]}`;
+          winConditions[2] = `${moves[6]}${moves[7]}${moves[8]}`;
+          // Diagonal wins
+          winConditions[3] = `${moves[0]}${moves[4]}${moves[8]}`;
+          winConditions[4] = `${moves[2]}${moves[4]}${moves[6]}`;
+          // Vertical wins
+          winConditions[5] = `${moves[0]}${moves[3]}${moves[6]}`;
+          winConditions[6] = `${moves[1]}${moves[4]}${moves[7]}`;
+          winConditions[7] = `${moves[2]}${moves[5]}${moves[8]}`;
+
+          console.log('win', winConditions);
+          // ---------------------------- //
+          // Check if a win or draw
+          var xWin = winConditions.find(win => win === "XXX");
+          var oWin = winConditions.find(win => win === "OOO");
+          var notDraw = winConditions.find(win => win.includes("-"));
+          var isDraw = !notDraw;
+
+          // Set the game over status
+          isGameOver = xWin || oWin || isDraw;
+          if (isGameOver) {
+            // Add a replay button
+            document.getElementById('turn').innerHTML = "Game Over!<button onclick='initiateGame()'>Play again</button>";
+          }
+          if (xWin || oWin) {
+            document.getElementById('win').innerHTML = turnIndicator + " Won";
+          } else if (isDraw) {
+            document.getElementById('win').innerHTML = " The game is a draw";
+          }
+          return isGameOver;
+        }
+
+        // ---------------------------- //
+        // function to add an X or O to a square
+        // ---------------------------- //
+        function addValue(squareNumber)
+        {
+            // Cannot make a move if the game is not in play
+            if (isGameOver) return;
+            // Get the square of interest
+            square = document.getElementById('sq' + squareNumber);
+            // If the square is already filled, don't do anything
+            if (square.innerHTML != "") {
+                return;
+            };
+            // Add the correct value into the square
+            square.innerHTML = turnIndicator;
+            // Check the status of the game
+            var isOver = checkStatusOfGame();
+            if (!isOver) {
+              // Toggle the turn indicator
+              turnIndicator = turnIndicator == "X" ? "O" : "X";
+              // Show whos turn is next
+              document.getElementById('turn').innerHTML = turnIndicator + "'s Turn";
+            }
+        }
+
+        // ---------------------------- //
+        // Add a click event handler to each square
+        // ---------------------------- //
+        for (let i=0; i<NUM_SQUARES; i++)
+        {
+            square = document.getElementById('sq' + i);
+            square.addEventListener("click", () => addValue(i));
+        }
+    </script>
+    <!-- DGMD-28 Assignment 2c
+    -- TODOs:
+    -- 0. (done) Fix the bad random code to randomly choose X or 0 from previous assignment
+    -- 1. (doing) Remove the popup that occurs when a user clicks on a square.
+    -- 2. (done) Create a "moves" array to track the current moves using map()
+    -- 3. (done) Create a "winConditions" array to represent the 8 possible win conditions
+    -- 4. Check if any of the "winConditions" contain all X or all O, if so it's a win
+    -- 5. Else if none of the "winConditions" contains a "-" it's a stalemate
+    -- 6. If win/stalemate condition, display status and require click of restart button
+    -- 7. Else the game continues
+    -- 8. Identify an area of JS code in the final solution (ttt5) you feel really good about – and indicate why
+    -->
+  </head>
+  <body id="body">
+  </body>
+</html>
