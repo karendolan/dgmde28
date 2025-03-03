@@ -29,6 +29,19 @@
         color: #7B28A1;
         background-color: #A9E101;
       }
+      .square.winner {
+        color: #A9E101;
+        background-color: #7B28A1;
+      }
+      .resetButton {
+        font-size: 1.2rem;
+        border-radius: 10%;
+        background-color: #A9E101;
+      }
+      .resetButton:hover {
+        color: white;
+        background-color: #7B28A1;
+      }
       .indicatorBox {
         border: 1px solid black;
         width: 160px;
@@ -38,6 +51,12 @@
         margin: 5px;
         font-size: 3rem;
         background-color: #111;
+      }
+      .messageBoxContainer, .squareContainer {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        text-align: center;
       }
       #turn {
         color: #fff;
@@ -75,15 +94,19 @@
         // Add a hidden popup div to use for the popup message
         document.write( "<div id='popup'></div>" );
         // Create 9 tic tac toe squares
+        document.write( "<div class='squareContainer'>" );
         for (let i=0; i<NUM_SQUARES; i++)
         {
             id = "sq"+i;
             document.write( "<div class='square' id='" + id + "'></div>" );
         }
+        document.write( "</div>" );
+        document.write( "<div class='messageBoxContainer'>" );
         // Add a box to indicate if it's X or O's turn
         document.write( "<div class='indicatorBox' id='turn'></div>" );
         // Add a box to indicate who won
         document.write( "<div class='indicatorBox' id='win'></div>" );
+        document.write( "</div>" );
         // Initialize game play text
         initiateGame();
 
@@ -95,7 +118,10 @@
           // Clear all the square values
           var squares = document.querySelectorAll(".square");
           Array.from(squares).map(square => {
+            // Clean out the square value
             square.innerHTML = "";
+            // Clean up any previous winner squares
+            square.classList.remove("winner");
           });
           // Randomly assign first move and tracks whose turn it is (Fixed from HW3)
           var randomInt = Number.parseInt(Math.random() * 100);
@@ -114,6 +140,10 @@
         function checkStatusOfGame() {
           // Placeholder for the moves
           var moves = [];
+          // Placeholder for the end game conditions
+          var isXwin;
+          var isOwin;
+          var isDraw;
           // Get all the squares
           var squares = document.querySelectorAll(".square");
           // Map the contents of the square into the moves array
@@ -123,39 +153,63 @@
             var value = ["X", "O"].includes(move) ? move : "-";
             return value;
           })
-          console.log('moves', moves);
           // ---------------------------- //
           // Check all the possible win conditions
           var winConditionCount = 0;
           var maxWinConditions = 8;
-          var winConditions = [];
-          // Horizontal wins
-          winConditions[0] = `${moves[0]}${moves[1]}${moves[2]}`;
-          winConditions[1] = `${moves[3]}${moves[4]}${moves[5]}`;
-          winConditions[2] = `${moves[6]}${moves[7]}${moves[8]}`;
-          // Diagonal wins
-          winConditions[3] = `${moves[0]}${moves[4]}${moves[8]}`;
-          winConditions[4] = `${moves[2]}${moves[4]}${moves[6]}`;
-          // Vertical wins
-          winConditions[5] = `${moves[0]}${moves[3]}${moves[6]}`;
-          winConditions[6] = `${moves[1]}${moves[4]}${moves[7]}`;
-          winConditions[7] = `${moves[2]}${moves[5]}${moves[8]}`;
 
-          console.log('win', winConditions);
           // ---------------------------- //
-          // Check if a win or draw
-          var xWin = winConditions.find(win => win === "XXX");
-          var oWin = winConditions.find(win => win === "OOO");
-          var notDraw = winConditions.find(win => win.includes("-"));
-          var isDraw = !notDraw;
+          // Re-wrote my previous brute force winConditions array
+          // to track the square position
+          // so that the winning squares can be highlighted
+          var winConditions = [
+            // Horizontal 1-3
+            [0,1,2],
+            [3,4,5],
+            [6,7,8],
+            // Diagonal 4-5
+            [0,4,8],
+            [2,4,6],
+            // Vertical 6-8
+            [0,3,6],
+            [1,4,7],
+            [2,5,8]
+          ];
+
+          // ---------------------------- //
+          // Iterate over each type of win condition to check for a winner
+          winConditions.find(winCondition => {
+            // Get the string of the square values for the square numbers in this win condition
+            var value = winCondition.map(index => moves[index]).join("");
+            isXwin = value === "XXX";
+            isOwin = value === "OOO";
+            // Set the winning squares to have a different style
+            if (isXwin || isOwin) {
+              winCondition.forEach(i => {
+                var square = document.getElementById('sq' + i);
+                square.classList.add("winner");
+              });
+              // Break from this loop, found the winner!
+              return true;
+            }
+            // Continue looking at next condition
+            return false;
+          });
+
+          // ---------------------------- //
+          // If no winner, check if it's a draw
+          if (!isXwin && !isOwin) {
+            var notDraw = moves.find(move => move === "-");
+            isDraw = !notDraw;
+          }
 
           // Set the game over status
-          isGameOver = xWin || oWin || isDraw;
+          isGameOver = isXwin || isOwin || isDraw;
           if (isGameOver) {
             // Add a replay button
-            document.getElementById('turn').innerHTML = "Game Over!<button onclick='initiateGame()'>Play again</button>";
+            document.getElementById('turn').innerHTML = "Game Over!<button class='resetButton' onclick='initiateGame()'>Play again</button>";
           }
-          if (xWin || oWin) {
+          if (isXwin || isOwin) {
             document.getElementById('win').innerHTML = turnIndicator + " Won";
           } else if (isDraw) {
             document.getElementById('win').innerHTML = " The game is a draw";
@@ -203,11 +257,14 @@
     -- 1. (doing) Remove the popup that occurs when a user clicks on a square.
     -- 2. (done) Create a "moves" array to track the current moves using map()
     -- 3. (done) Create a "winConditions" array to represent the 8 possible win conditions
-    -- 4. Check if any of the "winConditions" contain all X or all O, if so it's a win
-    -- 5. Else if none of the "winConditions" contains a "-" it's a stalemate
-    -- 6. If win/stalemate condition, display status and require click of restart button
-    -- 7. Else the game continues
+    -- 4. (done) Check if any of the "winConditions" contain all X or all O, if so it's a win
+    -- 5. (done) Else if none of the "winConditions" contains a "-" it's a stalemate
+    -- 6. (done) If win/stalemate condition, display status and require click of restart button
+    -- 7. (done) Else the game continues
     -- 8. Identify an area of JS code in the final solution (ttt5) you feel really good about – and indicate why
+    --    A: I redid the winCondition array a few ways. This last way allows me to track the
+    --    winning squares in order to add a class name to them to highlight them. It also is cleaner code
+    --    with less lines of code, and less confusing than my initial brute force approach.
     -->
   </head>
   <body id="body">
