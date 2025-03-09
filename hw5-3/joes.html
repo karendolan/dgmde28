@@ -7,18 +7,17 @@
     <style type="text/css" media="screen">
       body {
         margin: 0 auto;
-        max-width: 400px;
       }
       h1, h2 {
         text-align: center;
       }
-      .menuItem, #cartContainer, #checkoutContainer {
+      .menuItem, #addToCartContainer, #checkoutContainer {
         display: flex;
         justify-content: space-between;
         text-align: start;
         flex-direction: row;
       }
-      #menuContainer, #cartContainer, #checkoutContainer {
+      #menuContainer, #addToCartContainer, #checkoutContainer {
         border: 1px solid black;
         border-radius: 10px;
         margin: 5px;
@@ -29,59 +28,23 @@
         margin-right: 1rem;
       }
       .visible {
-        display: block;
+        display: flex;
       }
       .invisible {
         display: none;
       }
-
-      .square:hover {
-        color: #7B28A1;
-        background-color: #A9E101;
+      .container {
+        margin: 0 auto;
+        max-width: 400px;
+        position: relative;
       }
-      .square.winner {
-        color: #A9E101;
-        background-color: #7B28A1;
-      }
-      .resetButton {
-        font-size: 1.2rem;
-        border-radius: 10%;
-        background-color: #A9E101;
-      }
-      .resetButton:hover {
-        color: white;
-        background-color: #7B28A1;
-      }
-      .indicatorBox {
-        border: 1px solid black;
-        width: 160px;
-        height: 200px;
-        display: inline-block;
-        text-align: center;
-        margin: 5px;
-        font-size: 3rem;
-        background-color: #111;
-      }
-
-      #turn {
-        color: #fff;
-      }
-      #win {
-        color: #7B28A1;
-        background-color:  #fff;
-      }
-      #popup {
+      #checkoutPopup {
         position: absolute;
-        top: 20%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: 80%;
-        color:  #A9E101;
-        background-color:  #7B28A1;
-        font-size: 3rem;
-        z-index: 1000;
-        border-radius: 1rem;
-        text-align: center;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: #fff;
       }
     </style>
     <script>
@@ -109,7 +72,12 @@
         document.write( "<h1 class='title'>Assignment 3</h1><h2>Joe's Hotdogs!</h2>" );
 
         // ---------------------------- //
+        // Create a container for the page content
+        document.write( "<div class='container'>" );
+
+        // ---------------------------- //
         // Create the Menu Area
+        document.write( "<h4>Menu</h4>" );
         document.write( "<div id='menuContainer'>" );
         // List the menu items
         Object.keys(menu).forEach((item) => {
@@ -123,18 +91,19 @@
         document.write( "</div>" );
 
         // ---------------------------- //
-        // Create the Cart Area
-        document.write( "<div id='cartContainer'>" );
+        // Create the Add to Cart Area
+        document.write( "<h4>Add to Cart</h4>" );
+        document.write( "<div id='addToCartContainer'>" );
         // Add an input area
         document.write( "<input id='newItem' type='text' placeholder='"+INPUT_PROMPT+"' />" );
         // Add the add to cart button
         document.write( "<button onClick='addToCart()' >Add to Cart</button>" );
-        // Close the cart area
+        // Close the cart input area
         document.write( "</div>" );
 
-
         // ---------------------------- //
-        // Create the Checkout Area
+        // Create the Shopping Cart Display Area
+        document.write( "<h4>Shopping Cart</h4>" );
         document.write( "<div id='checkoutContainer'>" );
         // Add the shopping cart display
         document.write( "<div id='cartDisplay'></div>" );
@@ -143,7 +112,7 @@
         // Close the checkout area
         document.write( "</div>" );
 
-        // ---------------------------- //
+        // ------------------------------- //
         // Create the Checkout Totals Popup Area
         document.write( "<div id='checkoutPopup' class='invisible'>" );
         // Show the total cost of each item
@@ -152,6 +121,11 @@
         document.write( "<button id='popupButton' onClick='checkOutOk()'>Ok</button>" );
         // Close the checkout area
         document.write( "</div>" );
+
+        // ----------------------------------- //
+        // Close thecontainer for the page content
+        document.write( "</div>" );
+
 
         // ---------------------------- //
         // Function to add to the cart
@@ -189,7 +163,7 @@
           // Create the cart inner html from each object in cart over value 0
           cartDisplay.innerHTML = Object.keys(cart).map((item) => {
             if (cart[item] > 0) {
-              return "<div>" + item + " count: " + cart[item] + "</div>";
+              return "<div>" + cart[item] + " " + item + "</div>";
             }
           }).join(""); // flatten the array of string into a big string
         }
