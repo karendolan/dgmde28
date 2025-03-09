@@ -8,11 +8,8 @@
       h1, h2 {
         text-align: center;
       }
-      .visible {
-        display: flex;
-      }
       .invisible {
-        display: none;
+        display: none !important;
       }
       .alignRight {
         text-align: right;
@@ -22,13 +19,13 @@
         max-width: 400px;
         position: relative;
       }
-      .itemContainer, .menuItem, #addToCartContainer, #checkoutContainer, #checkoutPopup {
+      .itemContainer, .menuItem, #addToCartContainer, #checkoutContainer {
         display: flex;
         justify-content: space-between;
         text-align: start;
         flex-direction: row;
       }
-      #menuContainer, #addToCartContainer, #checkoutContainer, #checkoutPopup {
+      #menuContainer, #addToCartContainer, #checkoutContainer, #popupContainer {
         border: 1px solid black;
         border-radius: 10px;
         margin: 5px;
@@ -38,7 +35,7 @@
         flex-grow: 1;
         margin-right: 1rem;
       }
-      #checkoutPopupppp {
+      #checkoutPopup {
         position: absolute;
         top: 0;
         left: 0;
@@ -115,17 +112,22 @@
         // ------------------------------- //
         // Create the Checkout Totals Popup Area
         document.write( "<div id='checkoutPopup' class='invisible'>" );
+        // Title for the space
+        document.write( "<h4>Total Cost</h4>" );
+        // Add a container for the popup content
+        document.write( "<div id='popupContainer'>" );
         // Show the total cost of each item
         document.write( "<div id='checkoutDisplay'></div>" );
         // Add the checkout total Ok button
         document.write( "<button id='popupButton' onClick='checkOutOk()'>Ok</button>" );
-        // Close the checkout area
+        // Close the popup content area
+        document.write( "</div>" );
+        // Close the popup element
         document.write( "</div>" );
 
         // ----------------------------------- //
-        // Close thecontainer for the page content
+        // Close the page content container
         document.write( "</div>" );
-
 
         // ---------------------------- //
         // Function to add to the cart
@@ -147,7 +149,6 @@
             // Reset the input prompt
             inputElement.placeholder = INPUT_PROMPT;
           } else {
-            // Show the validation error in the input placeholder
             // Clear the input
             inputElement.value = "";
             // Show the validation error in the input placeholder
@@ -175,7 +176,6 @@
           // Make the checkout popup visible by changing it's classname
           var checkoutPopup = document.getElementById('checkoutPopup');
           checkoutPopup.classList.remove("invisible");
-          checkoutPopup.classList.add("visible");
           var total = 0;
           Object.keys(cart).forEach((item) => {
             // multiple the amount of the item with it's cost
@@ -183,18 +183,22 @@
           });
           // Show the totals
           var checkoutDisplay = document.getElementById('checkoutDisplay');
-          // fill in the html, filter out items with 0 count
-          checkoutDisplay.innerHTML = Object.keys(cart).filter(item => cart[item] > 0)
-            // Show the total cost of that time, with cents
+          // Fill in the html of the totals
+          checkoutDisplay.innerHTML = Object.keys(cart)
+            // filter out items with 0 count
+            .filter(item => cart[item] > 0)
+            // Show the total cost of the item, with cents precision
             .map((item) => "<div class='itemContainer'><div>" + cart[item] + " " + item + "</div><div>$" + (cart[item] * menu[item]).toFixed(2) + "</div></div>")
-            // Add the grand total to the end of inner html element the array
+            // add a horizontal line
             .concat("<hr/>")
+            // Add the grand total to the end of inner html element the array
             .concat("<div class='alignRight'>Total: $" + total.toFixed(2) + "</div>")
-            .join(""); // flatten the array of element strings into a big string
+            // flatten the array into a big string
+            .join("");
         }
-        // -------------------------------- //
-        // Function for Ok button to reset the cart
-        // -------------------------------- //
+        // ---------------------------------------------- //
+        // Function for checkout Ok button to reset the cart
+        // ------------------------------------------------ //
         function checkOutOk() {
           // Reset the cart to values 0
           Object.keys(menu).forEach((key) => {
@@ -204,27 +208,10 @@
           updateCartDisplay();
           // Disable the checkout button until something has been added
           document.getElementById('checkoutButton').disabled = true;
-          // Make the checkout popup invisible again by changing it's classname
-          var checkoutPopup = document.getElementById('checkoutPopup');
-          checkoutPopup.classList.remove("visible");
-          checkoutPopup.classList.add("invisible");
+          // Make the popup invisible again
+          document.getElementById('checkoutPopup').classList.add("invisible");
         }
     </script>
-    <!-- DGMD-28 Assignment 3 - Joe's Hotdogs
-    -- TODOs:
-    -- 1. (done) Create an associative array of items and prices using array or object notation
-    -- 2. (doing) Display menu of items on the page using the array
-    -- 3. Below menu...
-    -- 3.1. add input and "Add to Cart" button
-    -- 3.2. add div for the shopping cart display
-    -- 3.3. add button below "cart" labelled "Checkout"
-    -- 3.4. (done )Create an associative array to represent quantities in the cart. key is item and value is quantity
-    -- 4.a User enters item in text box and clicks "add to cart", if item is in menu (case insensitive), add to cart
-    -- 4.b. Display items over quantity 0 in the cart area
-    -- 5. When user clicks "Checkout", tally final cost for each item and for total,
-    -- 5.b. Show tallies on a popup with a an "ok" button
-    -- 5.c. When user clicks "ok", clear the cart and the popup
-  -->
   </head>
   <body id="body">
   </body>
