@@ -133,10 +133,8 @@
         // Function to add to the cart
         // ---------------------------- //
         function addToCart() {
-          console.log("addToCart");
           var inputElement = document.getElementById('newItem')
           var item = inputElement.value.trim().toLowerCase();
-          console.log("item: ", item);
           if (item in menu) {
             // Add the item to the cart
             cart[item] = ++cart[item];
@@ -159,7 +157,6 @@
         // Function to update shopping cart
         // -------------------------------- //
         function updateCartDisplay() {
-          console.log("updateCartDisplay");
           var cartDisplay = document.getElementById('cartDisplay');
           // Create the cart inner html from each object in cart over value 0
           cartDisplay.innerHTML = Object.keys(cart).map((item) => {
