@@ -158,12 +158,14 @@
         // -------------------------------- //
         function updateCartDisplay() {
           var cartDisplay = document.getElementById('cartDisplay');
-          // Create the cart inner html from each object in cart over value 0
-          cartDisplay.innerHTML = Object.keys(cart).map((item) => {
-            if (cart[item] > 0) {
-              return "<div>" + cart[item] + " " + item + "</div>";
-            }
-          }).join(""); // flatten the array of string into a big string
+          // Create the cart inner html from each object in cart
+          cartDisplay.innerHTML = Object.keys(cart)
+            // filter out items with 0 count
+            .filter((item) => cart[item] > 0)
+            // Show the amount of the item in the cart
+            .map((item) =>  "<div>" + cart[item] + " " + item + "</div>")
+            // flatten the array of string into a big string
+            .join("");
         }
 
         // -------------------------------- //
@@ -173,6 +175,7 @@
           // Make the checkout popup visible by changing it's classname
           var checkoutPopup = document.getElementById('checkoutPopup');
           checkoutPopup.classList.remove("invisible");
+          // Get the total of all items
           var total = 0;
           Object.keys(cart).forEach((item) => {
             // multiple the amount of the item with it's cost
