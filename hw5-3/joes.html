@@ -5,27 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>DGMD E-28 Spring 2025 Assignment 3 Joe's Hotdogs, Karen Dolan</title>
     <style type="text/css" media="screen">
-      body {
-        margin: 0 auto;
-      }
       h1, h2 {
         text-align: center;
-      }
-      .menuItem, #addToCartContainer, #checkoutContainer {
-        display: flex;
-        justify-content: space-between;
-        text-align: start;
-        flex-direction: row;
-      }
-      #menuContainer, #addToCartContainer, #checkoutContainer {
-        border: 1px solid black;
-        border-radius: 10px;
-        margin: 5px;
-        padding: 5px;
-      }
-      #newItem {
-        flex-grow: 1;
-        margin-right: 1rem;
       }
       .visible {
         display: flex;
@@ -33,12 +14,31 @@
       .invisible {
         display: none;
       }
+      .alignRight {
+        text-align: right;
+      }
       .container {
         margin: 0 auto;
         max-width: 400px;
         position: relative;
       }
-      #checkoutPopup {
+      .itemContainer, .menuItem, #addToCartContainer, #checkoutContainer, #checkoutPopup {
+        display: flex;
+        justify-content: space-between;
+        text-align: start;
+        flex-direction: row;
+      }
+      #menuContainer, #addToCartContainer, #checkoutContainer, #checkoutPopup {
+        border: 1px solid black;
+        border-radius: 10px;
+        margin: 5px;
+        padding: 5px;
+      }
+      #newItem, #checkoutDisplay {
+        flex-grow: 1;
+        margin-right: 1rem;
+      }
+      #checkoutPopupppp {
         position: absolute;
         top: 0;
         left: 0;
@@ -87,7 +87,7 @@
           document.write("<div>$" + menu[item].toFixed(2) + "</div>");
           document.write("</div>");
         });
-        // End of menu
+        // End of menu container
         document.write( "</div>" );
 
         // ---------------------------- //
@@ -186,9 +186,10 @@
           // fill in the html, filter out items with 0 count
           checkoutDisplay.innerHTML = Object.keys(cart).filter(item => cart[item] > 0)
             // Show the total cost of that time, with cents
-            .map((item) => "<div>" + item + " total: $" + (cart[item] * menu[item]).toFixed(2) + "</div>")
+            .map((item) => "<div class='itemContainer'><div>" + cart[item] + " " + item + "</div><div>$" + (cart[item] * menu[item]).toFixed(2) + "</div></div>")
             // Add the grand total to the end of inner html element the array
-            .concat("<div>Total: $" + total + "</div>")
+            .concat("<hr/>")
+            .concat("<div class='alignRight'>Total: $" + total.toFixed(2) + "</div>")
             .join(""); // flatten the array of element strings into a big string
         }
         // -------------------------------- //
