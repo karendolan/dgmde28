@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>DGMD E-28 Spring 2025 Assignment 4 Wordle, Karen Dolan</title>
+    <style type="text/css" media="screen">
+      h1, h2, h3 {
+        text-align: center;
+      }
+      #game-board {
+        width: fit-content;
+        margin: auto;
+      }
+      #key-board, .keyboard-row {
+        margin:  auto;
+        width: fit-content;
+      }
+      .square, .keyboard-key {
+        border: 1px solid black;
+        width: 60px;
+        height: 60px;
+        margin: 5px;
+        box-sizing: border-box; /* to include border in width and height */
+        display: inline-block;
+        font-size: 2rem;
+        line-height: 2rem;
+        text-align: center;
+        vertical-align: top;
+        border-radius: 5%;
+      }
+      .keyboard-key {
+        width: 50px;
+        height: 50px;
+        margin: 3px;
+        border-radius: 20%;
+        font-size: 1.5rem;
+        line-height: 2rem;
+      }
+      .squffffare:hover,.keybffffoard-key:hover {
+        color: #7B28A1;
+        background-color: #A9E101;
+      }
+    </style>
+  </head>
+  <body id="body">
+    <div id="gameContainer">
+    </div>
+
+    <script>
+      // ----------------------------- //
+      // --- Wordle Class ------------ //
+      // ----------------------------- //
+      class Wordle {
+        constructor(wordToGuess) {
+          this.wordToGuess = wordToGuess;
+          this.guessCount = 0;
+          this.prevGuesses = [];
+        }
+        addLetter(square, letter) {
+          square.innerHTML = letter;
+        }
+        guessWord(guess) {
+          // Validate guess is 5 letters
+          if (guess.length !== 5) {
+            return 'Guess must be 5 letters';
+          }
+          // Don't allow a duplicate guess
+          if (this.prevGuesses.includes(guess)) {
+            return `You already guessed "${guess}", try a different word`;
+          }
+          // Guess must be a valid word
+
+          // All checks pass, add word to list of words
+          this.prevGuesses.push(guess);
+          // Check the hit and miss count
+
+        }
+      }
+      // ---------------------------  //
+      // Function to verify letter and put it upper case
+      // --------------------------- //
+      function onChangeValue(event) {
+        console.log("start" , event);
+        const {
+          data,
+          target,
+        } = event;
+        const {
+          id,
+        } = target;
+        console.log(data, id, event);
+        const curValue = data?.toUpperCase();
+        // If it's a value, make it upper case
+        if (ALL_LETTERS.includes(curValue)) {
+          document.getElementById(id).value = curValue;
+          // Move focus if not at end of word
+          const curId = Number.parseInt(id.split('-sq-')[1]);
+          // If a valid letter was entered, move focus to next square to right
+          if (curId < WORD_SIZE - 1) {
+            const nextId = id.replace(`sq-${curId}`, `sq-${curId + 1}`);
+            console.log("Moving focus to next square ", nextId)
+            let nextSquare =  document.getElementById(nextId);
+            console.log('next square is ', nextSquare);
+            nextSquare.focus();
+          }
+        } else {
+          // remove existing value if it exists
+          document.getElementById(id).value = '';
+        }
+        console.log("Leaving enter", currGuess);
+      }
+
+      // ----------------------------- //
+      // --- END OF CLASS ------------ //
+      // ----------------------------- //
+
+      // ----------------------------- //
+      // --- SET UP ------------------ //
+      // ---------------------------- //
+      const MAX_GUESSES = 6;
+      const WORD_SIZE = 5;
+      // Hold the current word to guess
+      let wordToGuess = 'apple'; //TODO: temp word to guess until hook up the API
+      // The current word being built for the guess, an array of char
+      let currGuess = [];
+      // The previous guesses fore this round
+      const prevWords = [];
+
+      // ---- Header  --------------- //
+      // Add a title to the page
+      document.write( "<h1 class='title'>Assignment 4</h1>" );
+      document.write( "<h2>Wordle</h2>" );
+      document.write( "<h3>You have 6 tries to guess a 5 letter word!</h3>" );
+      // ---------------------------- //
+      // ---- Game Board ------------ //
+      document.write("<div id='game-board'>");
+      // Create 6 rows of 5 input blocks
+      for (let r = 0 ; r < MAX_GUESSES ; r++) {
+        document.write( "<div class='row' id='row-" + r + "'>" );
+        // 5 columns
+        for (let c = 0 ; c < WORD_SIZE ; c++) {
+          id = "row-" + r + "-sq-" + c;
+          // Disable all squares but those in the first row to start
+          const disabled = r > 0 ? 'disabled' : '';
+          document.write( "<input type='text' maxlength='1' class='square' " + disabled + "  id='" + id + "'/>" );
+          const element = document.getElementById(id);
+          element.addEventListener("input", (event) => {
+            onChangeValue(event, element);
+          })
+        }
+        // end row
+        document.write( "</div>" );
+      }
+      // end game board div
+      document.write("</div>");
+      // ---------------------------- //
+      // ----- Key Board  ----------- //
+      const KEYBOARD_1 = "qwertyuiop".toUpperCase();
+      const KEYBOARD_2 = "asdfghijkl".toUpperCase();
+      const KEYBOARD_3 = "zxcvbnm".toUpperCase();
+      const ALL_LETTERS = KEYBOARD_1 + KEYBOARD_2 + KEYBOARD_3;
+      const KEYBOARD_KEYS = [KEYBOARD_1, KEYBOARD_2, KEYBOARD_3];
+      // Key board container element
+      document.write("<div id='keyboard'>");
+      KEYBOARD_KEYS.forEach((rowStr, i) => {
+        document.write( "<div class='keyboard-row' id='keyboard-row-" + i + "'>" );
+        rowStr.split('').forEach(letter => {
+          document.write("<button class='keyboard-key' id='key-" + letter + "' onClick(letterClick) >" + letter.toUpperCase() + "</button>");
+        })
+        // end keyboard row
+        document.write("</div>");
+      })
+      // end key board div
+      document.write("</div>");
+      // Add the submit button, disabled until all 5 char are filled for the row
+      document.write( "<button id='submitGuessButton' disabled onClick='submitGuess()'>Enter</button>" );
+
+    </script>
+  </body>
+</html>
