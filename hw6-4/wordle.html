@@ -8,13 +8,9 @@
       h1, h2, h3 {
         text-align: center;
       }
-      #game-board {
+      #game-board, #guess-button-container, #key-board, .keyboard-row {
         width: fit-content;
         margin: auto;
-      }
-      #key-board, .keyboard-row {
-        margin:  auto;
-        width: fit-content;
       }
       .square, .keyboard-key {
         border: 1px solid black;
@@ -111,6 +107,13 @@
         console.log("Leaving enter", currGuess);
       }
 
+      // ------------------------------ //
+      // ---- Make Guess ---------------//
+      function makeGuess() {
+        //TODO:
+        // submitGuessButton
+      }
+
       // ----------------------------- //
       // --- END OF CLASS ------------ //
       // ----------------------------- //
@@ -125,7 +128,9 @@
       // The current word being built for the guess, an array of char
       let currGuess = [];
       // The previous guesses fore this round
-      const prevWords = [];
+      const wordGusses = [];
+      // current guess
+      let wor
 
       // ---- Header  --------------- //
       // Add a title to the page
@@ -173,9 +178,12 @@
       })
       // end key board div
       document.write("</div>");
-      // Add the submit button, disabled until all 5 char are filled for the row
-      document.write( "<button id='submitGuessButton' disabled onClick='submitGuess()'>Enter</button>" );
 
+      // Submit button
+      document.write("<div id='guess-button-container'>");
+      document.write( "<button id='submitGuessButton' disabled onClick='submitGuess()'>Make Guess!</button>" );
+      // end Guess Button
+      document.write("</div>");
     </script>
   </body>
 </html>
