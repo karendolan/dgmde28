@@ -12,6 +12,10 @@
         width: fit-content;
         margin: auto;
       }
+      #wordle-validation {
+        text-align: center;
+        color: #7B28A1;
+      }
       .square, .keyboard-key {
         border: 1px solid black;
         width: 60px;
@@ -45,34 +49,18 @@
 
     <script>
       // ----------------------------- //
-      // --- Wordle Class ------------ //
-      // ----------------------------- //
-      class Wordle {
-        constructor(wordToGuess) {
-          this.wordToGuess = wordToGuess;
-          this.guessCount = 0;
-          this.prevGuesses = [];
-        }
-        addLetter(square, letter) {
-          square.innerHTML = letter;
-        }
-        guessWord(guess) {
-          // Validate guess is 5 letters
-          if (guess.length !== 5) {
-            return 'Guess must be 5 letters';
-          }
-          // Don't allow a duplicate guess
-          if (this.prevGuesses.includes(guess)) {
-            return `You already guessed "${guess}", try a different word`;
-          }
-          // Guess must be a valid word
-
-          // All checks pass, add word to list of words
-          this.prevGuesses.push(guess);
-          // Check the hit and miss count
-
-        }
-      }
+      // --- Game Constants   -------- //
+      // ---------------------------- //
+      const MAX_GUESSES = 6;
+      const WORD_SIZE = 5;
+      // Hold the current word to guess
+      let wordToGuess = 'APPLE'; //TODO: temp word to guess until hook up the API
+      // Previous word guesses
+      const prevGuesses = [];
+      // Current word
+      const curGuess = [];
+      // flag if game is ended
+      let isEnded = false;
       // ---------------------------  //
       // Function to verify letter and put it upper case
       // --------------------------- //
@@ -100,37 +88,80 @@
             console.log('next square is ', nextSquare);
             nextSquare.focus();
           }
+          curGuess[curId] = curValue;
         } else {
           // remove existing value if it exists
           document.getElementById(id).value = '';
         }
-        console.log("Leaving enter", currGuess);
+        console.log("Leaving enter curGuess", curGuess);
       }
 
       // ------------------------------ //
       // ---- Make Guess ---------------//
-      function makeGuess() {
-        //TODO:
-        // submitGuessButton
+      function submitGuess() {
+        const guess = curGuess.join('');
+        const msgElem = document.getElementById('wordle-validation');
+        const rowNum = prevGuesses.length;
+        console.log("In submit guess", msgElem);
+        // Validate guess is 5 letters
+        if (guess.length !== 5) {
+          msgElem.innerHTML = ('Guess must be 5 letters');
+        }
+        // Don't allow a duplicate guess
+        if (prevGuesses.includes(guess)) {
+          msgElem.innerHTML = (`You already guessed "${guess}", try a different word`);
+        }
+        // Guess must be a valid word
+        if (false) {
+          msgElem.innerHTML = (`You already guessed "${guess}", try a different word`);
+        }
+        // Freeze the row
+        const blocks = document.getElementsByClassName("row-" + rowNum);
+        for (let block of blocks) {
+          block.disabled = true;
+        }
+
+        // Check for letter matches
+        curGuess.forEach((letter, i) => {
+          // Is a match in right space?
+          if (wordToGuess[i] === letter) {
+            keyMap[letter] = 3; // match
+            // Is a match in work space?
+          } else if (wordToGuess.includes(letter)) {
+            keyMap[letter] = 2; // match but wrong position
+            // Otherwise not a match
+          } else {
+            keyMap[letter] = 1; // no match
+          }
+        })
+        // Add this guest to list of guesses
+        prevGuesses.push(guess);
+        // Show win message!!!
+        console.log(guess, wordToGuess, guess === wordToGuess, keyMap);
+        if (guess === wordToGuess) {
+          msgElem.innerHTML = (`You win!!! You guessed in ${prevGuesses.length} tr${prevGuesses.length > 1 ? 'ies' : 'y'}`);
+          isEnded = true;
+        }
+        // Check the hit and miss count
+        else if (prevGuesses.length === MAX_GUESSES) {
+          msgElem.innerHTML = (`You are out of guesses. The word to guess was ${wordToGuess}`);
+        }
+        else {
+          msgElem.innerText = (`Keep trying! You have ${MAX_GUESSES - prevGuesses.length} more guesses`);
+          // UnFreeze the next row
+          const nextBlocks = document.getElementsByClassName(`row-${rowNum + 1}`);
+          for (let block of nextBlocks) {
+            block.removeAttribute("disabled");
+          }
+          const focusBlock = document.getElementById(`row-${rowNum + 1}-sq-0`);
+          console.log('next square is ', focusBlock);
+          focusBlock.focus();
+        }
       }
 
       // ----------------------------- //
       // --- END OF CLASS ------------ //
       // ----------------------------- //
-
-      // ----------------------------- //
-      // --- SET UP ------------------ //
-      // ---------------------------- //
-      const MAX_GUESSES = 6;
-      const WORD_SIZE = 5;
-      // Hold the current word to guess
-      let wordToGuess = 'apple'; //TODO: temp word to guess until hook up the API
-      // The current word being built for the guess, an array of char
-      let currGuess = [];
-      // The previous guesses fore this round
-      const wordGusses = [];
-      // current guess
-      let wor
 
       // ---- Header  --------------- //
       // Add a title to the page
@@ -140,6 +171,9 @@
       // ---------------------------- //
       // ---- Game Board ------------ //
       document.write("<div id='game-board'>");
+      // --- Validation message ----- //
+      document.write( "<div id='wordle-validation'></div>" );
+
       // Create 6 rows of 5 input blocks
       for (let r = 0 ; r < MAX_GUESSES ; r++) {
         document.write( "<div class='row' id='row-" + r + "'>" );
@@ -148,7 +182,7 @@
           id = "row-" + r + "-sq-" + c;
           // Disable all squares but those in the first row to start
           const disabled = r > 0 ? 'disabled' : '';
-          document.write( "<input type='text' maxlength='1' class='square' " + disabled + "  id='" + id + "'/>" );
+          document.write( "<input type='text' maxlength='1' class='square row-" + r + "' " + disabled + "  id='" + id + "'/>" );
           const element = document.getElementById(id);
           element.addEventListener("input", (event) => {
             onChangeValue(event, element);
@@ -166,11 +200,21 @@
       const KEYBOARD_3 = "zxcvbnm".toUpperCase();
       const ALL_LETTERS = KEYBOARD_1 + KEYBOARD_2 + KEYBOARD_3;
       const KEYBOARD_KEYS = [KEYBOARD_1, KEYBOARD_2, KEYBOARD_3];
+      // Create a map for hits or misses on letters
+      const keyMap = ALL_LETTERS.split('').map((letter) => {
+        // 0 is not guessed,
+        // 1 is guessed, not in the word
+        // 2 is guessed, in wrong spot
+        // 3 is guessed, in correct spot
+        return {[letter]: 0 };
+      })
+      console.log('keyMap', keyMap);
       // Key board container element
       document.write("<div id='keyboard'>");
       KEYBOARD_KEYS.forEach((rowStr, i) => {
+        keyMap.push()
         document.write( "<div class='keyboard-row' id='keyboard-row-" + i + "'>" );
-        rowStr.split('').forEach(letter => {
+        rowStr.split('').forEach((letter) => {
           document.write("<button class='keyboard-key' id='key-" + letter + "' onClick(letterClick) >" + letter.toUpperCase() + "</button>");
         })
         // end keyboard row
@@ -181,7 +225,7 @@
 
       // Submit button
       document.write("<div id='guess-button-container'>");
-      document.write( "<button id='submitGuessButton' disabled onClick='submitGuess()'>Make Guess!</button>" );
+      document.write( "<button id='submitGuessButton' onClick='submitGuess()'>Submit Guess!</button>" );
       // end Guess Button
       document.write("</div>");
     </script>
