@@ -68,6 +68,10 @@
       const KEYBOARD_ROW_3 = "zxcvbnm".toUpperCase();
       const ALL_LETTERS = KEYBOARD_ROW_1 + KEYBOARD_ROW_2 + KEYBOARD_ROW_3;
       const KEYBOARD_KEYS = [KEYBOARD_ROW_1, KEYBOARD_ROW_2, KEYBOARD_ROW_3];
+      // Store potential 5 letter words to cut down on API calls
+      const potentialWordsForGame = ["APPLE", "GRIPE", "PLATE"];
+      // Keep track of previous game words used in current session to avoid reusing
+      const usedWordsForGame = [];
 
       // ---------------------------------- //
       // ---------------------------------- //
@@ -105,6 +109,10 @@
           this.start();
         }
 
+        letterClick(event) {
+          console.log("KEY ", event);
+        }
+
         // ------------------------------------------  //
         // Function to verify letter and put it upper case
         // ------------------------------------------- //
@@ -116,6 +124,7 @@
           const {
             id,
           } = target;
+          console.log("On Change ", data, target);
           const curValue = data?.toUpperCase();
           if (ALL_LETTERS.includes(curValue)) {
             document.getElementById(id).value = curValue;
@@ -132,6 +141,7 @@
             // remove existing value if it exists
             document.getElementById(id).value = '';
           }
+          console.log("On Change ", data, target, curValue, this.curGuess, this);
         }
 
         // ------------------------------ //
@@ -141,6 +151,7 @@
           const guess = this.curGuess.join('');
           const msgElem = document.getElementById('wordle-validation');
           const rowNum = this.prevGuesses.length;
+          console.log("SUBMIT guess ", this.curGuess, guess, ", word to guess ", this.wordToGuess, this );
           // -------------------------
           // Validate entry
           // --------------------------
@@ -174,6 +185,7 @@
           const lettersGuessedResult = [];
           // First Check for letter matches in right spot
           this.curGuess.forEach((letter, i) => {
+            console.log("SUBMIT testing for direct match: ", i, ", letter  ", letter, ", against ", lettersToGuess[i] );
             // Is a match in right space?
             if (lettersToGuess[i] === letter) {
               // Remove direct match letter from comparator
@@ -186,13 +198,19 @@
               // Refresh the key match color
               const keyElem = document.getElementById("key-" + letter);
               keyElem.classList = `keyboard-key ${this.keyMap[letter] }`;
+              console.log("Is match");
+            } else {
+              console.log("Is not match");
             }
           });
           // Next, Check for matches in the wrong place
           this.curGuess.forEach((letter, i) => {
+            console.log("SUBMIT testing non direct match: ", i, ", letter  ", letter, ", against ", lettersToGuess );
             if (lettersToGuess.includes(letter)) {
+              console.log("Is non-direct match");
               // Remove this match letter from comparator
-              lettersToGuess[letter] = '';
+              const position = lettersToGuess.indexOf(letter);
+              lettersToGuess[position] = '';
               // The "rightLetterRightSpot" overrides rightLetter wrong spot
               if (lettersGuessedResult[i] !== "rightLetterRightSpot") {
                 lettersGuessedResult[i] = "rightLetterWrongSpot";
@@ -208,6 +226,7 @@
                 key.classList = `keyboard-key ${this.keyMap[letter]}`;
               }
             } else if (!lettersGuessedResult[i]) {
+              console.log("Is no match");
               // Refresh letter match color
               blocks[i].classList.add("wrongLetter");
               // Update key if not already set to something else
@@ -322,7 +341,7 @@
           KEYBOARD_KEYS.forEach((rowStr, i) => {
             document.write( "<div class='keyboard-row' id='keyboard-row-" + i + "'>" );
             rowStr.split('').forEach((letter) => {
-              document.write("<button class='keyboard-key' id='key-" + letter + "' onClick(letterClick) >" + letter.toUpperCase() + "</button>");
+              document.write("<div class='keyboard-key' id='key-" + letter + "'>" + letter.toUpperCase() + "</div>");
             })
             // end keyboard row
             document.write("</div>");
@@ -331,7 +350,7 @@
           document.write("</div>");
           // Submit button
           document.write("<div id='guess-button-container'>");
-          document.write( "<button id='submitGuessButton' onClick='game.submitGuess()'>Submit Guess!</button>" );
+          document.write( "<button id='submitGuessButton' onClick='submitGuess()'>Submit Guess!</button>" );
           // Refresh button
           document.write( "<button id='playNewGame' onClick='playNewGame()'>Start a new game!</button>" );
           // end Guess Button
@@ -341,11 +360,22 @@
       // ----------------------------- //
       // --- END OF Wordle CLASS ------//
       // ----------------------------- //
+
+      // ---------------------
+      // Global functions
+      // ---------------------
       function playNewGame() {
         // TODO: get from api
-        const wordToGuess = "APPLE";
+        const wordToGuess = potentialWordsForGame.length > 0 ? potentialWordsForGame.pop() : "LATEST";
+        usedWordsForGame.push(wordToGuess);
+        console.log("New GAME ",wordToGuess, ", used", usedWordsForGame, ", potential", potentialWordsForGame);
         // create a new game
         game = new Wordle(wordToGuess);
+      }
+
+      function submitGuess() {
+        console.log("Submitting on wordle ", game);
+        game.submitGuess();
       }
 
       // ---- Header  --------------- //
