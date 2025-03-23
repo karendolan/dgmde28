@@ -101,7 +101,6 @@
           this.keyMap = ALL_LETTERS.split('').map((letter) => {
             return {[letter]: '' };
           })
-          console.log('keyMap', this.keyMap);
           // Build or refresh game board
           this.start();
         }
@@ -110,7 +109,6 @@
         // Function to verify letter and put it upper case
         // ------------------------------------------- //
         onChangeValue(event) {
-          console.log("start" , event);
           const {
             data,
             target,
@@ -118,7 +116,6 @@
           const {
             id,
           } = target;
-          console.log(data, id, event);
           const curValue = data?.toUpperCase();
           if (ALL_LETTERS.includes(curValue)) {
             document.getElementById(id).value = curValue;
@@ -127,9 +124,7 @@
             // If a valid letter was entered, move focus to next square to right
             if (curId < WORD_SIZE - 1) {
               const nextId = id.replace(`sq-${curId}`, `sq-${curId + 1}`);
-              console.log("Moving focus to next square ", nextId)
               let nextSquare =  document.getElementById(nextId);
-              console.log('next square is ', nextSquare);
               nextSquare.focus();
             }
             this.curGuess[curId] = curValue;
@@ -137,7 +132,6 @@
             // remove existing value if it exists
             document.getElementById(id).value = '';
           }
-          console.log("Leaving enter curGuess", this.curGuess);
         }
 
         // ------------------------------ //
@@ -147,7 +141,6 @@
           const guess = this.curGuess.join('');
           const msgElem = document.getElementById('wordle-validation');
           const rowNum = this.prevGuesses.length;
-          console.log("In submit guess", msgElem, guess, rowNum);
           // -------------------------
           // Validate entry
           // --------------------------
@@ -169,7 +162,7 @@
           // -------------------
           // VALID checks passed
           // -------------------
-          // Freeze the row
+          // Freeze the input blocks in the current row
           const blocks = document.getElementsByClassName("row-" + rowNum);
           for (let block of blocks) {
             block.disabled = true;
@@ -177,7 +170,8 @@
           // Copy word to guess in to a temp comparator so that letters can be removed
           // as matches are made in the current word
           const lettersToGuess = this.wordToGuess.split('');
-          const lettersGuessed = guess.split('');
+          // Temp container to hold the match, miss, or no match results for each position
+          const lettersGuessedResult = [];
           // First Check for letter matches in right spot
           this.curGuess.forEach((letter, i) => {
             // Is a match in right space?
@@ -185,10 +179,10 @@
               // Remove direct match letter from comparator
               lettersToGuess[i] = '';
               // match
-              lettersGuessed[i] = "rightLetterRightSpot";
-              this.keyMap[letter] = lettersGuessed[i];
+              lettersGuessedResult[i] = "rightLetterRightSpot";
+              this.keyMap[letter] = lettersGuessedResult[i];
               // Refresh letter match color
-              blocks[i].classList.add(lettersGuessed[i]);
+              blocks[i].classList.add(lettersGuessedResult[i]);
               // Refresh the key match color
               const keyElem = document.getElementById("key-" + letter);
               keyElem.classList = `keyboard-key ${this.keyMap[letter] }`;
@@ -196,36 +190,38 @@
           });
           // Next, Check for matches in the wrong place
           this.curGuess.forEach((letter, i) => {
-            console.log("index ", i, ", letter", letter, ", letters to guess", lettersToGuess);
             if (lettersToGuess.includes(letter)) {
               // Remove this match letter from comparator
-              lettersToGuess = lettersToGuess.replace(letter, '');
+              lettersToGuess[letter] = '';
               // The "rightLetterRightSpot" overrides rightLetter wrong spot
-              if (lettersGuessed[i] !== "rightLetterRightSpot") {
-                lettersGuessed[i] = "rightLetterWrongSpot";
+              if (lettersGuessedResult[i] !== "rightLetterRightSpot") {
+                lettersGuessedResult[i] = "rightLetterWrongSpot";
               }
               // Update this letter block class
-              blocks[i].classList.add(lettersGuessed[i]);
+              blocks[i].classList.add(lettersGuessedResult[i]);
               // Only update key if it isn't a right spot match
               if (this.keyMap[letter] !== "rightLetterRightSpot" ) {
                 // Only update if not previous right
                 this.keyMap[letter] = "rightLetterWrongSpot";
+                // Refresh the key match color
+                const key = document.getElementById("key-" + letter);
+                key.classList = `keyboard-key ${this.keyMap[letter]}`;
               }
-            } else if (lettersGuessed[letter] === '') {
-              // no match
-              this.keyMap[letter] = "wrongLetter";
+            } else if (!lettersGuessedResult[i]) {
               // Refresh letter match color
               blocks[i].classList.add("wrongLetter");
-              // Refresh the key match color
-              const key = document.getElementById("key-" + letter);
-              key.classList = `keyboard-key ${this.keyMap[letter]}`;
+              // Update key if not already set to something else
+              if (!this.keyMap[letter]){
+                this.keyMap[letter] = "wrongLetter";
+                const key = document.getElementById("key-" + letter);
+                key.classList = `keyboard-key ${this.keyMap[letter]}`;
+              }
             }
           })
           // Add this guest to list of guesses
           this.prevGuesses.push(guess);
 
           // Show win message!!!
-          console.log(guess, this.wordToGuess, guess === this.wordToGuess, this.keyMap);
           if (guess === this.wordToGuess) {
             msgElem.innerHTML = (`You win!!! You won in ${this.prevGuesses.length} tr${this.prevGuesses.length > 1 ? 'ies' : 'y'}`);
             this.isEnded = true;
@@ -242,7 +238,6 @@
               block.removeAttribute("disabled");
             }
             const focusBlock = document.getElementById(`row-${rowNum + 1}-sq-0`);
-            console.log('next square is ', focusBlock);
             focusBlock.focus();
           }
         }
@@ -265,7 +260,6 @@
         // function to refresh values on board game
         // ---------------------------
         refreshBoard() {
-          console.log("Before refresh this is ", this);
           // Refresh keyboard values
           KEYBOARD_KEYS.forEach((rowStr, i) => {
             rowStr.split('').forEach((letter) => {
@@ -282,7 +276,6 @@
               // Set to block's default class
               letterBlock.className = `square row-${r}`;
               // unset the value
-              console.log('letterBlock', letterBlock);
               letterBlock.value = '';
               // Disable all squares but those in the first row
               const disabled = r > 0 ? 'disabled' : '';
