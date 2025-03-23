@@ -105,7 +105,6 @@
           this.start();
         }
 
-
         // ------------------------------------------  //
         // Function to verify letter and put it upper case
         // ------------------------------------------- //
@@ -149,6 +148,7 @@
           const msgElem = document.getElementById('wordle-validation');
           const rowNum = this.prevGuesses.length;
           console.log("In submit guess", msgElem, guess, rowNum);
+          // -------------------------
           // Validate guess is 5 letters
           if (guess.length !== 5) {
             msgElem.innerHTML = ('Guess must be 5 letters');
@@ -164,31 +164,35 @@
             msgElem.innerHTML = (`You already guessed "${guess}", try a different word`);
             return;
           }
+          // -------------------
+          // VALID checks pass!
           // Freeze the row
           const blocks = document.getElementsByClassName("row-" + rowNum);
           for (let block of blocks) {
             block.disabled = true;
           }
-
           // Check for letter matches
           this.curGuess.forEach((letter, i) => {
             // Is a match in right space?
             if (this.wordToGuess[i] === letter) {
               this.keyMap[letter] = "rightLetterRightSpot"; // match
-              blocks[i].classList.add(this.keyMap[letter]);
               // Is a match in work space?
             } else if (this.wordToGuess.includes(letter)) {
               this.keyMap[letter] = "rightLetterWrongSpot"; // match but wrong position
-              blocks[i].classList.add(this.keyMap[letter]);
               // Otherwise not a match
             } else {
               this.keyMap[letter] = "wrongLetter"; // no match
-              blocks[i].classList.add(this.keyMap[letter]);
             }
+            // Refresh letter match color
+            blocks[i].classList.add(this.keyMap[letter]);
+            // Refresh the key match color
+            const key = document.getElementById("key-" + letter);
+            key.classList = `keyboard-key ${this.keyMap[letter]}`;
           })
           // Add this guest to list of guesses
           this.prevGuesses.push(guess);
           // Update the keys to show hits and misses
+          const keyBoardKeys = document.getElementsByClassName("keyboard-keys");
           this.keyMap
 
           // Show win message!!!
