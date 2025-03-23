@@ -38,10 +38,16 @@
         line-height: 2rem;
       }
       .rightLetterWrongSpot {
+        color: white;
         background-color: lightgoldenrodyellow;
       }
       .rightLetterRightSpot {
+        color: white;
         background-color: #A9E101;
+      }
+      .wrongLetter {
+        color: white;
+        background-color: gray;
       }
     </style>
   </head>
@@ -142,18 +148,21 @@
           const guess = this.curGuess.join('');
           const msgElem = document.getElementById('wordle-validation');
           const rowNum = this.prevGuesses.length;
-          console.log("In submit guess", msgElem);
+          console.log("In submit guess", msgElem, guess, rowNum);
           // Validate guess is 5 letters
           if (guess.length !== 5) {
             msgElem.innerHTML = ('Guess must be 5 letters');
+            return;
           }
           // Don't allow a duplicate guess
           if (this.prevGuesses.includes(guess)) {
             msgElem.innerHTML = (`You already guessed "${guess}", try a different word`);
+            return;
           }
           // Guess must be a valid word
           if (false) {
             msgElem.innerHTML = (`You already guessed "${guess}", try a different word`);
+            return;
           }
           // Freeze the row
           const blocks = document.getElementsByClassName("row-" + rowNum);
@@ -165,17 +174,23 @@
           this.curGuess.forEach((letter, i) => {
             // Is a match in right space?
             if (this.wordToGuess[i] === letter) {
-              this.keyMap[letter] = 3; // match
+              this.keyMap[letter] = "rightLetterRightSpot"; // match
+              blocks[i].classList.add(this.keyMap[letter]);
               // Is a match in work space?
             } else if (this.wordToGuess.includes(letter)) {
-              this.keyMap[letter] = 2; // match but wrong position
+              this.keyMap[letter] = "rightLetterWrongSpot"; // match but wrong position
+              blocks[i].classList.add(this.keyMap[letter]);
               // Otherwise not a match
             } else {
-              this.keyMap[letter] = 1; // no match
+              this.keyMap[letter] = "wrongLetter"; // no match
+              blocks[i].classList.add(this.keyMap[letter]);
             }
           })
           // Add this guest to list of guesses
           this.prevGuesses.push(guess);
+          // Update the keys to show hits and misses
+          this.keyMap
+
           // Show win message!!!
           console.log(guess, this.wordToGuess, guess === this.wordToGuess, this.keyMap);
           if (guess === this.wordToGuess) {
