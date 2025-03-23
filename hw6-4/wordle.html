@@ -85,7 +85,12 @@
           allLetters = ALL_LETTERS,
 
         ) {
-          this.wordToGuess = wordToGuess;
+          if (wordToGuess.length !== wordSize) {
+            console.error("Wrong word length");
+            return;
+          }
+          // Ensure upper case
+          this.wordToGuess = wordToGuess.toUpperCase();
           this.wordSize = wordSize;
           this.maxGuesses = maxGuesses;
           this.guessCount = 0;
@@ -115,7 +120,6 @@
           } = target;
           console.log(data, id, event);
           const curValue = data?.toUpperCase();
-          // If it's a value, make it upper case
           if (ALL_LETTERS.includes(curValue)) {
             document.getElementById(id).value = curValue;
             // Move focus if not at end of word
@@ -170,37 +174,55 @@
           for (let block of blocks) {
             block.disabled = true;
           }
-          // Check for letter matches
+          // Copy word to guess in to a temp comparator so that letters can be removed
+          // as matches are made in the current word
+          const lettersToGuess = this.wordToGuess.split('');
+          const lettersGuessed = guess.split('');
+          // First Check for letter matches in right spot
           this.curGuess.forEach((letter, i) => {
             // Is a match in right space?
-            if (this.wordToGuess[i] === letter) {
+            if (lettersToGuess[i] === letter) {
+              // Remove direct match letter from comparator
+              lettersToGuess[i] = '';
               // match
-              this.keyMap[letter] = "rightLetterRightSpot";
+              lettersGuessed[i] = "rightLetterRightSpot";
+              this.keyMap[letter] = lettersGuessed[i];
               // Refresh letter match color
-              blocks[i].classList.add(this.keyMap[letter]);
-            } else if (this.wordToGuess.includes(letter)) {
-               // match but wrong position
+              blocks[i].classList.add(lettersGuessed[i]);
+              // Refresh the key match color
+              const keyElem = document.getElementById("key-" + letter);
+              keyElem.classList = `keyboard-key ${this.keyMap[letter] }`;
+            }
+          });
+          // Next, Check for matches in the wrong place
+          this.curGuess.forEach((letter, i) => {
+            console.log("index ", i, ", letter", letter, ", letters to guess", lettersToGuess);
+            if (lettersToGuess.includes(letter)) {
+              // Remove this match letter from comparator
+              lettersToGuess = lettersToGuess.replace(letter, '');
+              // The "rightLetterRightSpot" overrides rightLetter wrong spot
+              if (lettersGuessed[i] !== "rightLetterRightSpot") {
+                lettersGuessed[i] = "rightLetterWrongSpot";
+              }
+              // Update this letter block class
+              blocks[i].classList.add(lettersGuessed[i]);
+              // Only update key if it isn't a right spot match
               if (this.keyMap[letter] !== "rightLetterRightSpot" ) {
                 // Only update if not previous right
                 this.keyMap[letter] = "rightLetterWrongSpot";
               }
-              // Refresh letter match color
-              blocks[i].classList.add("rightLetterWrongSpot");
-            } else {
+            } else if (lettersGuessed[letter] === '') {
               // no match
               this.keyMap[letter] = "wrongLetter";
               // Refresh letter match color
               blocks[i].classList.add("wrongLetter");
+              // Refresh the key match color
+              const key = document.getElementById("key-" + letter);
+              key.classList = `keyboard-key ${this.keyMap[letter]}`;
             }
-            // Refresh the key match color
-            const key = document.getElementById("key-" + letter);
-            key.classList = `keyboard-key ${this.keyMap[letter]}`;
           })
           // Add this guest to list of guesses
           this.prevGuesses.push(guess);
-          // Update the keys to show hits and misses
-          const keyBoardKeys = document.getElementsByClassName("keyboard-keys");
-          this.keyMap
 
           // Show win message!!!
           console.log(guess, this.wordToGuess, guess === this.wordToGuess, this.keyMap);
