@@ -139,7 +139,7 @@
         // Show win message!!!
         console.log(guess, wordToGuess, guess === wordToGuess, keyMap);
         if (guess === wordToGuess) {
-          msgElem.innerHTML = (`You win!!! You guessed in ${prevGuesses.length} tr${prevGuesses.length > 1 ? 'ies' : 'y'}`);
+          msgElem.innerHTML = (`You win!!! You won in ${prevGuesses.length} tr${prevGuesses.length > 1 ? 'ies' : 'y'}`);
           isEnded = true;
         }
         // Check the hit and miss count
