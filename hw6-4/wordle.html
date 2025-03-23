@@ -109,10 +109,6 @@
           this.start();
         }
 
-        letterClick(event) {
-          console.log("KEY ", event);
-        }
-
         // ------------------------------------------  //
         // Function to verify letter and put it upper case
         // ------------------------------------------- //
@@ -124,7 +120,6 @@
           const {
             id,
           } = target;
-          console.log("On Change ", data, target);
           const curValue = data?.toUpperCase();
           if (ALL_LETTERS.includes(curValue)) {
             document.getElementById(id).value = curValue;
@@ -141,7 +136,6 @@
             // remove existing value if it exists
             document.getElementById(id).value = '';
           }
-          console.log("On Change ", data, target, curValue, this.curGuess, this);
         }
 
         // ------------------------------ //
@@ -299,6 +293,15 @@
               // Disable all squares but those in the first row
               const disabled = r > 0 ? 'disabled' : '';
               letterBlock.disabled = disabled;
+              // Remove existing listeners from the previous object
+              letterBlock.removeEventListener("input", (event) => {
+                onChangeValue(event);
+              })
+              // Add the new event listener that will point to this Wordle Class
+              letterBlock.addEventListener("input", (event) => {
+                // Calls the global var that passes back to this Wordle object
+                onChangeValue(event);
+              })
             }
           }
           // Refresh message
@@ -314,6 +317,7 @@
         // -------------------------------------
         buildGameBoard() {
           // ---- Create Game Board ------------ //
+          document.write("<div id='game-container'>");
           document.write("<div id='game-board'>");
           // --- Validation message ----- //
           document.write( "<div id='wordle-validation'></div>" );
@@ -328,7 +332,7 @@
               document.write( "<input type='text' maxlength='1' class='square row-" + r + "' " + disabled + "  id='" + id + "'/>" );
               const element = document.getElementById(id);
               element.addEventListener("input", (event) => {
-                this.onChangeValue(event, element);
+                this.onChangeValue(event);
               })
             }
             // end row
@@ -355,6 +359,8 @@
           document.write( "<button id='playNewGame' onClick='playNewGame()'>Start a new game!</button>" );
           // end Guess Button
           document.write("</div>");
+          // end Game Container
+          document.write("</div>");
         }
       };
       // ----------------------------- //
@@ -366,11 +372,15 @@
       // ---------------------
       function playNewGame() {
         // TODO: get from api
-        const wordToGuess = potentialWordsForGame.length > 0 ? potentialWordsForGame.pop() : "LATEST";
+        const wordToGuess = potentialWordsForGame.length > 0 ? potentialWordsForGame.pop() : "LATER";
         usedWordsForGame.push(wordToGuess);
         console.log("New GAME ",wordToGuess, ", used", usedWordsForGame, ", potential", potentialWordsForGame);
         // create a new game
         game = new Wordle(wordToGuess);
+      }
+
+      function onChangeValue(event) {
+        game.onChangeValue(event);
       }
 
       function submitGuess() {
