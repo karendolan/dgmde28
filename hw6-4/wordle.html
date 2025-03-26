@@ -148,7 +148,7 @@
         // ------------------------------ //
         // Function to submit a guess
         // ------------------------------ //
-        submitGuess() {
+        async submitGuess() {
           const guess = this.curGuess.join('');
           const msgElem = document.getElementById('wordle-validation');
           const rowNum = this.prevGuesses.length;
@@ -167,9 +167,12 @@
             return;
           }
           // Guess must be a valid word
-          if (false) {
-            msgElem.innerHTML = (`The word "${guess}" is not recognized, try a different word`);
+          const isKnown = await isWordKnown(guess);
+          if (!isKnown) {
+            msgElem.innerHTML = (`The word "${guess}" is not known, try a different word`);
             return;
+          } else {
+            console.log(`The ${guess} is known!.`);
           }
           // -------------------
           // VALID checks passed
@@ -339,7 +342,7 @@
 
       // Handler for initiating a new Wordle game
       async function playNewGame() {
-        // TODO: get from api
+        // get the word to guess from the API
         const wordToGuess = await getWordToGuess();
         console.log("The wordToGuess is " + wordToGuess + ".");
         // const wordToGuess = potentialWordsForGame.length > 0 ? potentialWordsForGame.pop() : "LATER";
@@ -359,8 +362,27 @@
 
       // Handler for submitting the guess
       function submitGuess() {
-        console.log("Submitting on wordle ", game);
+        console.log("Submitting on Wordle ", game);
         game.submitGuess();
+      }
+
+      // Function to check if API knows this word
+      // Return TRUE if word is known or FALSE if not known
+      async function isWordKnown(guessWord) {
+        let wordIsKnown;
+        // Fetch a set of words that "means like" the passed word
+        // If the word is valid, the word itself will be returned along with any other
+        // word that "means like" this word. Otherwise, an empty array is returned.
+        const res = await fetch ("https://api.dictionaryapi.dev/api/v2/entries/en/" + guessWord)
+          .then (res => {
+            console.log("res", res.status);
+            // http 200 is known word, 404 is unknown word
+            wordIsKnown = res.status === 200;
+          })
+          .catch (error => console.log(error));
+          // The word should be upper case
+          console.log(`2 The ${guessWord} is known ${wordIsKnown}.`);
+          return wordIsKnown;
       }
 
       // Function to get word to guess
@@ -375,7 +397,8 @@
         var randomIntTo24 = randomInt % 25;
         // Use the random index to get a letter
         var randomLetter  = ALL_LETTERS[randomIntTo24];
-        // Fetch a set of 5 letter words from DataMuse that start with the randomLetter
+        // Fetch a set of words from DataMuse that start with the randomLetter
+        // and contains 4 more letters.
         const res = await fetch(`https://api.datamuse.com/words?sp=${randomLetter}????`)
           .then (res => res.text())
           .then (data =>
@@ -385,8 +408,8 @@
             console.log("parsed Data ", data);
             // Find the first candidate that is all letters
             dataCandidate = data.find(candidate => {
-              // Return true if the candidate is all 5 letters, otherwise false
-              // This excludes words like "X-RAY"
+              // Return true if the candidate is all 5 letters, otherwise false.
+              // This is exclude words like "X-RAY"
               return candidate.word.toUpperCase().match('([A-Z]{5})');
             });
             // Retrieve the word
