@@ -5,8 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>DGMD E-28 Spring 2025 Assignment 4 Wordle, Karen Dolan</title>
     <style type="text/css" media="screen">
-      .header {
+      .header, #button-container {
         text-align: center;
+      }
+      #button-container button {
+        margin: 5px;
+      }
+      .hidden {
+        display: none;
       }
       #game-board, #guess-button-container, #key-board, .keyboard-row {
         width: fit-content;
@@ -326,7 +332,9 @@
 
       // Handler for debugging the game
       function debugGame() {
-
+        const debugWordElem = document.getElementById("debugText");
+        // Toggle visibility
+        debugWordElem.className = debugWordElem.className === "hidden" ? "" : "hidden";
       }
 
       // Handler for initiating a new Wordle game
@@ -433,15 +441,6 @@
         })
         // end key board div
         document.write("</div>");
-        // Submit button
-        document.write("<div id='guess-button-container'>");
-        document.write( "<button id='submitGuessButton' onClick='submitGuess()'>Submit Guess!</button>" );
-        // Refresh button
-        document.write( "<button id='playNewGameButton' onClick='playNewGame()'>Start a new game!</button>" );
-        // Debug button
-        document.write( "<button id='debugButton' onClick='debugGame()'>Debug Option</button>" );
-        // end Guess Button
-        document.write("</div>");
         // end Game Container
         document.write("</div>");
       };
@@ -454,9 +453,18 @@
       document.write("<h2>Wordle</h2>" );
       document.write("<h3>You have 6 tries to guess a 5 letter word!</h3>");
       // Debug option
-      document.write("<div class='hidden'>The word to guess is \"<span id='wordToGuess'></span>\"</div>");
+      document.write("<div id='debugText' class='hidden'>The word to guess is \"<span id='wordToGuess'></span>\"</div>");
       document.write("</div>");
-      document.write("<div></div>");
+      // --- Button container  --------
+      document.write("<div id='button-container'>");
+      // Refresh button
+      document.write( "<button id='playNewGameButton' onClick='playNewGame()'>Start New Game</button>" );
+      // Debug button
+      document.write( "<button id='debugButton' onClick='debugGame()'>Debug Option</button>" );
+      // Submit button
+      document.write( "<button id='submitGuessButton' onClick='submitGuess()'>Submit Guess</button>" );
+      // end Guess Button
+      document.write("</div>");
       // Build the game board
       buildGameBoard();
       // Start the first game
