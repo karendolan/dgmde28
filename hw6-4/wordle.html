@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>DGMD E-28 Spring 2025 Assignment 4 Wordle, Karen Dolan</title>
     <style type="text/css" media="screen">
-      h1, h2, h3 {
+      .header {
         text-align: center;
       }
       #game-board, #guess-button-container, #key-board, .keyboard-row {
@@ -54,11 +54,7 @@
     </style>
   </head>
   <body id="body">
-    <div id="gameContainer">
-    </div>
-
     <script>
-
       // ----------------------------- //
       // --- Game Constants   -------- //
       // ---------------------------- //
@@ -268,7 +264,7 @@
             this.refreshBoard();
           } else {
             // Build from scratch
-            this.buildGameBoard();
+            // this.buildGameBoard();
           }
         }
         // --------------------------
@@ -358,7 +354,9 @@
           document.write("<div id='guess-button-container'>");
           document.write( "<button id='submitGuessButton' onClick='submitGuess()'>Submit Guess!</button>" );
           // Refresh button
-          document.write( "<button id='playNewGame' onClick='playNewGame()'>Start a new game!</button>" );
+          document.write( "<button id='playNewGameButton' onClick='playNewGame()'>Start a new game!</button>" );
+          // Debug button
+          document.write( "<button id='debugButton' onClick='debugGame()'>Debug Option</button>" );
           // end Guess Button
           document.write("</div>");
           // end Game Container
@@ -372,29 +370,82 @@
       // ---------------------
       // Global functions
       // ---------------------
-      function playNewGame() {
+
+      // Handler for debugging the game
+      function debugGame() {
+
+      }
+
+      // Handler for initiating a new Wordle game
+      async function playNewGame() {
         // TODO: get from api
-        const wordToGuess = potentialWordsForGame.length > 0 ? potentialWordsForGame.pop() : "LATER";
+        const wordToGuess = await getWordToGuess();
+        console.log("The wordToGuess is " + wordToGuess + ".");
+        // const wordToGuess = potentialWordsForGame.length > 0 ? potentialWordsForGame.pop() : "LATER";
         usedWordsForGame.push(wordToGuess);
-        console.log("New GAME ",wordToGuess, ", used", usedWordsForGame, ", potential", potentialWordsForGame);
+        console.log("New GAME ", wordToGuess, ", used", usedWordsForGame, ", potential", potentialWordsForGame);
+        // set the debug area
+        const debugWordElem = document.getElementById("wordToGuess");
+        debugWordElem.innerText = wordToGuess;
         // create a new game
         game = new Wordle(wordToGuess);
       }
 
+      // Handler for changing the value in a square
       function onChangeValue(event) {
         game.onChangeValue(event);
       }
 
+      // Handler for submitting the guess
       function submitGuess() {
         console.log("Submitting on wordle ", game);
         game.submitGuess();
       }
 
+      // Function to get word to guess
+      // Calls out to the Datamuse API
+      // Returns a semi-random 5 letter work
+      async function getWordToGuess() {
+        // Variable for the word to guess
+        var word;
+        // Get a random letter from the alphabet
+        var randomInt = Number.parseInt(Math.random() * 100);
+        // Get a random number 0-24
+        var randomIntTo24 = randomInt % 25;
+        // Use the random index to get a letter
+        var randomLetter  = ALL_LETTERS[randomIntTo24];
+        // Fetch a set of 5 letter words from DataMuse that start with the randomLetter
+        const res = await fetch(`https://api.datamuse.com/words?sp=X????`)
+          .then (res => res.text())
+          .then (data =>
+          {
+            console.log("Data ", data);
+            data = JSON.parse(data);
+            console.log("parsed Data ", data);
+            // Find the first candidate that is all letters
+            dataCandidate = data.find(candidate => {
+              // Return true if the candidate is all 5 letters, otherwise false
+              // This excludes words like "X-RAY"
+              return candidate.word.toUpperCase().match('([A-Z]{5})');
+            });
+            // Retrieve the word
+            word = dataCandidate.word.toUpperCase();
+            console.log("The current word is " + dataCandidate.word + ".");
+          })
+          .catch (error => console.log(error));
+          // The word should be upper case
+          return word.toUpperCase();
+      }
+
       // ---- Header  --------------- //
-      // Add a title to the page
-      document.write( "<h1 class='title'>Assignment 4</h1>" );
-      document.write( "<h2>Wordle</h2>" );
-      document.write( "<h3>You have 6 tries to guess a 5 letter word!</h3>" );
+      // Add a titles to the page
+      document.write("<div class='header'>")
+      document.write("<h1 class='title'>Assignment 4</h1>");
+      document.write("<h2>Wordle</h2>" );
+      document.write("<h3>You have 6 tries to guess a 5 letter word!</h3>");
+      // Debug option
+      document.write("<div class='hidden'>The word to guess is \"<span id='wordToGuess'></span>\"</div>");
+      document.write("</div>")
       // Global variable
       var game;
       playNewGame();
