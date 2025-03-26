@@ -54,6 +54,7 @@
     </style>
   </head>
   <body id="body">
+    <div></div>
     <script>
       // ----------------------------- //
       // --- Game Constants   -------- //
@@ -90,6 +91,8 @@
           if (wordToGuess.length !== wordSize) {
             console.error("Wrong word length");
             return;
+          } else {
+            console.log("Word to guess is ", wordToGuess);
           }
           // Ensure upper case
           this.wordToGuess = wordToGuess.toUpperCase();
@@ -264,7 +267,7 @@
             this.refreshBoard();
           } else {
             // Build from scratch
-            // this.buildGameBoard();
+            this.buildGameBoard();
           }
         }
         // --------------------------
@@ -309,63 +312,13 @@
           const firstBlock = document.getElementById('row-0-sq-0');
           firstBlock.focus();
         };
-
-        // -------------------------------------
-        // function to build game board
-        // -------------------------------------
-        buildGameBoard() {
-          // ---- Create Game Board ------------ //
-          document.write("<div id='game-container'>");
-          document.write("<div id='game-board'>");
-          // --- Validation message ----- //
-          document.write( "<div id='wordle-validation'></div>" );
-          // Create 6 rows of 5 input blocks
-          for (let r = 0 ; r < MAX_GUESSES ; r++) {
-            document.write( "<div class='row' id='row-" + r + "'>" );
-            // 5 columns
-            for (let c = 0 ; c < WORD_SIZE ; c++) {
-              const id = "row-" + r + "-sq-" + c;
-              // Disable all squares but those in the first row to start
-              const disabled = r > 0 ? 'disabled' : '';
-              document.write( "<input type='text' maxlength='1' class='square row-" + r + "' " + disabled + "  id='" + id + "'/>" );
-              const element = document.getElementById(id);
-              element.addEventListener("input", (event) => {
-                this.onChangeValue(event);
-              })
-            }
-            // end row
-            document.write( "</div>" );
-          }
-          // end game board div
-          document.write("</div>");
-          // Key board container element
-          document.write("<div id='keyboard'>");
-          KEYBOARD_KEYS.forEach((rowStr, i) => {
-            document.write( "<div class='keyboard-row' id='keyboard-row-" + i + "'>" );
-            rowStr.split('').forEach((letter) => {
-              document.write("<div class='keyboard-key' id='key-" + letter + "'>" + letter.toUpperCase() + "</div>");
-            })
-            // end keyboard row
-            document.write("</div>");
-          })
-          // end key board div
-          document.write("</div>");
-          // Submit button
-          document.write("<div id='guess-button-container'>");
-          document.write( "<button id='submitGuessButton' onClick='submitGuess()'>Submit Guess!</button>" );
-          // Refresh button
-          document.write( "<button id='playNewGameButton' onClick='playNewGame()'>Start a new game!</button>" );
-          // Debug button
-          document.write( "<button id='debugButton' onClick='debugGame()'>Debug Option</button>" );
-          // end Guess Button
-          document.write("</div>");
-          // end Game Container
-          document.write("</div>");
-        }
-      };
+      }
       // ----------------------------- //
       // --- END OF Wordle CLASS ------//
       // ----------------------------- //
+
+      // Global variable
+      var game;
 
       // ---------------------
       // Global functions
@@ -415,7 +368,7 @@
         // Use the random index to get a letter
         var randomLetter  = ALL_LETTERS[randomIntTo24];
         // Fetch a set of 5 letter words from DataMuse that start with the randomLetter
-        const res = await fetch(`https://api.datamuse.com/words?sp=X????`)
+        const res = await fetch(`https://api.datamuse.com/words?sp=${randomLetter}????`)
           .then (res => res.text())
           .then (data =>
           {
@@ -435,7 +388,64 @@
           .catch (error => console.log(error));
           // The word should be upper case
           return word.toUpperCase();
-      }
+      };
+
+      // -------------------------------------
+      // function to build game board
+      // This has to be called while the page is still loading
+      // Prior to doing an async on getting the word for Wordle
+      // -------------------------------------
+      function buildGameBoard() {
+        // ---- Create Game Board ------------ //
+        console.log("document: ", document);
+        document.write("<div id='game-container'>");
+        document.write("<div id='game-board'>");
+        // --- Validation message ----- //
+        document.write( "<div id='wordle-validation'></div>" );
+        // Create 6 rows of 5 input blocks
+        for (let r = 0 ; r < MAX_GUESSES ; r++) {
+          document.write( "<div class='row' id='row-" + r + "'>" );
+          // 5 columns
+          for (let c = 0 ; c < WORD_SIZE ; c++) {
+            const id = "row-" + r + "-sq-" + c;
+            // Disable all squares but those in the first row to start
+            const disabled = r > 0 ? 'disabled' : '';
+            document.write( "<input type='text' maxlength='1' class='square row-" + r + "' " + disabled + "  id='" + id + "'/>" );
+            const element = document.getElementById(id);
+            element.addEventListener("input", (event) => {
+              this.onChangeValue(event);
+            })
+          }
+          // end row
+          document.write( "</div>" );
+        }
+        // end game board div
+        document.write("</div>");
+        // Key board container element
+        document.write("<div id='keyboard'>");
+        KEYBOARD_KEYS.forEach((rowStr, i) => {
+          document.write( "<div class='keyboard-row' id='keyboard-row-" + i + "'>" );
+          rowStr.split('').forEach((letter) => {
+            document.write("<div class='keyboard-key' id='key-" + letter + "'>" + letter.toUpperCase() + "</div>");
+          })
+          // end keyboard row
+          document.write("</div>");
+        })
+        // end key board div
+        document.write("</div>");
+        // Submit button
+        document.write("<div id='guess-button-container'>");
+        document.write( "<button id='submitGuessButton' onClick='submitGuess()'>Submit Guess!</button>" );
+        // Refresh button
+        document.write( "<button id='playNewGameButton' onClick='playNewGame()'>Start a new game!</button>" );
+        // Debug button
+        document.write( "<button id='debugButton' onClick='debugGame()'>Debug Option</button>" );
+        // end Guess Button
+        document.write("</div>");
+        // end Game Container
+        document.write("</div>");
+      };
+
 
       // ---- Header  --------------- //
       // Add a titles to the page
@@ -445,9 +455,11 @@
       document.write("<h3>You have 6 tries to guess a 5 letter word!</h3>");
       // Debug option
       document.write("<div class='hidden'>The word to guess is \"<span id='wordToGuess'></span>\"</div>");
-      document.write("</div>")
-      // Global variable
-      var game;
+      document.write("</div>");
+      document.write("<div></div>");
+      // Build the game board
+      buildGameBoard();
+      // Start the first game
       playNewGame();
     </script>
   </body>
