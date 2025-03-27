@@ -11,39 +11,78 @@
       #button-container button {
         margin: 5px;
       }
+      button {
+        padding: 8px;
+        border-radius: 15%;
+      }
       .hidden {
         display: none;
+      }
+      .row {
+        margin: auto;
       }
       #game-board, #guess-button-container, #key-board, .keyboard-row {
         width: fit-content;
         margin: auto;
       }
+      #game-board {
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+      }
+      #game-key {
+        width: 300px;
+        margin: auto;
+        padding: 10px;
+        border: 1px solid black;
+      }
+      #debugText {
+        color: #7B28A1;
+      }
       #wordle-validation {
+        font-size: 1.5rem;
         text-align: center;
         color: #7B28A1;
       }
-      .square, .keyboard-key {
+      .square, .keyboard-key, .key-square {
         border: 1px solid black;
-        width: 60px;
-        height: 60px;
-        margin: 5px;
         box-sizing: border-box; /* to include border in width and height */
         display: inline-block;
         font-size: 2rem;
         line-height: 2rem;
         text-align: center;
         vertical-align: top;
+      }
+      .square {
+        width: 60px;
+        height: 60px;
+        margin: 5px;
         border-radius: 5%;
       }
       .keyboard-key {
-        width: 50px;
-        height: 50px;
-        margin: 3px;
+        width: 30px;
+        height: 30px;
+        margin: 1px;
+        border-width: 0;
+        font-size: 1.3rem;
+        line-height: 1.3rem;
+        align-content: center;
         border-radius: 20%;
+      }
+      .key-square {
+        width: 20px;
+        height: 20px;
+        margin: 1px;
         border-width: 0;
         font-size: 1.5rem;
         line-height: 1.5rem;
         align-content: center;
+        border-radius: 20%;
+      }
+      .keyboard-row {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
       }
       .rightLetterWrongSpot {
         color: white;
@@ -81,13 +120,13 @@
       // ---------------------------------- //
       // ---------------------------------- //
       // --- Wordle Game Class ------------ //
-      // --------------------------------- //
+      // ---------------------------------  //
       // ---------------------------------- //
       class Wordle {
         // ------------------------------  //
-        // The constructor with defaults   //
-        // ------------------------------ //
+        // Class constructor with defaults   //
         constructor (
+          // Default param values
           wordToGuess = "APPLE",
           wordSize = WORD_SIZE,
           maxGuesses = MAX_GUESSES,
@@ -116,9 +155,8 @@
           this.start();
         }
 
-        // ------------------------------------------  //
-        // Function to verify letter and put it upper case
-        // ------------------------------------------- //
+        // ------------------------------ //
+        // Class function to verify letter and put it upper case
         onChangeValue(event) {
           const {
             data,
@@ -146,36 +184,38 @@
         }
 
         // ------------------------------ //
-        // Function to submit a guess
-        // ------------------------------ //
+        // Class function to submit a guess
         async submitGuess() {
           const guess = this.curGuess.join('');
           const msgElem = document.getElementById('wordle-validation');
           const rowNum = this.prevGuesses.length;
           console.log("SUBMIT guess ", this.curGuess, guess, ", word to guess ", this.wordToGuess, this );
           // -------------------------
-          // Validate entry
+          // Validate the guess
           // --------------------------
           // Validate guess is 5 letters
           if (guess.length !== 5) {
             msgElem.innerHTML = ('Guess must be 5 letters');
+            this.removeValuesInRow(rowNum);
             return;
           }
           // Don't allow a duplicate guess
           if (this.prevGuesses.includes(guess)) {
             msgElem.innerHTML = (`You already guessed "${guess}", try a different word`);
+            this.removeValuesInRow(rowNum);
             return;
           }
           // Guess must be a valid word
           const isKnown = await isWordKnown(guess);
           if (!isKnown) {
             msgElem.innerHTML = (`The word "${guess}" is not known, try a different word`);
+            this.removeValuesInRow(rowNum);
             return;
           } else {
             console.log(`The ${guess} is known!.`);
           }
           // -------------------
-          // VALID checks passed
+          // VALID checks passed!
           // -------------------
           // Freeze the input blocks in the current row
           const blocks = document.getElementsByClassName("row-" + rowNum);
@@ -251,10 +291,10 @@
           }
           // Check the hit and miss count
           else if (this.prevGuesses.length === this.maxGuesses) {
-            msgElem.innerHTML = (`You are out of guesses. The word to guess was ${this.wordToGuess}`);
+            msgElem.innerHTML = (`Sorry! No more guesses. The word to guess was "${this.wordToGuess}"`);
           }
           else {
-            msgElem.innerText = (`Keep trying! You have ${MAX_GUESSES - this.prevGuesses.length} more guesses`);
+            msgElem.innerText = (`Guess again! You have ${MAX_GUESSES - this.prevGuesses.length} more guesses`);
             // UnFreeze the next row
             const nextBlocks = document.getElementsByClassName(`row-${rowNum + 1}`);
             for (let block of nextBlocks) {
@@ -264,9 +304,21 @@
             focusBlock.focus();
           }
         }
+
         // -------------------------------------
-        // function to refresh or build game board
+        // Class function to clear the values in that row
+        removeValuesInRow(rowNum) {
+          const blocks = document.getElementsByClassName("row-" + rowNum);
+          console.log(`Have blocks in row ${rowNum}: ${blocks}`);
+          for (let block of blocks) {
+            block.value = '';
+          }
+          // Set focus back to first block in row
+          blocks[0].focus();
+        }
+
         // -------------------------------------
+        //  Class function to refresh or build game board
         start() {
           // Reset board if it already exists, otherwise build it
           let isFirstBuild = true;
@@ -279,9 +331,9 @@
             this.buildGameBoard();
           }
         }
+
         // --------------------------
-        // function to refresh values on board game
-        // ---------------------------
+        //  Class helper to refresh values on board game
         refreshBoard() {
           // Refresh keyboard values
           KEYBOARD_KEYS.forEach((rowStr, i) => {
@@ -291,7 +343,7 @@
               keyBlock.className = "keyboard-key";
             })
           })
-          // Refresh board row values
+          // Refresh all board block values
           for (let r = 0 ; r < this.maxGuesses ; r++) {
             for (let c = 0 ; c < this.wordSize ; c++) {
               const id = "row-" + r + "-sq-" + c;
@@ -422,13 +474,15 @@
       };
 
       // -------------------------------------
-      // function to build game board
+      // Application function to build game board
       // This has to be called while the page is still loading
       // Prior to doing an async on getting the word for Wordle
       // -------------------------------------
       function buildGameBoard() {
         // ---- Create Game Board ------------ //
         console.log("document: ", document);
+        // ----------------------
+        // Start of the board
         document.write("<div id='game-container'>");
         document.write("<div id='game-board'>");
         // --- Validation message ----- //
@@ -464,6 +518,13 @@
         })
         // end key board div
         document.write("</div>");
+        // Start of the KEY container
+        document.write("<div id='game-key'>");
+        document.write("<h4>Color key</h4>");
+        document.write("<div><div class='key-square rightLetterRightSpot'></div> The letter is in the word in the right spot</div>");
+        document.write("<div><div class='key-square rightLetterWrongSpot'></div> The letter is in the word, but not this spot</div>");
+        document.write("<div><div class='key-square wrongLetter'></div> This letter is not part of the word</div>");
+        document.write("</div>");
         // end Game Container
         document.write("</div>");
       };
@@ -472,9 +533,8 @@
       // ---- Header  --------------- //
       // Add a titles to the page
       document.write("<div class='header'>")
-      document.write("<h1 class='title'>Assignment 4</h1>");
-      document.write("<h2>Wordle</h2>" );
-      document.write("<h3>You have 6 tries to guess a 5 letter word!</h3>");
+      document.write("<h1>Wordle - Assignment 4 - Dolan</h1>" );
+      document.write("<h2>You have 6 tries to guess a 5 letter word!</h2>");
       // Debug option
       document.write("<div id='debugText' class='hidden'>The word to guess is \"<span id='wordToGuess'></span>\"</div>");
       document.write("</div>");
