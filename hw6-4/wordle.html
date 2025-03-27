@@ -294,7 +294,7 @@
             msgElem.innerHTML = (`Sorry! No more guesses. The word to guess was "${this.wordToGuess}"`);
           }
           else {
-            msgElem.innerText = (`Guess again! You have ${MAX_GUESSES - this.prevGuesses.length} more guesses`);
+            msgElem.innerText = (`Guess again! You have ${MAX_GUESSES - this.prevGuesses.length} more tries`);
             // UnFreeze the next row
             const nextBlocks = document.getElementsByClassName(`row-${rowNum + 1}`);
             for (let block of nextBlocks) {
@@ -445,32 +445,43 @@
         var word;
         // Get a random letter from the alphabet
         var randomInt = Number.parseInt(Math.random() * 100);
-        // Get a random number 0-24
+        // Get a random number 0-24 fot the letter
         var randomIntTo24 = randomInt % 25;
+        // Get a random number 0-4 for position in word
+        var randomIntTo4 = randomInt % 5;
         // Use the random index to get a letter
         var randomLetter  = ALL_LETTERS[randomIntTo24];
-        // Fetch a set of words from DataMuse that start with the randomLetter
-        // and contains 4 more letters.
-        const res = await fetch(`https://api.datamuse.com/words?sp=${randomLetter}????`)
+        // Place the random letter in the 5 letter word request
+        var wordArray = "?????".split('');
+        wordArray[randomIntTo4] = randomLetter;
+        var wordWithWildCardAndRandomLetter = wordArray.join('');
+        console.log('wordWithWildCardAndRandomLetter', wordWithWildCardAndRandomLetter);
+
+        // Fetch a set of 5 letter words from DataMuse that have the random letter at the random position
+        const res = await fetch(`https://api.datamuse.com/words?sp=${wordWithWildCardAndRandomLetter}`)
           .then (res => res.text())
           .then (data =>
           {
             console.log("Data ", data);
             data = JSON.parse(data);
-            console.log("parsed Data ", data);
-            // Find the first candidate that is all letters
-            dataCandidate = data.find(candidate => {
-              // Return true if the candidate is all 5 letters, otherwise false.
-              // This is exclude words like "X-RAY"
-              return candidate.word.toUpperCase().match('([A-Z]{5})');
-            });
-            // Retrieve the word
-            word = dataCandidate.word.toUpperCase();
-            console.log("The current word is " + dataCandidate.word + ".");
+            // Find a candidate in the results
+            let candidateWord;
+            while (!word) {
+              // Choose from the top 10 results
+              var modValue = data.length < 10 ? data.length : 10;
+              var randomIndex = randomInt % modValue;
+              var item = data[randomIndex];
+              console.log('item: ', item, item.word);
+              // If this word is alphabetic, choose it. This avoids words like X-RAY.
+              if (item.word.toUpperCase().match('([A-Z]{5})')) {
+                console.log('choosing word ',item.word.toUpperCase(), ' from index ',  randomIndex);
+                word = item.word.toUpperCase();
+              }
+            }
           })
           .catch (error => console.log(error));
-          // The word should be upper case
-          return word.toUpperCase();
+          // Return the result
+          return word;
       };
 
       // -------------------------------------
