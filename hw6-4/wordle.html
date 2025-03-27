@@ -102,8 +102,8 @@
     <div></div>
     <script>
       // ----------------------------- //
-      // --- Game Constants   -------- //
-      // ---------------------------- //
+      // --- Global Constants   ------ //
+      // ----------------------------- //
       const MAX_GUESSES = 6;
       const WORD_SIZE = 5;
       // ----- Key Board  ----------- //
@@ -111,11 +111,8 @@
       const KEYBOARD_ROW_2 = "asdfghijkl".toUpperCase();
       const KEYBOARD_ROW_3 = "zxcvbnm".toUpperCase();
       const ALL_LETTERS = KEYBOARD_ROW_1 + KEYBOARD_ROW_2 + KEYBOARD_ROW_3;
+      // This is for showing the QUERTY keyboard for guessed keyboard letters
       const KEYBOARD_KEYS = [KEYBOARD_ROW_1, KEYBOARD_ROW_2, KEYBOARD_ROW_3];
-      // Store potential 5 letter words to cut down on API calls
-      const potentialWordsForGame = ["APPLE", "GRIPE", "PLATE"];
-      // Keep track of previous game words used in current session to avoid reusing
-      const usedWordsForGame = [];
 
       // ---------------------------------- //
       // ---------------------------------- //
@@ -134,6 +131,7 @@
 
         ) {
           if (wordToGuess.length !== wordSize) {
+            // Protection against wrong word length
             console.error("Wrong word length");
             return;
           } else {
@@ -151,8 +149,12 @@
           this.keyMap = ALL_LETTERS.split('').map((letter) => {
             return {[letter]: '' };
           })
-          // Build or refresh game board
-          this.start();
+          // Check if an existing game board needs to be refreshed
+          let isRefresh = document.getElementById('game-board');
+          if (isRefresh) {
+            // Refresh board
+            this.refreshBoard();
+          }
         }
 
         // ------------------------------ //
@@ -189,7 +191,7 @@
           const guess = this.curGuess.join('');
           const msgElem = document.getElementById('wordle-validation');
           const rowNum = this.prevGuesses.length;
-          console.log("SUBMIT guess ", this.curGuess, guess, ", word to guess ", this.wordToGuess, this );
+          // console.log("SUBMIT guess ", this.curGuess, guess, ", word to guess ", this.wordToGuess, this );
           // -------------------------
           // Validate the guess
           // --------------------------
@@ -212,6 +214,7 @@
             this.removeValuesInRow(rowNum);
             return;
           } else {
+            // debugging
             console.log(`The ${guess} is known!.`);
           }
           // -------------------
@@ -229,7 +232,7 @@
           const lettersGuessedResult = [];
           // First Check for letter matches in right spot
           this.curGuess.forEach((letter, i) => {
-            console.log("SUBMIT testing for direct match: ", i, ", letter  ", letter, ", against ", lettersToGuess[i] );
+            console.log("TEST for direct match: ", i, ", letter  ", letter, ", against ", lettersToGuess[i] );
             // Is a match in right space?
             if (lettersToGuess[i] === letter) {
               // Remove direct match letter from comparator
@@ -255,7 +258,7 @@
               // Remove this match letter from comparator
               const position = lettersToGuess.indexOf(letter);
               lettersToGuess[position] = '';
-              // The "rightLetterRightSpot" overrides rightLetter wrong spot
+              // The "rightLetterRightSpot" overrides a right Letter in the wrong spot
               if (lettersGuessedResult[i] !== "rightLetterRightSpot") {
                 lettersGuessedResult[i] = "rightLetterWrongSpot";
               }
@@ -270,6 +273,7 @@
                 key.classList = `keyboard-key ${this.keyMap[letter]}`;
               }
             } else if (!lettersGuessedResult[i]) {
+              // This letter in this position in not in the word
               console.log("Is no match");
               // Refresh letter match color
               blocks[i].classList.add("wrongLetter");
@@ -315,21 +319,6 @@
           }
           // Set focus back to first block in row
           blocks[0].focus();
-        }
-
-        // -------------------------------------
-        //  Class function to refresh or build game board
-        start() {
-          // Reset board if it already exists, otherwise build it
-          let isFirstBuild = true;
-          let isRefresh = document.getElementById('game-board');
-          if (isRefresh) {
-            // Refresh board
-            this.refreshBoard();
-          } else {
-            // Build from scratch
-            this.buildGameBoard();
-          }
         }
 
         // --------------------------
@@ -396,10 +385,6 @@
       async function playNewGame() {
         // get the word to guess from the API
         const wordToGuess = await getWordToGuess();
-        console.log("The wordToGuess is " + wordToGuess + ".");
-        // const wordToGuess = potentialWordsForGame.length > 0 ? potentialWordsForGame.pop() : "LATER";
-        usedWordsForGame.push(wordToGuess);
-        console.log("New GAME ", wordToGuess, ", used", usedWordsForGame, ", potential", potentialWordsForGame);
         // set the debug area
         const debugWordElem = document.getElementById("wordToGuess");
         debugWordElem.innerText = wordToGuess;
@@ -414,7 +399,6 @@
 
       // Handler for submitting the guess
       function submitGuess() {
-        console.log("Submitting on Wordle ", game);
         game.submitGuess();
       }
 
@@ -427,13 +411,12 @@
         // word that "means like" this word. Otherwise, an empty array is returned.
         const res = await fetch ("https://api.dictionaryapi.dev/api/v2/entries/en/" + guessWord)
           .then (res => {
-            console.log("res", res.status);
             // http 200 is known word, 404 is unknown word
             wordIsKnown = res.status === 200;
           })
           .catch (error => console.log(error));
           // The word should be upper case
-          console.log(`2 The ${guessWord} is known ${wordIsKnown}.`);
+          // console.log(`2 The ${guessWord} is known ${wordIsKnown}.`);
           return wordIsKnown;
       }
 
@@ -455,14 +438,13 @@
         var wordArray = "?????".split('');
         wordArray[randomIntTo4] = randomLetter;
         var wordWithWildCardAndRandomLetter = wordArray.join('');
-        console.log('wordWithWildCardAndRandomLetter', wordWithWildCardAndRandomLetter);
 
         // Fetch a set of 5 letter words from DataMuse that have the random letter at the random position
         const res = await fetch(`https://api.datamuse.com/words?sp=${wordWithWildCardAndRandomLetter}`)
           .then (res => res.text())
           .then (data =>
           {
-            console.log("Data ", data);
+            // console.log("Data ", data);
             data = JSON.parse(data);
             // Find a candidate in the results
             let candidateWord;
@@ -471,10 +453,9 @@
               var modValue = data.length < 10 ? data.length : 10;
               var randomIndex = randomInt % modValue;
               var item = data[randomIndex];
-              console.log('item: ', item, item.word);
               // If this word is alphabetic, choose it. This avoids words like X-RAY.
               if (item.word.toUpperCase().match('([A-Z]{5})')) {
-                console.log('choosing word ',item.word.toUpperCase(), ' from index ',  randomIndex);
+                console.log('choosing word ',item.word.toUpperCase(), ' from result index ',  randomIndex);
                 word = item.word.toUpperCase();
               }
             }
@@ -491,7 +472,6 @@
       // -------------------------------------
       function buildGameBoard() {
         // ---- Create Game Board ------------ //
-        console.log("document: ", document);
         // ----------------------
         // Start of the board
         document.write("<div id='game-container'>");
