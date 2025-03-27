@@ -191,7 +191,7 @@
           const guess = this.curGuess.join('');
           const msgElem = document.getElementById('wordle-validation');
           const rowNum = this.prevGuesses.length;
-          // console.log("SUBMIT guess ", this.curGuess, guess, ", word to guess ", this.wordToGuess, this );
+          console.log("SUBMIT guess ", this.curGuess, guess, ", word to guess ", this.wordToGuess, this );
           // -------------------------
           // Validate the guess
           // --------------------------
@@ -287,6 +287,8 @@
           })
           // Add this guest to list of guesses
           this.prevGuesses.push(guess);
+          // Reset the current guess submission
+          this.curGuess = [];
 
           // Show win message!!!
           if (guess === this.wordToGuess) {
@@ -319,6 +321,8 @@
           }
           // Set focus back to first block in row
           blocks[0].focus();
+          // Reset the current guess submission
+          this.curGuess = [];
         }
 
         // --------------------------
