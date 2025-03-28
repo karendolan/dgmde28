@@ -15,14 +15,12 @@
         padding: 8px;
         border-radius: 15%;
       }
+      /* for hiding the debug text */
       .hidden {
         display: none;
       }
-      .row {
-        margin: auto;
-      }
-      #game-board, #guess-button-container, #key-board, .keyboard-row {
-        width: fit-content;
+      /* to center all these elements */
+      .row, #game-board, #guess-button-container, #key-board, .keyboard-row {
         margin: auto;
       }
       #game-board {
@@ -46,12 +44,13 @@
       }
       .square, .keyboard-key, .key-square {
         border: 1px solid black;
-        box-sizing: border-box; /* to include border in width and height */
-        display: inline-block;
         font-size: 2rem;
         line-height: 2rem;
         text-align: center;
         vertical-align: top;
+      }
+      .key-square {
+        display: inline-block;
       }
       .square {
         width: 60px;
@@ -102,11 +101,15 @@
     <div></div>
     <script>
       // ----------------------------- //
-      // --- Global Constants   ------ //
+      //     Global Constants          //
       // ----------------------------- //
+      // Global Game Variable
+      var game;
+      // Size constraints
       const MAX_GUESSES = 6;
       const WORD_SIZE = 5;
       // ----- Key Board  ----------- //
+      // This is the QWERTY display used in NYTimes wordle
       const KEYBOARD_ROW_1 = "qwertyuiop".toUpperCase();
       const KEYBOARD_ROW_2 = "asdfghijkl".toUpperCase();
       const KEYBOARD_ROW_3 = "zxcvbnm".toUpperCase();
@@ -115,26 +118,26 @@
       const KEYBOARD_KEYS = [KEYBOARD_ROW_1, KEYBOARD_ROW_2, KEYBOARD_ROW_3];
 
       // ---------------------------------- //
-      // ---------------------------------- //
-      // --- Wordle Game Class ------------ //
+      //    Wordle Game Class               //
       // ---------------------------------  //
-      // ---------------------------------- //
       class Wordle {
         // ------------------------------  //
         // Class constructor with defaults   //
         constructor (
+          // Word to guess!
+          wordToGuess,
           // Default param values
-          wordToGuess = "APPLE",
           wordSize = WORD_SIZE,
           maxGuesses = MAX_GUESSES,
           allLetters = ALL_LETTERS,
 
         ) {
+          // The word to guess must be provided and the right length
           if (wordToGuess.length !== wordSize) {
-            // Protection against wrong word length
             console.error("Wrong word length");
             return;
           } else {
+            // debugging
             console.log("Word to guess is ", wordToGuess);
           }
           // Ensure upper case
@@ -218,7 +221,7 @@
             console.log(`The ${guess} is known!.`);
           }
           // -------------------
-          // VALID checks passed!
+          // Valid checks passed!
           // -------------------
           // Freeze the input blocks in the current row
           const blocks = document.getElementsByClassName("row-" + rowNum);
@@ -367,25 +370,23 @@
           firstBlock.focus();
         };
       }
-      // ----------------------------- //
-      // --- END OF Wordle CLASS ------//
-      // ----------------------------- //
-
-      // Global variable
-      var game;
 
       // ---------------------
       // Global functions
       // ---------------------
 
-      // Handler for debugging the game
+      // -------------------------------------
+      // Global function for showing the debug text
+      // -------------------------------------
       function debugGame() {
         const debugWordElem = document.getElementById("debugText");
         // Toggle visibility
         debugWordElem.className = debugWordElem.className === "hidden" ? "" : "hidden";
       }
 
-      // Handler for initiating a new Wordle game
+      // -------------------------------------
+      // Global function for initiating a new Wordle game
+      // -------------------------------------
       async function playNewGame() {
         // get the word to guess from the API
         const wordToGuess = await getWordToGuess();
@@ -406,8 +407,10 @@
         game.submitGuess();
       }
 
-      // Function to check if API knows this word
+      // -------------------------------------
+      // Global function to check if API knows this word
       // Return TRUE if word is known or FALSE if not known
+      // -------------------------------------
       async function isWordKnown(guessWord) {
         let wordIsKnown;
         // Fetch a set of words that "means like" the passed word
@@ -424,9 +427,11 @@
           return wordIsKnown;
       }
 
-      // Function to get word to guess
+      // -------------------------------------
+      // Global function to get word to guess
       // Calls out to the Datamuse API
       // Returns a semi-random 5 letter work
+       // -------------------------------------
       async function getWordToGuess() {
         // Variable for the word to guess
         var word;
@@ -470,13 +475,12 @@
       };
 
       // -------------------------------------
-      // Application function to build game board
+      // Global function to build game board
       // This has to be called while the page is still loading
       // Prior to doing an async on getting the word for Wordle
       // -------------------------------------
       function buildGameBoard() {
         // ---- Create Game Board ------------ //
-        // ----------------------
         // Start of the board
         document.write("<div id='game-container'>");
         document.write("<div id='game-board'>");
