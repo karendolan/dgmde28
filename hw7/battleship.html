@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <title>DGMD E-28 Spring 2025 Assignment 5 Battleship, Karen Dolan</title>
+      <style type="text/css" media="screen">
+        .header, #button-container, #game-container {
+          text-align: center;
+        }
+        .row {
+          display: flex;
+          flex-wrap: wrap;
+          justify-content: center;
+        }
+        .square {
+          border: 1px solid black;
+          font-size: 2rem;
+          line-height: 2rem;
+          text-align: center;
+          vertical-align: top;
+          width: 60px;
+          height: 60px;
+          margin: 1px;
+          border-radius: 5%;
+        }
+        .hit {
+          background-color: red;
+        }
+        .miss {
+          background-color: grey;
+        }
+      </style>
+    </head>
+    <body class="hw7">
+    <script>
+      //TODO:
+      //  In addition to the JSON to place the ships,
+      //  each square could be an object and the “game” can be an object.
+      //  Some suggested methods for the game object are buildBoard() and placeShips().
+      // Game is over when all ships are sunk or 20 guesses used up
+      // On game over, indicate the locations of the individual ships.
+      // 1.	Of the object variations we have learned, which feels the most useful to you?
+      // 2.	What was the easiest part of this assignment?
+      // 40% creativity/effort/code quality
+      // ----------------------------- //
+      //     Global Constants          //
+      // ----------------------------- //
+      // Global Game Variables
+      var game;
+      var ships = [];
+      // Size constraints
+      const BOARD_SIZE = 6; // 6x6
+
+      // -------------------------------------
+      // Game Class
+      // -------------------------------------
+      class Game {
+        // Private attributes
+        #shipsJson;
+        // track the ship objects
+        #ships = [];
+        // track number of guesses used
+        #guesses = 0;
+        // track if game Over
+        #isGameOver = false;
+
+        // The constructor
+        constructor(shipsJson){
+          this.#shipsJson = shipsJson;
+        }
+
+        // Function
+        playNewGame() {
+          console.log("TODO: set up new game");
+          this.#ships = [];
+          this.#guesses = 0;
+          this.#isGameOver = false;
+          buildGameBoard();
+          placeShips();
+        };
+
+        toggleDebugMode() {
+          console.log("TODO: show location of boats")
+          this.#ships
+        }
+
+        // Function
+        torpedoSquare(event) {
+          // Destructure the row and col coordinates
+          var square = event.target;
+          var [,row,,col] = square.id.split("-");
+          console.log('in torpedoSquare function ', row, col);
+          var isHit = ships.find(ship => {
+            var status = ship.torpedoSquare([col,row]);
+            // debug
+            console.log(`coord ${[col,row]} for ${ship.name} is a ${isHit}`);
+            // Color the square with the new classname
+            if (['hit', 'sunk'].includes(status)) {
+              square.classList.add('hit');
+              return true;
+            } else {
+              square.classList.add('miss');
+              return false;
+            }
+          });
+        }
+
+        // Class function
+        buildGameBoard() {
+          // ---- Delete old Game Board -------- //
+          var existingBoard = document.getElementById('game-container');
+          if (existingBoard) {
+            existingBoard.remove();
+          }
+          // ---- Create Game Board ------------ //
+          // Start of the board
+          document.write("<div id='game-container'>");
+          document.write("<div id='game-board'>");
+          // --- Validation message ----- //
+          document.write( "<div id='validation'></div>" );
+          // Create 6 rows of 6 input blocks
+          for (let r = 1 ; r <= BOARD_SIZE ; r++) {
+            document.write( "<div class='row' id='row-" + r + "'>" );
+            // 5 columns
+            for (let c = 1 ; c <= BOARD_SIZE ; c++) {
+              const id = "row-" + r + "-col-" + c;
+              document.write( "<div class='square row-" + r + "'  id='" + id + "'></div>" );
+              const element = document.getElementById(id);
+              element.addEventListener("click", (event) => {
+                torpedoSquare(event);
+              })
+            }
+            // end row
+            document.write( "</div>" );
+          }
+          // end game board div
+          document.write("</div>");
+          // end Game Container
+          document.write("</div>");
+        };
+        // Function to read ship json and create ships
+        placeShips() {
+          this.#shipsJson.forEach(ship => {
+            // Create ship object
+            // Add ship to array
+          });
+
+
+        }
+      // End Game Class
+      };
+
+      // -------------------------------------
+      // Ship Class
+      // -------------------------------------
+      class Ship {
+        // Private attribute to track damage to ship
+        // Holds coordinates of impact
+        #hitCoords;
+        // The constructor
+        constructor (name, size, orientation, coords) {
+          this.name = name;
+          // number of squares 2-4
+          this.size = size;
+          // horizontal or vertical
+          this.orientation = orientation;
+          // where on the board, [col, row] (the first col,row is [1,1])
+          this.coords = coords;
+          // private attribute
+          this.#hitCoords = [];
+        }
+
+        // Function to check on status of square in game
+        // Returns: “hit”, “miss” or “sunk”
+        torpedoSquare(coordsHit) {
+          // Destructure col & row of torpedo strike
+          var [colHit, rowHit] = coordsHit;
+          // Start position of ship
+          var [col, row] = this.coords;
+          // Check the hit coordinate against each square of the ship
+          for (let i = 0; i < this.size; i++) {
+            var isHit = col == colHit && row == rowHit;
+            if (isHit) {
+              this.#hitCoords.push(coordsHit);
+              if (this.#hitCoords.length ===  this.size) {
+                return 'sunk';
+              } else {
+                return 'hit';
+              }
+            }
+            // If horizontal, move over a square
+            if (this.orientation === 'horizontal'){
+              col++;
+            }
+            // If vertical, move down a square
+            if (this.orientation === 'vertical') {
+              row++;
+            }
+          }
+          // Got through the checks without a hit!
+          return 'miss';
+        };
+        // End of ship class
+      };
+
+      // ---- Global Function ------ //
+      function playGame() {
+        // Create the game instance if it doesn't exist
+        if (!game) {
+          game = new Game();
+        }
+        // Start a new game
+        game.playNewGame();
+      }
+      // Option to debug the game
+      function debugGame() {
+        if (game) {
+          game.toggleDebugMode();
+        }
+      }
+
+      // ---- Header  --------------- //
+      // Add a titles to the page
+      document.write("<div class='header'>")
+      document.write("<h1>Battleship - Assignment 5 - Dolan</h1>" );
+      document.write("<h2>You have 20 guesses to find all ships! </h2>");
+      // Debug option
+      document.write("<div id='debugText' class='hidden'>The word to guess is \"<span id='wordToGuess'></span>\"</div>");
+      document.write("</div>");
+      // --- Button container  --------
+      document.write("<div id='button-container'>");
+      // Refresh button
+      document.write( "<button id='playNewGameButton'>Start New Game</button>" );
+      // Debug button
+      document.write( "<button id='debugButton' onClick='debugGame()'>Debug Option</button>" );
+      document.write("</div>");
+      // Set the play game button
+      var gameButton = document.getElementById('playNewGameButton');
+
+
+    </script>
+    </body>
+</html>
