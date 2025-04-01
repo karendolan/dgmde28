@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <title>DGMD E-28 Testing</title>
+      <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+      <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+      <style type="text/css">
+        .mytitle {
+          color: #263BBB;
+          font-size: 20px;
+        }
+        .quote {
+          color: green;
+          width: 400px;
+          margin: auto;
+          text-align: center;
+        }
+      </style>
+    </head>
+    <body>
+      <h1>My TEST</h1>
+      <div id="myapp">
+      </div>
+      <script>
+        var react1 = React.createElement(
+          "h1",
+          {id:"main", class:"mytitle"},
+          "Hello React World!"
+        );
+        var lincoln = React.createElement(
+          "p",
+          {class:"quote"},
+          "Four score and seven years ago"
+        );
+        //            ReactDOM.render(lincoln, myapp);
+        var select = React.createElement("select",{name:"pick"},
+            React.createElement("option",null,"Basic"),
+            React.createElement("option",null,"Standard"),
+            React.createElement("option",null,"Premium") );
+
+        ReactDOM.render(select, myapp);
+    </script>
+    </body>
+</html>
