@@ -34,13 +34,43 @@
           {class:"quote"},
           "Four score and seven years ago"
         );
-        //            ReactDOM.render(lincoln, myapp);
-        var select = React.createElement("select",{name:"pick"},
+        // ReactDOM.render(lincoln, myapp);
+        var select = React.createElement(
+            "select",
+            {name:"pick"},
             React.createElement("option",null,"Basic"),
             React.createElement("option",null,"Standard"),
-            React.createElement("option",null,"Premium") );
+            React.createElement("option",null,"Premium")
+          );
 
-        ReactDOM.render(select, myapp);
+        // Make weather link
+        var weather = React.createElement(
+          "a",
+          {target: "_blank", href: "https://weather.com"},
+          "Weather"
+        );
+        // Make clothes link
+        var clothes = React.createElement(
+          "a",
+          {target: "_blank", href: "https://www.rei.com/"},
+          "Clothes"
+        );
+        // Make food link
+        var food = React.createElement(
+          "a",
+          {target: "_blank", href: "https://www.wholefoodsmarket.com/"},
+          "Food"
+        );
+        // Make a list of the links
+        var navList = React.createElement(
+          "ol",
+          {class:"nav"},
+          React.createElement("li",null,weather),
+          React.createElement("li",null,clothes),
+          React.createElement("li",null,food)
+        );
+        // Render the list to the DOM, in the div with id "myapp"
+        ReactDOM.render(navList, myapp);
     </script>
     </body>
 </html>
