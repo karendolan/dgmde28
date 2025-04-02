@@ -43,17 +43,16 @@
       <div id="game-container">
       </div>
     <script>
-      //TODO:
-      //  In addition to the JSON to place the ships,
-      //  each square could be an object and the “game” can be an object.
-      //  Some suggested methods for the game object are buildBoard() and placeShips().
+      //  Battleship - DGMD E-29 Assignment 5
+      // External JSON file used to place the ships in deployed mode.
+      // An internal JSON is used to debug the game in local mode.
+      // Objects include Game & Ship
       // Game is over when all ships are sunk or 20 guesses used up
-      // On game over, indicate the locations of the individual ships.
+      // On game over, the locations of the ships are revealed.
       // 1.	Of the object variations we have learned, which feels the most useful to you?
-      // -- class is most intuitive
+      // -- Class is most intuitive
       // 2.	What was the easiest part of this assignment?
       // -- There was no easy part!!
-      // 40% creativity/effort/code quality
       // ----------------------------- //
       //     Global Constants          //
       // ----------------------------- //
@@ -64,27 +63,28 @@
       const BOARD_SIZE = 6; // 6x6
       const MAX_GUESSES = 20;
 
-      // Temp to get past the cors error
-      const data = {
+      // This internal json is used for testing
+      // When deployed external "battleship.json" file is used
+      const LOCAL_TESTING_SHIP_JSON = {
         "ships":
         [
           {
             "name": "ship1",
             "orientation": "vertical",
             "size": 4,
-            "coords": [2,3]
+            "coords": [1,2]
           },
           {
             "name": "ship2",
             "orientation": "horizontal",
             "size": 3,
-            "coords": [3,3]
+            "coords": [2,3]
           },
           {
             "name": "ship3",
             "orientation": "vertical",
             "size": 2,
-            "coords": [6,5]
+            "coords": [3,5]
           }
         ]
       };
@@ -93,7 +93,8 @@
       // Game Class
       // -------------------------------------
       class Game {
-        // Private attributes
+        // --- Private attributes -----
+        // Json to use to place the ships
         #shipsJson;
         // track the ship objects
         #ships = [];
@@ -102,27 +103,31 @@
         // track if game Over
         #isGameOver = false;
 
-        // The constructor
+        // --- The Constructor -----
         constructor(shipsJson){
           this.#shipsJson = shipsJson;
         }
 
-        // Function
+        // --- Class function to set up a new game -----
+        // @param shipsData JSON object
         playNewGame(shipsData) {
-          console.log("Set up new game");
           this.#shipsJson = shipsData;
           this.#guesses = [];
           this.#isGameOver = false;
           this.reset();
         };
 
-        // Optional toShow param to force revealing boats
+        // --- Class function toggle reveal and hide ship positions -----
+        // Used for debug mode and at the end of the game to ensure reveal of ships
+        // @param toShow boolean optional, false to toggle reveal on and off
+        //                  set to true to ensure reveal is on
         toggleDebugMode(toShow) {
           this.#ships.forEach(ship => {
             ship.toggleVisibility(toShow);
           })
         }
 
+        // --- Class function to reset game attributes and game squares -----
         reset() {
           // Reset message element
           const msgElem = document.getElementById('battleship_msg');
@@ -144,7 +149,7 @@
           }
         }
 
-        // Function
+        // --- Class function to handle square click event -----
         torpedoSquare(event) {
           // No more torpedos if game is over
           if (this.#isGameOver) return;
@@ -159,7 +164,6 @@
           // Destructure the row and col coordinates
           var [,row,,col] = square.id.split("-");
           // console.log('in torpedoSquare function ', row, col, this.#ships);
-
           // Save the square guessed
           this.#guesses.push(square.id);
           const guess = this.#guesses.length;
@@ -196,7 +200,7 @@
           }
         }
 
-        // Function to read ship json and create ships
+        // --- Class function to read ship json and create ship objects ---
         placeShips() {
           this.#shipsJson.forEach(shipJson => {
             // Create ship object
@@ -215,7 +219,8 @@
         // Private attribute to track damage to ship
         // Holds coordinates of impact
         #hitCoords;
-        // The constructor
+
+        // --- The Constructor -----
         constructor ({name, size, orientation, coords}) {
           this.name = name;
           // number of squares 2-4
@@ -228,10 +233,16 @@
           this.#hitCoords = [];
         }
 
+        // --- Class function return sunk/floating status -----
+        // @return boolean true if sunk, false if still floating
         isSunk() {
           return this.#hitCoords.length == this.size;
         }
 
+        // --- Class function toggle reveal and hide the ship  -----
+        // Used for debug mode and at the end of the game to ensure reveal of ship
+        // @param toShow boolean optional, false to toggle reveal on and off
+        //                  set to true to ensure reveal is on
         toggleVisibility(toShow) {
           // Start position of ship
           var [col, row] = this.coords;
@@ -256,9 +267,9 @@
           }
 
         }
-
-        // Function to check on status of square in game
-        // Returns: “hit”, “miss” or “sunk”
+        // --- Class function to check incoming torpedo impact on ship ---
+        // @param coordsHit: [col, row] of torpedo strike
+        // @returns string “hit”, “miss” or “sunk” status for this ship
         incoming(coordsHit) {
           // Destructure col & row of torpedo strike
           var [colHit, rowHit] = coordsHit;
@@ -290,7 +301,11 @@
         // End of ship class
       };
 
-      // ---- Global Function ------ //
+      // -------------------------------------
+      // Global Application Functions
+      // -------------------------------------
+
+      // --- Global function to initiate start of the game ---
       // Async because of fetching game JSON
       async function playGame() {
         // Create the game instance if it doesn't exist
@@ -307,28 +322,30 @@
               console.log("shipsData parsed ", shipsData)
             })
             .catch (error => console.log(error))
-
         if (!shipsData) {
           console.log("Couldn't get battleship.json, falling back to internal data")
-          shipsData = data.ships;
+          shipsData = LOCAL_TESTING_SHIP_JSON.ships;
         }
         // Start a new game
         console.log("About to start the game ", shipsData);
         game.playNewGame(shipsData);
       }
-      // Option to debug the game
+
+      // --- Global Handler for the debug button ---
       function debugGame() {
         if (game) {
           game.toggleDebugMode();
         }
       }
-      // Game square click handler
+
+      // --- Global Handler for square click ---
       function fireTorpedo(event) {
         if (game) {
           game.torpedoSquare(event);
         }
       }
-      // Build more of the game
+
+      // --- Global function for building the initial game board ---
       function buildGameBoard() {
         // ---- Delete old Game Board -------- //
         var existingBoard = document.getElementById('game-container');
@@ -383,10 +400,12 @@
       gameButton.addEventListener("click", (event) => {
         playGame(event);
       });
+      // Set the debug game button
       var gameButton = document.getElementById('debugButton');
       gameButton.addEventListener("click", (event) => {
         debugGame(event);
       });
+      // Initiate the first game play
       playGame();
     </script>
     </body>
