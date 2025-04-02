@@ -93,8 +93,8 @@
         #shipsJson;
         // track the ship objects
         #ships = [];
-        // track number of guesses used
-        #guesses = 0;
+        // track guesses made
+        #guesses = [];
         // track if game Over
         #isGameOver = false;
 
@@ -107,7 +107,7 @@
         playNewGame(shipsData) {
           console.log("Set up new game");
           this.#shipsJson = shipsData;
-          this.#guesses = 0;
+          this.#guesses = [];
           this.#isGameOver = false;
           this.reset();
         };
@@ -126,7 +126,7 @@
           const msgElem = document.getElementById('battleship_msg');
           msgElem.innerText = 'You have 20 guesses to find all ships!';
           // reset the guesses
-          this.#guesses = 0;
+          this.#guesses = [];
           // reset the ships
           this.#ships = [];
           this.placeShips();
@@ -149,7 +149,7 @@
           const msgElem = document.getElementById('battleship_msg');
           // Don't allow duplicate square clicks
           var square = event.target;
-          if (square.classList.length > 2) {
+          if (this.#guesses.includes(square.id)) {
             msgElem.innerText = 'You already guessed this square, try another';
             return;
           }
@@ -157,8 +157,9 @@
           var [,row,,col] = square.id.split("-");
           console.log('in torpedoSquare function ', row, col, this.#ships);
 
-          // Increment guess count
-          const guess = ++this.#guesses;
+          // Save the square guessed
+          this.#guesses.push(square.id);
+          const guess = this.#guesses.length;
           // Iterate over ships to see if a hit
           var hitShip = this.#ships.find(ship => {
             return 'miss' !== ship.incoming([col,row]);
