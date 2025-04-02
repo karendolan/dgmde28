@@ -24,8 +24,12 @@
           margin: 1px;
           border-radius: 5%;
         }
+        #battleship_msg {
+          padding: 0.4rem;
+        }
         .reveal {
-          background-color: #0047AB
+          color: white;
+          background-color: #0047AB;
         }
         .hit {
           background-color: #DC143C;
@@ -114,9 +118,7 @@
 
         // Optional toShow param to force revealing boats
         toggleDebugMode(toShow) {
-          console.log("Show location of boats")
           this.#ships.forEach(ship => {
-            console.log("Show location of ship ", ship);
             ship.toggleVisibility(toShow);
           })
         }
@@ -125,6 +127,7 @@
           // Reset message element
           const msgElem = document.getElementById('battleship_msg');
           msgElem.innerText = 'You have 20 guesses to find all ships!';
+          msgElem.classList.remove('reveal');
           // reset the guesses
           this.#guesses = [];
           // reset the ships
@@ -155,7 +158,7 @@
           }
           // Destructure the row and col coordinates
           var [,row,,col] = square.id.split("-");
-          console.log('in torpedoSquare function ', row, col, this.#ships);
+          // console.log('in torpedoSquare function ', row, col, this.#ships);
 
           // Save the square guessed
           this.#guesses.push(square.id);
@@ -165,7 +168,6 @@
             return 'miss' !== ship.incoming([col,row]);
           });
           const status = hitShip ? 'hit' : 'miss';
-          console.log("IsHit is ", status);
           // Color the square with the new classname
           square.classList.add(status);
 
@@ -173,7 +175,7 @@
           const floatingShip = this.#ships.find(ship => {
             return !ship.isSunk();
           })
-          console.log(`Guesses ${guess} of ${MAX_GUESSES}, is floating ${!!floatingShip} last move was a ${status} `);
+          console.log(`Guesses ${guess} of ${MAX_GUESSES}, is floating ${!!floatingShip} last move was a ${status} `, floatingShip);
           if (!!floatingShip) {
             // Check if this was the last guess
             if (guess === MAX_GUESSES) {
@@ -188,6 +190,10 @@
             msgElem.innerText = `You sunk ALL my battleships in ${guess} guesses! Play again`;
             this.#isGameOver = true;
           }
+          if (this.#isGameOver) {
+            // Emphasize the last message
+            msgElem.classList.add('reveal');
+          }
         }
 
         // Function to read ship json and create ships
@@ -198,8 +204,6 @@
             // Add ship to array
             this.#ships.push(ship);
           });
-
-
         }
       // End Game Class
       };
@@ -230,13 +234,12 @@
 
         toggleVisibility(toShow) {
           // Start position of ship
-          console.log("About to reveal this", this);
           var [col, row] = this.coords;
           // Iterate over squares of the ship and reveal their location
           for (let i = 0; i < this.size; i++) {
             const squareId =  `row-${row}-col-${col}`;
             const square = document.getElementById(squareId);
-            console.log("Show location of ", squareId, square.classList);
+            // console.log("Show location of ", squareId, square.classList);
             if (square.classList.contains('reveal') && !toShow){
               square.classList.remove('reveal');
             } else {
@@ -289,26 +292,29 @@
 
       // ---- Global Function ------ //
       // Async because of fetching game JSON
-      function playGame() {
+      async function playGame() {
         // Create the game instance if it doesn't exist
         if (!game) {
           game = new Game();
         }
+        let shipsData;
         // Retrieve the game JSON
-        console.log('About to get game data', window.location);
-        const xhr = new XMLHttpRequest();
-        xhr.open('GET', 'battleship.json', true);
-        xhr.onload = function() {
-          if (xhr.status === 200) {
-            console.log(xhr.responseText);
-          }
-        };
-        // TODO: debug this later with HTTP
-        // xhr.send();
+        const res = await fetch("battleship.json")
+            .then (res => res.json())
+            .then (resData => {
+              console.log("Data", resData)
+              shipsData = JSON.parse(resData)
+              console.log("shipsData parsed ", shipsData)
+            })
+            .catch (error => console.log(error))
 
+        if (!shipsData) {
+          console.log("Couldn't get battleship.json, falling back to internal data")
+          shipsData = data.ships;
+        }
         // Start a new game
-        console.log("About to start the game ", data.ships);
-        game.playNewGame(data.ships);
+        console.log("About to start the game ", shipsData);
+        game.playNewGame(shipsData);
       }
       // Option to debug the game
       function debugGame() {
