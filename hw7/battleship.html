@@ -24,15 +24,20 @@
           margin: 1px;
           border-radius: 5%;
         }
+        .reveal {
+          background-color: #0047AB
+        }
         .hit {
-          background-color: red;
+          background-color: #DC143C;
         }
         .miss {
-          background-color: grey;
+          background-color: #7393B3
         }
       </style>
     </head>
     <body class="hw7">
+      <div id="game-container">
+      </div>
     <script>
       //TODO:
       //  In addition to the JSON to place the ships,
@@ -51,6 +56,31 @@
       var ships = [];
       // Size constraints
       const BOARD_SIZE = 6; // 6x6
+
+      // Temp to get past the cors error
+      const data = {
+        "ships":
+        [
+          {
+            "name": "ship1",
+            "orientation": "vertical",
+            "size": 4,
+            "coords": [2,3]
+          },
+          {
+            "name": "ship2",
+            "orientation": "horizontal",
+            "size": 3,
+            "coords": [3,3]
+          },
+          {
+            "name": "ship3",
+            "orientation": "vertical",
+            "size": 2,
+            "coords": [6,5]
+          }
+        ]
+      };
 
       // -------------------------------------
       // Game Class
@@ -71,18 +101,35 @@
         }
 
         // Function
-        playNewGame() {
-          console.log("TODO: set up new game");
-          this.#ships = [];
+        playNewGame(shipsData) {
+          console.log("Set up new game");
+          this.#shipsJson = shipsData;
           this.#guesses = 0;
           this.#isGameOver = false;
-          buildGameBoard();
-          placeShips();
+          this.reset();
         };
 
         toggleDebugMode() {
-          console.log("TODO: show location of boats")
-          this.#ships
+          console.log("Show location of boats")
+          this.#ships.forEach(ship => {
+            console.log("Show location of ship ", ship);
+            ship.toggleVisibility();
+          })
+        }
+
+        reset() {
+          // reset the ships
+          this.#ships = [];
+          this.placeShips();
+          // reset the game squares
+          for (let row = 1; row <= BOARD_SIZE; row++) {
+            for (let col = 1; col <= BOARD_SIZE; col++) {
+              // reset the square class name
+              const squareId =  `row-${row}-col-${col}`;
+              const square = document.getElementById(squareId);
+              square.classList = `square row-${row}`;
+            }
+          }
         }
 
         // Function
@@ -90,11 +137,13 @@
           // Destructure the row and col coordinates
           var square = event.target;
           var [,row,,col] = square.id.split("-");
-          console.log('in torpedoSquare function ', row, col);
-          var isHit = ships.find(ship => {
-            var status = ship.torpedoSquare([col,row]);
+          console.log('in torpedoSquare function ', row, col, this.#ships);
+          // Iterate over ships to see if a hit
+          var isHit = this.#ships.find(ship => {
+            console.log("ship is ", ship);
+            var status = ship.incoming([col,row]);
             // debug
-            console.log(`coord ${[col,row]} for ${ship.name} is a ${isHit}`);
+            console.log(`coord ${[col,row]} for ${ship.name} is a ${status}`);
             // Color the square with the new classname
             if (['hit', 'sunk'].includes(status)) {
               square.classList.add('hit');
@@ -104,46 +153,16 @@
               return false;
             }
           });
+          console.log("IsHit is ", isHit);
         }
 
-        // Class function
-        buildGameBoard() {
-          // ---- Delete old Game Board -------- //
-          var existingBoard = document.getElementById('game-container');
-          if (existingBoard) {
-            existingBoard.remove();
-          }
-          // ---- Create Game Board ------------ //
-          // Start of the board
-          document.write("<div id='game-container'>");
-          document.write("<div id='game-board'>");
-          // --- Validation message ----- //
-          document.write( "<div id='validation'></div>" );
-          // Create 6 rows of 6 input blocks
-          for (let r = 1 ; r <= BOARD_SIZE ; r++) {
-            document.write( "<div class='row' id='row-" + r + "'>" );
-            // 5 columns
-            for (let c = 1 ; c <= BOARD_SIZE ; c++) {
-              const id = "row-" + r + "-col-" + c;
-              document.write( "<div class='square row-" + r + "'  id='" + id + "'></div>" );
-              const element = document.getElementById(id);
-              element.addEventListener("click", (event) => {
-                torpedoSquare(event);
-              })
-            }
-            // end row
-            document.write( "</div>" );
-          }
-          // end game board div
-          document.write("</div>");
-          // end Game Container
-          document.write("</div>");
-        };
         // Function to read ship json and create ships
         placeShips() {
-          this.#shipsJson.forEach(ship => {
+          this.#shipsJson.forEach(shipJson => {
             // Create ship object
+            const ship = new Ship(shipJson);
             // Add ship to array
+            this.#ships.push(ship);
           });
 
 
@@ -159,7 +178,7 @@
         // Holds coordinates of impact
         #hitCoords;
         // The constructor
-        constructor (name, size, orientation, coords) {
+        constructor ({name, size, orientation, coords}) {
           this.name = name;
           // number of squares 2-4
           this.size = size;
@@ -171,9 +190,35 @@
           this.#hitCoords = [];
         }
 
+        toggleVisibility() {
+          // Start position of ship
+          console.log("About to reveal this", this);
+          var [col, row] = this.coords;
+          // Iterate over squares of the ship and reveal their location
+          for (let i = 0; i < this.size; i++) {
+            const squareId =  `row-${row}-col-${col}`;
+            const square = document.getElementById(squareId);
+            console.log("Show location of ", squareId, square.classList);
+            if (square.classList.contains('reveal')){
+              square.classList.remove('reveal');
+            } else {
+              square.classList.add('reveal');
+            }
+            // If horizontal, move over a square
+            if (this.orientation === 'horizontal'){
+              col++;
+            }
+            // If vertical, move down a square
+            if (this.orientation === 'vertical') {
+              row++;
+            }
+          }
+
+        }
+
         // Function to check on status of square in game
         // Returns: “hit”, “miss” or “sunk”
-        torpedoSquare(coordsHit) {
+        incoming(coordsHit) {
           // Destructure col & row of torpedo strike
           var [colHit, rowHit] = coordsHit;
           // Start position of ship
@@ -205,13 +250,27 @@
       };
 
       // ---- Global Function ------ //
+      // Async because of fetching game JSON
       function playGame() {
         // Create the game instance if it doesn't exist
         if (!game) {
           game = new Game();
         }
+        // Retrieve the game JSON
+        console.log('About to get game data', window.location);
+        const xhr = new XMLHttpRequest();
+        xhr.open('GET', 'battleship.json', true);
+        xhr.onload = function() {
+          if (xhr.status === 200) {
+            console.log(xhr.responseText);
+          }
+        };
+        // TODO: debug this later with HTTP
+        // xhr.send();
+
         // Start a new game
-        game.playNewGame();
+        console.log("About to start the game ", data.ships);
+        game.playNewGame(data.ships);
       }
       // Option to debug the game
       function debugGame() {
@@ -219,26 +278,72 @@
           game.toggleDebugMode();
         }
       }
+      // Game square click handler
+      function fireTorpedo(event) {
+        if (game) {
+          game.torpedoSquare(event);
+        }
+      }
+      // Build more of the game
+      function buildGameBoard() {
+        // ---- Delete old Game Board -------- //
+        var existingBoard = document.getElementById('game-container');
+        if (existingBoard) {
+          existingBoard.remove();
+        }
+        // ---- Create Game Board ------------ //
+        // Start of the board
+        document.write("<div id='game-container'>");
+        document.write("<div id='game-board'>");
+        // --- Validation message ----- //
+        document.write( "<div id='validation'></div>" );
+        // Create 6 rows of 6 input blocks
+        for (let r = 1 ; r <= BOARD_SIZE ; r++) {
+          document.write( "<div class='row' id='row-" + r + "'>" );
+          // 5 columns
+          for (let c = 1 ; c <= BOARD_SIZE ; c++) {
+            const id = "row-" + r + "-col-" + c;
+            document.write( "<div class='square row-" + r + "'  id='" + id + "'></div>" );
+            const element = document.getElementById(id);
+            const This = this;
+            element.addEventListener("click", (event) => {
+              fireTorpedo(event);
+            })
+          }
+          // end row
+          document.write( "</div>" );
+        }
+        // end game board div
+        document.write("</div>");
+        // end Game Container
+        document.write("</div>");
+      };
 
       // ---- Header  --------------- //
       // Add a titles to the page
       document.write("<div class='header'>")
       document.write("<h1>Battleship - Assignment 5 - Dolan</h1>" );
       document.write("<h2>You have 20 guesses to find all ships! </h2>");
-      // Debug option
-      document.write("<div id='debugText' class='hidden'>The word to guess is \"<span id='wordToGuess'></span>\"</div>");
       document.write("</div>");
       // --- Button container  --------
       document.write("<div id='button-container'>");
       // Refresh button
       document.write( "<button id='playNewGameButton'>Start New Game</button>" );
       // Debug button
-      document.write( "<button id='debugButton' onClick='debugGame()'>Debug Option</button>" );
+      document.write( "<button id='debugButton'>Debug Option</button>" );
       document.write("</div>");
+      // Create the initial game board
+      buildGameBoard();
       // Set the play game button
       var gameButton = document.getElementById('playNewGameButton');
-
-
+      gameButton.addEventListener("click", (event) => {
+        playGame(event);
+      });
+      var gameButton = document.getElementById('debugButton');
+      gameButton.addEventListener("click", (event) => {
+        debugGame(event);
+      });
+      playGame();
     </script>
     </body>
 </html>
