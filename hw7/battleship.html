@@ -31,7 +31,7 @@
           background-color: #DC143C;
         }
         .miss {
-          background-color: #7393B3
+          background-color: #c1c2c7;
         }
       </style>
     </head>
@@ -46,7 +46,9 @@
       // Game is over when all ships are sunk or 20 guesses used up
       // On game over, indicate the locations of the individual ships.
       // 1.	Of the object variations we have learned, which feels the most useful to you?
+      // -- class is most intuitive
       // 2.	What was the easiest part of this assignment?
+      // -- There was no easy part!!
       // 40% creativity/effort/code quality
       // ----------------------------- //
       //     Global Constants          //
@@ -56,6 +58,7 @@
       var ships = [];
       // Size constraints
       const BOARD_SIZE = 6; // 6x6
+      const MAX_GUESSES = 20;
 
       // Temp to get past the cors error
       const data = {
@@ -109,15 +112,21 @@
           this.reset();
         };
 
-        toggleDebugMode() {
+        // Optional toShow param to force revealing boats
+        toggleDebugMode(toShow) {
           console.log("Show location of boats")
           this.#ships.forEach(ship => {
             console.log("Show location of ship ", ship);
-            ship.toggleVisibility();
+            ship.toggleVisibility(toShow);
           })
         }
 
         reset() {
+          // Reset message element
+          const msgElem = document.getElementById('battleship_msg');
+          msgElem.innerText = 'You have 20 guesses to find all ships!';
+          // reset the guesses
+          this.#guesses = 0;
           // reset the ships
           this.#ships = [];
           this.placeShips();
@@ -134,26 +143,50 @@
 
         // Function
         torpedoSquare(event) {
-          // Destructure the row and col coordinates
+          // No more torpedos if game is over
+          if (this.#isGameOver) return;
+          // Get message element
+          const msgElem = document.getElementById('battleship_msg');
+          // Don't allow duplicate square clicks
           var square = event.target;
+          if (square.classList.length > 2) {
+            msgElem.innerText = 'You already guessed this square, try another';
+            return;
+          }
+          // Destructure the row and col coordinates
           var [,row,,col] = square.id.split("-");
           console.log('in torpedoSquare function ', row, col, this.#ships);
+
+          // Increment guess count
+          const guess = ++this.#guesses;
           // Iterate over ships to see if a hit
-          var isHit = this.#ships.find(ship => {
-            console.log("ship is ", ship);
-            var status = ship.incoming([col,row]);
-            // debug
-            console.log(`coord ${[col,row]} for ${ship.name} is a ${status}`);
-            // Color the square with the new classname
-            if (['hit', 'sunk'].includes(status)) {
-              square.classList.add('hit');
-              return true;
-            } else {
-              square.classList.add('miss');
-              return false;
-            }
+          var hitShip = this.#ships.find(ship => {
+            return 'miss' !== ship.incoming([col,row]);
           });
-          console.log("IsHit is ", isHit);
+          const status = hitShip ? 'hit' : 'miss';
+          console.log("IsHit is ", status);
+          // Color the square with the new classname
+          square.classList.add(status);
+
+          // Check if ships are still floating
+          const floatingShip = this.#ships.find(ship => {
+            return !ship.isSunk();
+          })
+          console.log(`Guesses ${guess} of ${MAX_GUESSES}, is floating ${!!floatingShip} last move was a ${status} `);
+          if (!!floatingShip) {
+            // Check if this was the last guess
+            if (guess === MAX_GUESSES) {
+              this.#isGameOver = true;
+              msgElem.innerText = "Out of guesses! Play again";
+              // Reveal ships if not already revealed
+              game.toggleDebugMode(true);
+            } else {
+              msgElem.innerText = `That was a ${status}! You have ${MAX_GUESSES - guess} more guesses`;
+            }
+          } else {
+            msgElem.innerText = `You sunk ALL my battleships in ${guess} guesses! Play again`;
+            this.#isGameOver = true;
+          }
         }
 
         // Function to read ship json and create ships
@@ -190,7 +223,11 @@
           this.#hitCoords = [];
         }
 
-        toggleVisibility() {
+        isSunk() {
+          return this.#hitCoords.length == this.size;
+        }
+
+        toggleVisibility(toShow) {
           // Start position of ship
           console.log("About to reveal this", this);
           var [col, row] = this.coords;
@@ -199,7 +236,7 @@
             const squareId =  `row-${row}-col-${col}`;
             const square = document.getElementById(squareId);
             console.log("Show location of ", squareId, square.classList);
-            if (square.classList.contains('reveal')){
+            if (square.classList.contains('reveal') && !toShow){
               square.classList.remove('reveal');
             } else {
               square.classList.add('reveal');
@@ -323,7 +360,7 @@
       // Add a titles to the page
       document.write("<div class='header'>")
       document.write("<h1>Battleship - Assignment 5 - Dolan</h1>" );
-      document.write("<h2>You have 20 guesses to find all ships! </h2>");
+      document.write("<h3 id='battleship_msg'>You have 20 guesses to find all ships!</h3>");
       document.write("</div>");
       // --- Button container  --------
       document.write("<div id='button-container'>");
