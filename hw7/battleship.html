@@ -301,9 +301,9 @@
         // Retrieve the game JSON
         const res = await fetch("battleship.json")
             .then (res => res.json())
-            .then (resData => {
-              console.log("Data", resData)
-              shipsData = JSON.parse(resData)
+            .then (json => {
+              console.log("Data", json)
+              shipsData = json.ships;
               console.log("shipsData parsed ", shipsData)
             })
             .catch (error => console.log(error))
