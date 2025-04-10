@@ -24,53 +24,116 @@
       <div id="myapp">
       </div>
       <script>
-        var react1 = React.createElement(
-          "h1",
-          {id:"main", class:"mytitle"},
-          "Hello React World!"
-        );
-        var lincoln = React.createElement(
-          "p",
-          {class:"quote"},
-          "Four score and seven years ago"
-        );
-        // ReactDOM.render(lincoln, myapp);
-        var select = React.createElement(
-            "select",
-            {name:"pick"},
-            React.createElement("option",null,"Basic"),
-            React.createElement("option",null,"Standard"),
-            React.createElement("option",null,"Premium")
-          );
+        // var react1 = React.createElement(
+        //   "h1",
+        //   {id:"main", class:"mytitle"},
+        //   "Hello React World!"
+        // );
+        // var lincoln = React.createElement(
+        //   "p",
+        //   {class:"quote"},
+        //   "Four score and seven years ago"
+        // );
+        // // ReactDOM.render(lincoln, myapp);
+        // var select = React.createElement(
+        //     "select",
+        //     {name:"pick"},
+        //     React.createElement("option",null,"Basic"),
+        //     React.createElement("option",null,"Standard"),
+        //     React.createElement("option",null,"Premium")
+        //   );
 
-        // Make weather link
-        var weather = React.createElement(
-          "a",
-          {target: "_blank", href: "https://weather.com"},
-          "Weather"
-        );
-        // Make clothes link
-        var clothes = React.createElement(
-          "a",
-          {target: "_blank", href: "https://www.rei.com/"},
-          "Clothes"
-        );
-        // Make food link
-        var food = React.createElement(
-          "a",
-          {target: "_blank", href: "https://www.wholefoodsmarket.com/"},
-          "Food"
-        );
-        // Make a list of the links
-        var navList = React.createElement(
+        // // Make weather link
+        // var weather = React.createElement(
+        //   "a",
+        //   {target: "_blank", href: "https://weather.com"},
+        //   "Weather"
+        // );
+        // // Make clothes link
+        // var clothes = React.createElement(
+        //   "a",
+        //   {target: "_blank", href: "https://www.rei.com/"},
+        //   "Clothes"
+        // );
+        // // Make food link
+        // var food = React.createElement(
+        //   "a",
+        //   {target: "_blank", href: "https://www.wholefoodsmarket.com/"},
+        //   "Food"
+        // );
+        // // Make a list of the links
+        // // ReactDOM.render(navList, myapp);
+        // var names = ["Me", "You", "Us", "Sally", "Bill", "Bob", "Joe"];
+        // var nameList = React.createElement(
+        //   "ol",
+        //   null,
+        //   names.map((item, i) => React.createElement("li",{key:i}, item))
+        // );
+        // // Render the list to the DOM, in the div with id "myapp"
+        // ReactDOM.render(nameList, myapp);
+
+        // // ---- create an object -----
+        // function Level(name, code) {
+        //   this.name = name;
+        //   this.code = code;
+        // }
+        // var options = [
+        //   new Level("Basic", "basic"),
+        //   new Level("Standard", "std"),
+        //   new Level("Premium", "prem"),
+        // ]
+        // var optionList = React.createElement(
+        //   "select",
+        //   {bane:"pick"},
+        //   options.map((item,i)=> React.createElement("option",{key:i, value:item.code}, item.name))
+        // );
+        // ReactDOM.render(optionList, myapp);
+
+                // var options = [
+        //   new LinkObj("Basic", "basic"),
+        //   new LinkObj("Standard", "std"),
+        //   new LinkObj("Premium", "prem"),
+        // ]
+        // var optionList = React.createElement(
+        //   "select",
+        //   {bane:"pick"},
+        //   options.map((item,i)=> React.createElement("option",{key:i, value:item.code}, item.name))
+        // );
+        // ---- define a nav object -----
+        function LinkObj(navLabel, isExternal, url) {
+          this.navLabel = navLabel;
+          this.isExternal = isExternal;
+          this.url = url;
+        }
+        // ---- create an array of nav objects ----
+        var navData = [
+          new LinkObj("Weather", true, "https://weather.com"),
+          new LinkObj("News", true, "https://npr.org"),
+          new LinkObj("Sports", true, "https://espn.com"),
+        ];
+        // ---- create an ordered list of anchor tags for each nav object ---
+        var navListElement = React.createElement(
           "ol",
-          {class:"nav"},
-          React.createElement("li",null,weather),
-          React.createElement("li",null,clothes),
-          React.createElement("li",null,food)
+          null,
+          navData.map((item,i) =>
+              React.createElement(
+                "li",
+                // Each li child in the ordered list needs a unique key
+                {key: "li-" + i},
+                React.createElement(
+                  "a",
+                  {
+                    // No key needed since only one anchor child per li
+                    href:item.url,
+                    target: item.isExternal ? '_blank' : ''
+                  },
+                  item.navLabel
+                )
+              )
+          )
         );
-        // Render the list to the DOM, in the div with id "myapp"
-        ReactDOM.render(navList, myapp);
+        ReactDOM.render(navListElement, myapp);
+
     </script>
     </body>
 </html>
