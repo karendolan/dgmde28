@@ -333,17 +333,18 @@
        function Board(props) {
          // Destructure props
          const {
-          dimension,
+          wordSize,
+          maxGuesses,
           wordToGuess,
           guesses,
           isDebugOn = false,
         } = props;
          // attributes
-         this.dimension = dimension;
+         this.maxGuesses = maxGuesses;
          // Create all the row elements
          this.rows = [];
-         for (let rowNum = 0; rowNum < dimension; rowNum++) {
-           var row = new GuessRow(rowNum, dimension, wordToGuess, guesses[rowNum])
+         for (let rowNum = 0; rowNum < maxGuesses; rowNum++) {
+           var row = new GuessRow(rowNum, wordSize, wordToGuess, guesses[rowNum])
            this.rows.push(row.getElement());
          }
          // Create the square row container
@@ -355,7 +356,7 @@
               )
             );
          // Create keyboard
-         this.keyboard = new Keyboard();
+         this.keyboard = new Keyboard({wordToGuess, guesses});
          // Create Title
          this.title = new Title({isDebugOn, wordToGuess});
          // Create Legend
@@ -374,21 +375,45 @@
        * Component On-Screen Keyboard
        * ----------------------------
        */
-       function Keyboard() {
+       function Keyboard(props) {
+        // Destructure props
+        var {wordToGuess, guesses} = props;
         // Key board container element
         var rows = [];
         KEYBOARD_KEYS.forEach((rowStr, rowNum) => {
           var keys = [];
           rowStr.split('').forEach((letter, index) => {
+            var props = {
+                  key: index,
+                  className:'keyboard-key',
+                  id: `key-${letter}`
+                };
+            // If a guess word exists for this row,
+            // update the square with the letter and code
+            if (guesses && guesses.length > 0) {
+              // Is this letter in any of the guesses?
+              if (guesses.join('').includes(letter)) {
+                // Is this letter also in the word to guess?
+                if (wordToGuess.includes(letter)) {
+                  var isMatch = guesses.find(guess => {
+                    var m = Array.from(guess).find((char, index) => {
+                      // console.log("TESTING ", char, letter, wordToGuess[index] );
+                      return char === letter && wordToGuess[index] === letter
+                    })
+                    return m;
+                  });
+                  props.className += isMatch ? " rightLetterRightSpot" : " rightLetterWrongSpot";
+                  // console.log(" MATCH? ",  props.className, letter, wordToGuess);
+                } else {
+                  props.className += " wrongLetter";
+                }
+              }
+            }
             // push the new keyboard key
             keys.push(
               React.createElement(
                 'div',
-                {
-                  key: index,
-                  className:'keyboard-key',
-                  id: `key-${letter}`
-                },
+                props,
                 letter.toUpperCase())
             );
           })
@@ -416,7 +441,8 @@
         React.createElement(
           Board,
           {
-            dimension: 5,
+            wordSize: WORD_SIZE,
+            maxGuesses: MAX_GUESSES,
             wordToGuess: WORD_TO_GUESS,
             guesses: THREE_GUESSES,
             isDebugOn: true,
