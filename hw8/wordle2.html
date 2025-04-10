@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <title>DGMD E-28 Spring 2025 Assignment 6 Wordle Redux, Karen Dolan</title>
+      <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+      <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+      <style type="text/css" media="screen">
+        .header, #button-container {
+          text-align: center;
+        }
+        #button-container button {
+          margin: 5px;
+        }
+        button {
+          padding: 8px;
+          border-radius: 15%;
+        }
+        /* for hiding the debug text */
+        .hidden {
+          display: none;
+        }
+        /* to center all these elements */
+        .row, #game-board, #guess-button-container, #key-board, .keyboard-row {
+          margin: auto;
+        }
+        .square-container {
+          display: flex;
+          flex-wrap: wrap;
+          width: 400px;
+          margin: auto;
+        }
+        #game-key {
+          width: 300px;
+          margin: auto;
+          padding: 10px;
+          border: 1px solid black;
+        }
+        #debugText {
+          color: #7B28A1;
+        }
+        #wordle-validation {
+          font-size: 1.5rem;
+          text-align: center;
+          color: #7B28A1;
+        }
+        .square, .keyboard-key, .key-square {
+          border: 1px solid black;
+          font-size: 2rem;
+          line-height: 2rem;
+          text-align: center;
+          vertical-align: top;
+        }
+        .key-square {
+          display: inline-block;
+        }
+        .square {
+          width: 60px;
+          height: 60px;
+          margin: 5px;
+          border-radius: 5%;
+        }
+        .keyboard-key {
+          width: 30px;
+          height: 30px;
+          margin: 1px;
+          border-width: 0;
+          font-size: 1.3rem;
+          line-height: 1.3rem;
+          align-content: center;
+          border-radius: 20%;
+        }
+        .key-square {
+          width: 20px;
+          height: 20px;
+          margin: 1px;
+          margin-right: 3px;
+          border-width: 0;
+          font-size: 1.5rem;
+          line-height: 1.5rem;
+          border-radius: 20%;
+        }
+        .keyboard-row {
+          display: flex;
+          flex-wrap: wrap;
+          justify-content: center;
+        }
+        .rightLetterWrongSpot {
+          color: white;
+          background-color: #c9b458;
+        }
+        .rightLetterRightSpot {
+          color: white;
+          background-color: #6aaa64;
+        }
+        .wrongLetter {
+          color: white;
+          background-color: #787c7e;
+        }
+      </style>
+    </head>
+    <body>
+      <div id="myapp"></div>
+    <script>
+      /**
+       * 1.  Use React to create
+       * 1.a The Wordle board (6 words of 5 letters each)
+       * 1.b The on-screen keyboard
+       *
+       * 2. hard code 3 guesses (“might”, “flood”, “stray”)
+       * and then calculate and display results against an answer of “moody”
+       *
+       * We will be looking for use of components. This assignment should not use JSX.
+       *
+       * Question: Which seems better for creating the elements of the app:  JS alone or JS with React
+       *  JS with React is better because I don't have to worry about placing the closing div when nesting elements.
+       */
+
+
+       /**
+       * ----------------------------
+       * Game Global Constants
+       * ----------------------------
+       */
+       var THREE_GUESSES = ["MIGHT", "FLOOD", "STRAY"];
+       var WORD_TO_GUESS = "MOODY";
+             // Size constraints
+      const MAX_GUESSES = 6;
+      const WORD_SIZE = 5;
+      // ----- Key Board  ----------- //
+      // This is the QWERTY display used in NYTimes wordle
+      const KEYBOARD_ROW_1 = "qwertyuiop".toUpperCase();
+      const KEYBOARD_ROW_2 = "asdfghijkl".toUpperCase();
+      const KEYBOARD_ROW_3 = "zxcvbnm".toUpperCase();
+      const ALL_LETTERS = KEYBOARD_ROW_1 + KEYBOARD_ROW_2 + KEYBOARD_ROW_3;
+      // This is for showing the QUERTY keyboard for guessed keyboard letters
+      const KEYBOARD_KEYS = [KEYBOARD_ROW_1, KEYBOARD_ROW_2, KEYBOARD_ROW_3];
+
+      /**
+       * ----------------------------
+       * Game Header title
+       * ----------------------------
+       */
+      function Title() {
+        // Instructions
+        var instruction = React.createElement(
+          'h2',
+          null,
+          "You have 6 tries to guess a 5 letter word!"
+        );
+        // Main title
+        var title = React.createElement(
+          'h1',
+          null,
+          "Wordle Redux - Assignment 6 - Dolan",
+        );
+        // Return the header title container
+        return (
+          React.createElement(
+            'div',
+            {className: 'header'},
+            title,
+            instruction
+          )
+        )
+      }
+
+       /**
+       * ----------------------------
+       * Legend Key for the colors
+       * ----------------------------
+       */
+      function Legend() {
+        // Right letter, right spot
+        var rightLetterRightSpot = React.createElement(
+          'span',
+          {className: "key-square rightLetterRightSpot"},
+          null
+        );
+        // Right letter, wrong spot
+        var rightLetterWrongSpot = React.createElement(
+          'span',
+          {className: "key-square rightLetterWrongSpot"},
+          null
+        );
+        // Wrong Letter
+        var wrongLetter = React.createElement(
+          'span',
+          {className: "key-square wrongLetter"},
+          null
+        );
+
+        var header = React.createElement(
+          'h4',
+          null,
+          "Color Legend"
+        );
+
+        // Return the header title container
+        return (
+          React.createElement(
+            'div',
+            {id: 'game-key'},
+            header,
+            rightLetterRightSpot,
+            "The letter is in the word in the right spot",
+            rightLetterWrongSpot,
+            "The letter is in the word, but not this spot",
+            wrongLetter,
+            "This letter is not part of the word"
+          )
+        )
+
+      }
+       /**
+       * ----------------------------
+       * Component Square
+       * props:{col, row}
+       * ----------------------------
+       */
+       function Square(props) {
+        // Destructure props
+        const {col, row} = props;
+        // attributes
+        this.col = col;
+        this.row = row;
+        this.id = `square-col-${col}-row-${row}`;
+        // Return element
+        console.log("Square key", this.id);
+        return React.createElement(
+          'div',
+          {
+            className: 'square',
+            id: this.id,
+          }
+        );
+       }
+
+      /**
+       * ----------------------------
+       * Component Board
+       * props:{dimension}
+       * ----------------------------
+       */
+       function Board(props) {
+         // Destructure props
+         const {
+          dimension,
+        } = props;
+         // attributes
+         this.dimension = dimension;
+         // Create all the squares
+         this.squares = [];
+         for (let col = 0; col < dimension; col++) {
+          for (let row = 0; row <  dimension; row++) {
+            this.squares.push(
+              React.createElement(
+                Square,
+                {
+                  key: `${col}-${row}`,
+                  row,
+                  col
+                },
+                null
+              )
+            );
+          }
+         }
+         // Create the square container
+         this.squareContainer = (
+          React.createElement(
+                "div",
+                {
+                  className: "square-container",
+                },
+                this.squares
+              )
+            );
+         // Create keyboard
+         this.keyboard = new Keyboard();
+         // Create Title
+         this.title = new Title();
+         // Legend
+         this.legend = new Legend();
+         // Return game board with it's nested components
+         return React.createElement(
+            'div',
+            {id: 'game-board'},
+            this.title, this.squareContainer, this.keyboard, this.legend
+          );
+        }
+
+      /**
+       * ----------------------------
+       * Component On-Screen Keyboard
+       * ----------------------------
+       */
+       function Keyboard() {
+        // Key board container element
+        var rows = [];
+        KEYBOARD_KEYS.forEach((rowStr, rowNum) => {
+          var keys = [];
+          rowStr.split('').forEach((letter, index) => {
+            // push the new keyboard key
+            keys.push(
+              React.createElement(
+                'div',
+                {
+                  key: index,
+                  className:'keyboard-key',
+                  id: `key-${letter}`
+                },
+                letter.toUpperCase())
+            );
+          })
+          // push the new keyboard row
+          rows.push(
+            React.createElement(
+              'div',
+              {
+                key: rowNum,
+                className: 'keyboard-row',
+                id: `keyboard-row-${rowNum}`
+              },
+              keys
+            )
+          );
+        })
+        console.log("rows ", this.rows);
+         // Return keyboard with it's nested rows
+         return React.createElement('div', {id: 'keyboard'}, rows);
+       }
+
+       // ----------------------------
+       // Game entry
+       // ----------------------------
+       ReactDOM.render(
+        React.createElement(
+          Board,
+          {dimension: 5},
+          null
+        ),
+        myapp
+      );
+
+    </script>
+    </body>
+</html>
