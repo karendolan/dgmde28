@@ -144,13 +144,33 @@
        * Game Header title
        * ----------------------------
        */
-      function Title() {
+      function Title(props) {
+        var {isDebugOn, wordToGuess} = props;
+        console.log("isDebugOn ", isDebugOn);
         // Instructions
         var instruction = React.createElement(
           'h2',
           null,
           "You have 6 tries to guess a 5 letter word!"
         );
+        // If Debug is on, show the guess word
+        var debugElem = isDebugOn
+          ? React.createElement(
+            "div",
+            {
+              className: "display",
+              id: "debugText"
+            },
+            "The word to guess is: ",
+            React.createElement(
+              "span",
+              {
+                id: "wordToGuess",
+              },
+              wordToGuess
+            )
+          )
+        : null;
         // Main title
         var title = React.createElement(
           'h1',
@@ -163,7 +183,8 @@
             'div',
             {className: 'header'},
             title,
-            instruction
+            instruction,
+            debugElem
           )
         )
       }
@@ -250,7 +271,7 @@
        * ----------------------------
        */
        class GuessRow {
-        // The constructor
+        // The constructor for this class
         constructor (rowNum, squareCount, wordToGuess, guessWord) {
           this.rowNum = rowNum;
           this.squareCount = squareCount;
@@ -258,35 +279,35 @@
           // Optional hard coding this for this assignment
           this.guessWord = guessWord;
         }
-
-        // function for returning the element
+        // A Class function to returning the REACT element
         getElement() {
-          // Create the squares in this guess Row
+          // A holder for the square elements
           var squareElems = [];
-          // If there is a guess word, update the square with the letter and code
-          var wordGuess = this.guessWord ? this.guessWord.split() : null;
-          var wordActual = this.wordToGuess ? this.wordToGuess.split() : null;
-          // Iterate over each square in the row
+          // Create a Square object for for each square in the row
           for (let col = 0; col <  this.squareCount; col++) {
+            // Create the props for the Square object
             var props = {
                   key: `${col}-${this.rowNum}`,
                   row: this.rowNum,
                   col,
+                  className: "square"
                 };
-            if (wordGuess) {
-              props.value = wordGuess[col];
-              if (wordGuess[col] === wordActual[col]) {
-                props.className = "square rightLetterRightSpot";
-              } else if (wordActual.includes(wordGuess[col])) {
-                props.className = "square rightLetterWrongSpot";
+            // If a guess word exists for this row,
+            // update the square with the letter and code
+            if (this.guessWord) {
+              var g = this.guessWord;
+              var w = this.wordToGuess;
+              console.log("Words ", g, col, g[col], w, w[col])
+              props.value = g[col];
+              if (g[col] === w[col]) {
+                props.className += " rightLetterRightSpot";
+              } else if (w.includes(g[col])) {
+                props.className += " rightLetterWrongSpot";
               } else {
-                props.className = "square wrongLetterWrongSpot";
+                props.className += " wrongLetter";
               }
-            } else {
-               props.className = "square";
             }
-
-            // Add the square element
+            // Add the square React element to the array
             squareElems.push(
               React.createElement( Square, props, null )
             );
@@ -312,17 +333,18 @@
           dimension,
           wordToGuess,
           guesses,
+          isDebugOn = false,
         } = props;
          // attributes
          this.dimension = dimension;
-         // Create all the squares
+         // Create all the row elements
          this.rows = [];
          for (let rowNum = 0; rowNum < dimension; rowNum++) {
            var row = new GuessRow(rowNum, dimension, wordToGuess, guesses[rowNum])
            this.rows.push(row.getElement());
          }
          console.log("ROWS ", this.rows );
-         // Create the square container
+         // Create the square row container
          this.rowContainer = (
           React.createElement(
                 "div",
@@ -333,9 +355,10 @@
          // Create keyboard
          this.keyboard = new Keyboard();
          // Create Title
-         this.title = new Title();
-         // Legend
+         this.title = new Title({isDebugOn, wordToGuess});
+         // Create Legend
          this.legend = new Legend();
+
          // Return game board with it's nested components
          return React.createElement(
             'div',
@@ -394,6 +417,7 @@
             dimension: 5,
             wordToGuess: WORD_TO_GUESS,
             guesses: THREE_GUESSES,
+            isDebugOn: true,
           },
           null
         ),
