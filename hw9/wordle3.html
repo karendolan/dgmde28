@@ -110,31 +110,17 @@
        * Practice using React JSX to create the Wordle board.
        * The spec is exactly the same for the last assignment
        *  – but this time, use JSX only!
-       *
-       * 1.  Use React to create
-       * 1.a The Wordle board (6 words of 5 letters each)
-       * 1.b The on-screen keyboard
-       *
-       * 2. hard code 3 guesses (“might”, “flood”, “stray”)
+       * hard code 3 guesses (“might”, “flood”, “stray”)
        * and then calculate and display results against an answer of “moody”
        *
        * We will be looking for use of components. This assignment should not use JSX.
        *
        * Question: Which seems better for creating the elements of the app:  JS alone or JS with React
-       *  JS with React is better because I don't have to worry about placing the closing div when nesting elements.
+       * Answer redux 1: JS with React is better because I don't have to worry about placing the closing div when nesting elements.
+       * answer redux 2: JS with React was better for creating elements of the app because it simplified nesting of elements.
+       * But JSX/babel was another level of improvement because it condensed the code even more by abstracting away
+       * more complexity. The code is even more simple and easier to read.
        *
-       * Question: Which seems better for creating the elements of the app:
-       *  JS alone or JS with React?
-       *
-       PDF with:
-          URL
-          Copy of the code
-          Answer to the question:
-          Which seems better for creating the elements of the app: JS alone or JS with React?
-          Rubric
-          Works to spec 65%
-          Good use of JSX 35%
-       */
        /**
        * ----------------------------
        * Game Global Constants
@@ -162,33 +148,23 @@
        * ----------------------------
        */
       function Title({isDebugOn, wordToGuess} ) {
-        // Create instructions
-        var instruction = (
-          <h2>
-            You have 6 tries to guess a 5 letter word!
-          </h2>
-        );
-        // Create show guess work, if Debug is on
-        var debugElem = isDebugOn ? (
-          <div className="display" id="debugText">
-            The word to guess is:
-            <span>
-              {wordToGuess}
-            </span>
-          </div>
-        ) : null;
-        // Create Main title
-        var title =  (
-          <h1>
-            Wordle Redux #2 - Assignment 7 - Dolan
-          </h1>
-        );
-        // Return the header title container
+        // Return the header component
         return (
           <div className="header">
-            {title}
-            {instruction}
-            {debugElem}
+            <h1>
+              Wordle Redux #2 - Assignment 7 - Dolan
+            </h1>
+            <h2>
+              You have 6 tries to guess a 5 letter word!
+            </h2>
+            {isDebugOn && (
+              <div className="display" id="debugText">
+                The word to guess is:
+                <span>
+                  {wordToGuess}
+                </span>
+              </div>
+            )}
           </div>
         );
       }
@@ -245,27 +221,23 @@
           className = 'square',
           value,
         } = props;
-        console.log("Square ", props);
-        // attributes
-        const id = `square-col-${col}-row-${row}`;
         // Return element
         return (
           <input
             className={className}
-            id={id}
+            id={`square-col-${col}-row-${row}`}
             type="text"
             maxLength={1}
             value={value}
             readOnly={true}
-          >
-          </input>
+          />
         );
        }
 
       /**
        * ----------------------------
        * CLASS Guess Row
-       * Now extends a React.Component
+       * Now extends a React.Component in order to have a "render" function
        * ----------------------------
        */
        class GuessRow extends React.Component {
@@ -273,7 +245,6 @@
         constructor (props) {
           super(props);
           const {rowNum, wordSize, wordToGuess, guessWord} = props;
-          console.log("This", this, props);
           this.rowNum = rowNum;
           this.wordSize = wordSize;
           this.wordToGuess = wordToGuess;
@@ -308,7 +279,7 @@
               }
             }
             // Add the square React element to the array
-            console.log("key", key, "col", col);
+            // console.log("key", key, "col", col);
             squareElems.push(
               <Square
                 key={key}
@@ -344,7 +315,7 @@
         // Create all the row elements
         var rows = [];
         for (let rowNum = 0; rowNum < maxGuesses; rowNum++) {
-          console.log("Board key ", rowNum);
+          // console.log("Board key ", rowNum);
           var row = (
             <GuessRow
               key={rowNum}
@@ -356,26 +327,21 @@
           );
           rows.push(row);
         }
-        // Create the square row container
-        var rowContainer = (
+        // Return game board with all it's nested components
+        return (
+        <div id="game-board">
+          <Title
+            isDebugOn={isDebugOn}
+            wordToGuess={wordToGuess}
+          />
           <div className="row-container">
             {rows}
           </div>
-        );
-        // Create keyboard
-        var keyboard = new Keyboard({wordToGuess, guesses});
-        // Create Title
-        var title = new Title({isDebugOn, wordToGuess});
-        // Create Legend
-        var legend = new Legend();
-
-        // Return game board with it's nested components
-        return (
-        <div id="game-board">
-          {title}
-          {rowContainer}
-          {keyboard}
-          {legend}
+          <Keyboard
+            wordToGuess={wordToGuess}
+            guesses={guesses}
+          />
+          <Legend />
         </div>
         )
       }
