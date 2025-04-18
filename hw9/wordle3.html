@@ -219,13 +219,13 @@
             <h4>
               Color Legend
             </h4>
-            {legendClasses.map((item) => (
-              <>
+            {legendClasses.map((item, i) => (
+              <div key={i}>
                 {/* The color code box */}
                 <span className={`key-square ${item.class}`} />
                 {/* The color code description */}
                 {item.text}
-              </>
+              </div>
             ))}
           </div>
         );
@@ -245,22 +245,20 @@
           className = 'square',
           value,
         } = props;
+        console.log("Square ", props);
         // attributes
-        this.col = col;
-        this.row = row;
-        this.id = `square-col-${col}-row-${row}`;
+        const id = `square-col-${col}-row-${row}`;
         // Return element
-        return React.createElement(
-          'input',
-          {
-            className,
-            id: this.id,
-            type: "text",
-            maxLength: 1,
-            value,
-            readOnly: true
-          },
-          null
+        return (
+          <input
+            className={className}
+            id={id}
+            type="text"
+            maxLength={1}
+            value={value}
+            readOnly={true}
+          >
+          </input>
         );
        }
 
@@ -274,10 +272,10 @@
         // The constructor for this class
         constructor (props) {
           super(props);
-          console.log("This", this);
-          const {rowNum, squareCount, wordToGuess, guessWord} = props;
+          const {rowNum, wordSize, wordToGuess, guessWord} = props;
+          console.log("This", this, props);
           this.rowNum = rowNum;
-          this.squareCount = squareCount;
+          this.wordSize = wordSize;
           this.wordToGuess = wordToGuess;
           // Optional hard coding this for this assignment
           this.guessWord = guessWord;
@@ -287,38 +285,44 @@
           // A holder for the square elements
           var squareElems = [];
           // Create a Square object for for each square in the row
-          for (let col = 0; col <  this.squareCount; col++) {
+          for (let col = 0; col < this.wordSize; col++) {
             // Create the props for the Square object
-            var props = {
-                  key: `${col}-${this.rowNum}`,
-                  row: this.rowNum,
-                  col,
-                  className: "square"
-                };
+            const key = `${col}-${this.rowNum}`;
+            const row = this.rowNum;
+            // Class name may be modified with guess color class
+            let className = "square"
+            let value;
             // If a guess word exists for this row,
             // update the square with the letter and code
             if (this.guessWord) {
               var g = this.guessWord;
               var w = this.wordToGuess;
               // console.log("Words ", g, col, g[col], w, w[col])
-              props.value = g[col];
+              value = g[col];
               if (g[col] === w[col]) {
-                props.className += " rightLetterRightSpot";
+                className += " rightLetterRightSpot";
               } else if (w.includes(g[col])) {
-                props.className += " rightLetterWrongSpot";
+                className += " rightLetterWrongSpot";
               } else {
-                props.className += " wrongLetter";
+                className += " wrongLetter";
               }
             }
             // Add the square React element to the array
+            console.log("key", key, "col", col);
             squareElems.push(
-              React.createElement( Square, props, null )
+              <Square
+                key={key}
+                className={className}
+                value={value}
+                row={row}
+                col={col}
+              />
             );
           }
           // Return element
             return (
             <div className="guess-row">
-              squareElems - TODO here
+              {squareElems}
             </div>
           )
         };
@@ -340,16 +344,17 @@
         // Create all the row elements
         var rows = [];
         for (let rowNum = 0; rowNum < maxGuesses; rowNum++) {
-          var row = new GuessRow({
-            rowNum,
-            wordSize,
-            wordToGuess,
-            guessWord: guesses[rowNum],
-          })
-          // rows.push(row.getElement());
-          rows.push(
-            <div>empty</div>
-          )
+          console.log("Board key ", rowNum);
+          var row = (
+            <GuessRow
+              key={rowNum}
+              rowNum={rowNum}
+              wordSize={wordSize}
+              wordToGuess={wordToGuess}
+              guessWord={guesses[rowNum]}
+            />
+          );
+          rows.push(row);
         }
         // Create the square row container
         var rowContainer = (
