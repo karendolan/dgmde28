@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DGMD E-28 Testing</title>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <style type="text/css">
+    .mytitle {
+      color: #263BBB;
+      font-size: 20px;
+    }
+
+    .quote {
+      color: green;
+      width: 400px;
+      margin: auto;
+      text-align: center;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>My TEST</h1>
+  <div id="myapp">
+  </div>
+  <script>
+    // From April 14 Class Lecture
+    function StaffName({name}) {
+      return React.createElement("h3", null, name)
+    }
+    // Props with destructuring
+    function StaffTitle({title}) {
+      return React.createElement("h4", null, title)
+    }
+    function StaffMember3({name, title}) {
+      return React.createElement(
+        "div",
+        null,
+        React.createElement(StaffName, { name: name }, null),
+        React.createElement(StaffTitle, { title: title }, null)
+      )
+    }
+    var staff3 = React.createElement(StaffMember3, { name: "Pat Jones", title: "Dept Head3" }, null)
+    ReactDOM.render(staff3, myapp);
+
+  </script>
+</body>
+
+</html>
