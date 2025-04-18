@@ -169,14 +169,14 @@
           </h2>
         );
         // Create show guess work, if Debug is on
-        var debugElem = isDebugOn ?? (
+        var debugElem = isDebugOn ? (
           <div className="display" id="debugText">
             The word to guess is:
             <span>
               {wordToGuess}
             </span>
           </div>
-        );
+        ) : null;
         // Create Main title
         var title =  (
           <h1>
@@ -221,13 +221,12 @@
             </h4>
             {legendClasses.map((item) => (
               <>
-              {/* The color code box */}
-              <span id={item.class} />
-              {/* The color code description */}
-              {item.text}
+                {/* The color code box */}
+                <span className={`key-square ${item.class}`} />
+                {/* The color code description */}
+                {item.text}
               </>
-            )
-            )}
+            ))}
           </div>
         );
       };
