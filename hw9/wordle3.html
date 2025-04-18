@@ -153,54 +153,44 @@
       const ALL_LETTERS = KEYBOARD_ROW_1 + KEYBOARD_ROW_2 + KEYBOARD_ROW_3;
       // This is for showing the QUERTY keyboard for guessed keyboard letters
       const KEYBOARD_KEYS = [KEYBOARD_ROW_1, KEYBOARD_ROW_2, KEYBOARD_ROW_3];
+      // Toggle to start game with debug on
+      const IS_DEBUG_ON = true;
 
       /**
        * ----------------------------
-       * Game Header title
+       * Game Header title - JSX
        * ----------------------------
        */
-      function Title(props) {
-        var {isDebugOn, wordToGuess} = props;
-        // Instructions
-        var instruction = React.createElement(
-          'h2',
-          null,
-          "You have 6 tries to guess a 5 letter word!"
+      function Title({isDebugOn, wordToGuess} ) {
+        // Create instructions
+        var instruction = (
+          <h2>
+            You have 6 tries to guess a 5 letter word!
+          </h2>
         );
-        // If Debug is on, show the guess word
-        var debugElem = isDebugOn
-          ? React.createElement(
-            "div",
-            {
-              className: "display",
-              id: "debugText"
-            },
-            "The word to guess is: ",
-            React.createElement(
-              "span",
-              {
-                id: "wordToGuess",
-              },
-              wordToGuess
-            )
-          )
-        : null;
-        // Main title
-        var title = React.createElement(
-          'h1',
-          null,
-          "Wordle Redux - Assignment 6 - Dolan",
+        // Create show guess work, if Debug is on
+        var debugElem = isDebugOn ?? (
+          <div className="display" id="debugText">
+            The word to guess is:
+            <span>
+              {wordToGuess}
+            </span>
+          </div>
+        );
+        // Create Main title
+        var title =  (
+          <h1>
+            Wordle Redux #2 - Assignment 7 - Dolan
+          </h1>
         );
         // Return the header title container
         return (
-          React.createElement(
-            'div',
-            {className: 'header'},
-            title,
-            instruction,
-            debugElem
-          )
-        )
+          <div className="header">
+            {title}
+            {instruction}
+            {debugElem}
+          </div>
+        );
       }
 
        /**
@@ -209,47 +199,39 @@
        * ----------------------------
        */
       function Legend() {
-        // Right letter, right spot
-        var rightLetterRightSpot = React.createElement(
-          'span',
-          {className: "key-square rightLetterRightSpot"},
-          null
-        );
-        // Right letter, wrong spot
-        var rightLetterWrongSpot = React.createElement(
-          'span',
-          {className: "key-square rightLetterWrongSpot"},
-          null
-        );
-        // Wrong Letter
-        var wrongLetter = React.createElement(
-          'span',
-          {className: "key-square wrongLetter"},
-          null
-        );
-
-        var header = React.createElement(
-          'h4',
-          null,
-          "Color Legend"
-        );
-
-        // Return the header title container
+        var legendClasses = [
+          {
+            class: "rightLetterRightSpot",
+            text: "The letter is in the word in the right spot",
+          },
+          {
+            class: "rightLetterWrongSpot",
+            text: "The letter is in the word, but not this spot",
+          },
+          {
+            class: "wrongLetter",
+            text: "This letter is not part of the word",
+          },
+        ];
+        // Return the combined JSX
         return (
-          React.createElement(
-            'div',
-            {id: 'game-key'},
-            header,
-            rightLetterRightSpot,
-            "The letter is in the word in the right spot",
-            rightLetterWrongSpot,
-            "The letter is in the word, but not this spot",
-            wrongLetter,
-            "This letter is not part of the word"
-          )
-        )
+          <div id="game-key">
+            <h4>
+              Color Legend
+            </h4>
+            {legendClasses.map((item) => (
+              <>
+              {/* The color code box */}
+              <span id={item.class} />
+              {/* The color code description */}
+              {item.text}
+              </>
+            )
+            )}
+          </div>
+        );
+      };
 
-      }
        /**
        * ----------------------------
        * Component Square
@@ -286,19 +268,23 @@
       /**
        * ----------------------------
        * CLASS Guess Row
+       * Now extends a React.Component
        * ----------------------------
        */
-       class GuessRow {
+       class GuessRow extends React.Component {
         // The constructor for this class
-        constructor (rowNum, squareCount, wordToGuess, guessWord) {
+        constructor (props) {
+          super(props);
+          console.log("This", this);
+          const {rowNum, squareCount, wordToGuess, guessWord} = props;
           this.rowNum = rowNum;
           this.squareCount = squareCount;
           this.wordToGuess = wordToGuess;
           // Optional hard coding this for this assignment
           this.guessWord = guessWord;
         }
-        // A Class function to returning the REACT element
-        getElement() {
+        // The function to render the JSX of this component
+        render() {
           // A holder for the square elements
           var squareElems = [];
           // Create a Square object for for each square in the row
@@ -331,13 +317,13 @@
             );
           }
           // Return element
-          return React.createElement(
-            'div',
-            {className: 'guess-row',  key: this.rowNum},
-            squareElems,
-          );
-        }
-       }
+            return (
+            <div className="guess-row">
+              squareElems - TODO here
+            </div>
+          )
+        };
+      }
 
       /**
        * ----------------------------
@@ -345,45 +331,50 @@
        * props:{dimension}
        * ----------------------------
        */
-       function Board(props) {
-         // Destructure props
-         const {
+       function Board({
           wordSize,
-          maxGuesses,
+          maxGuesses = 6,
           wordToGuess,
           guesses,
           isDebugOn = false,
-        } = props;
-         // attributes
-         this.maxGuesses = maxGuesses;
-         // Create all the row elements
-         this.rows = [];
-         for (let rowNum = 0; rowNum < maxGuesses; rowNum++) {
-           var row = new GuessRow(rowNum, wordSize, wordToGuess, guesses[rowNum])
-           this.rows.push(row.getElement());
-         }
-         // Create the square row container
-         this.rowContainer = (
-          React.createElement(
-                "div",
-                {className: "row-container"},
-                this.rows
-              )
-            );
-         // Create keyboard
-         this.keyboard = new Keyboard({wordToGuess, guesses});
-         // Create Title
-         this.title = new Title({isDebugOn, wordToGuess});
-         // Create Legend
-         this.legend = new Legend();
-
-         // Return game board with it's nested components
-         return React.createElement(
-            'div',
-            {id: 'game-board'},
-            this.title, this.rowContainer, this.keyboard, this.legend
-          );
+       }) {
+        // Create all the row elements
+        var rows = [];
+        for (let rowNum = 0; rowNum < maxGuesses; rowNum++) {
+          var row = new GuessRow({
+            rowNum,
+            wordSize,
+            wordToGuess,
+            guessWord: guesses[rowNum],
+          })
+          // rows.push(row.getElement());
+          rows.push(
+            <div>empty</div>
+          )
         }
+        // Create the square row container
+        var rowContainer = (
+          <div className="row-container">
+            {rows}
+          </div>
+        );
+        // Create keyboard
+        var keyboard = new Keyboard({wordToGuess, guesses});
+        // Create Title
+        var title = new Title({isDebugOn, wordToGuess});
+        // Create Legend
+        var legend = new Legend();
+
+        // Return game board with it's nested components
+        return (
+        <div id="game-board">
+          {title}
+          {rowContainer}
+          {keyboard}
+          {legend}
+        </div>
+        )
+      }
 
       /**
        * ----------------------------
@@ -452,20 +443,17 @@
        // ----------------------------
        // Game entry
        // ----------------------------
-       ReactDOM.render(
-        React.createElement(
-          Board,
-          {
-            wordSize: WORD_SIZE,
-            maxGuesses: MAX_GUESSES,
-            wordToGuess: WORD_TO_GUESS,
-            guesses: THREE_GUESSES,
-            isDebugOn: true,
-          },
-          null
-        ),
-        myapp
-      );
+
+       const game = (
+        <Board
+          wordSize={WORD_SIZE}
+          maxGuesses={MAX_GUESSES}
+          wordToGuess={WORD_TO_GUESS}
+          guesses={THREE_GUESSES}
+          isDebugOn={IS_DEBUG_ON}
+        />
+       );
+      ReactDOM.render(game, myapp);
      </script>
     </body>
 </html>
