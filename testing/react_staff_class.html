@@ -1,0 +1,68 @@
+
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script><title>React Try It - 1</title>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<style type="text/css">
+</style>
+</head>
+
+<body>
+	<div id="myapp"></div>
+
+<script type='text/babel'>
+
+
+function StaffMember(name, title)  //staff member object
+{
+    this.name = name;
+    this.title = title;
+}
+
+function StaffName({name})
+{
+     return <h3>{name}</h3>
+}
+
+function StaffTitle({title})
+{
+     return <h4>*{title}</h4>
+}
+
+function StaffMember5({member})
+{
+     return <div>
+               <StaffName name={member.name}></StaffName>
+               <StaffTitle title={member.title}></StaffTitle>
+           </div>
+}
+
+var members =   //3 objects
+[   new StaffMember("Pete", "Manager1"),
+    new StaffMember("Jill", "Manager2"),
+    new StaffMember("Pat", "Manager3")
+]
+
+
+function Team({members})
+{
+     return <div>
+               {members.map((m, i) =>
+                    <StaffMember5 member={m} key={i}></StaffMember5>)}
+            </div>
+}
+
+/*var oneStaff =<div><h1>My Staff Member</h1>
+           <StaffMember5 member={new StaffMember("Pat Jones", "Dept Head5")}>
+           </StaffMember5>
+           </div>
+ // just one staff member
+*/
+var staff=<Team members={members}></Team>
+ReactDOM.render(staff, myapp);
+</script>
+</body>
+</html>

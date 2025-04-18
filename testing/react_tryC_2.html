@@ -1,0 +1,58 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script><title>React Try It - 1</title>
+<style type="text/css">
+</style>
+</head>
+
+<body>
+	<div id="myapp"></div>
+<script>
+//props:  name
+function StaffMember(props)
+{
+     return React.createElement("h3", null, props.name )
+}
+
+function StaffName(props)
+{
+     return React.createElement("h3", null, props.name)
+}
+
+function StaffTitle(props)
+{
+     return React.createElement("h4", null, props.title )
+}
+
+//props name, title
+function StaffMember2(props)
+{
+     return React.createElement("div", null, 
+                React.createElement("h3", null, props.name ),
+                React.createElement("h4", null, "Title: " + props.title )
+        )
+}
+
+//props name, title
+function StaffMember3(props)
+{
+     return React.createElement("div", null, 
+                React.createElement(StaffName, {name: props.name}, null),
+                React.createElement(StaffTitle, {title: props.title}, null )
+        )
+}
+
+
+
+var staff1 = React.createElement(StaffMember, {name: "Pat Jones"}, null)
+var staff2 = React.createElement(StaffMember2, {name: "Pat Jones", title: "Dept Head"}, null)
+var staff3 = React.createElement(StaffMember3, {name: "Pat Jones", title: "Dept Head2"}, null)
+
+ReactDOM.render(staff3, myapp);	
+</script>	
+</body>
+</html>
+	

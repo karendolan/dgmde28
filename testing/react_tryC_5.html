@@ -1,0 +1,65 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script><title>React Try It - 1</title>
+<style type="text/css">
+</style>
+</head>
+
+<body>
+	<div id="myapp"></div>
+<script>
+
+function StaffMember(name, title)
+{
+    this.name = name;
+    this.title = title;
+}
+
+
+function StaffName({name})
+{
+     return React.createElement("h3", null, name)
+}
+
+function StaffTitle({title})
+{
+     return React.createElement("h4", null, title )
+}
+
+
+function StaffMember5({member})
+{
+     return React.createElement("div", null, 
+                React.createElement(StaffName, {name: member.name}, null),
+                React.createElement(StaffTitle, {title: member.title}, null )
+        )
+}
+
+
+
+var staff = React.createElement(StaffMember5, 
+                    {member: new StaffMember("Pat Jones", "Dept Head5")}, null)
+
+var members = 
+[new StaffMember("Pete", "Manager1"),
+    new StaffMember("Jill", "Manager2"),
+    new StaffMember("Pat", "Manager3")
+]
+
+function Team({members})
+{
+    return React.createElement("div", null, 
+                members.map((m, i)=> 
+                    React.createElement(StaffMember5, {member:m, key:1}, null)), 
+                )
+}
+
+var staff = React.createElement(Team, {members: members}, null)
+ReactDOM.render(staff, myapp);	
+</script>	
+</body>
+</html>
+	

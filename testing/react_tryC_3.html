@@ -1,0 +1,41 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script><title>React Try It - 1</title>
+<style type="text/css">
+</style>
+</head>
+
+<body>
+	<div id="myapp"></div>
+<script>
+//props:  name
+
+function StaffName({name})
+{
+     return React.createElement("h3", null, name)
+}
+
+function StaffTitle({title})
+{
+     return React.createElement("h4", null, title )
+}
+
+//props name, title
+function StaffMember4({name, title})
+{
+     return React.createElement("div", null, 
+                React.createElement(StaffName, {name: name}, null),
+                React.createElement(StaffTitle, {title: title}, null )
+        )
+}
+
+var staff4 = React.createElement(StaffMember4, {name: "Tom Jones", title: "Dept Head4"}, null)
+
+ReactDOM.render(staff4, myapp);	
+</script>	
+</body>
+</html>
+	
