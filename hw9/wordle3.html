@@ -393,11 +393,9 @@
         KEYBOARD_KEYS.forEach((rowStr, rowNum) => {
           var keys = [];
           rowStr.split('').forEach((letter, index) => {
-            var props = {
-                  key: index,
-                  className:'keyboard-key',
-                  id: `key-${letter}`
-                };
+            const id = `key-${letter}`;
+            // The classname may be modified with a guess color class
+            let className = 'keyboard-key';
             // If a guess word exists for this row,
             // update the square with the letter and code
             if (guesses && guesses.length > 0) {
@@ -406,42 +404,46 @@
                 // Is this letter also in the word to guess?
                 if (wordToGuess.includes(letter)) {
                   var isMatch = guesses.find(guess => {
-                    var m = Array.from(guess).find((char, index) => {
-                      // console.log("TESTING ", char, letter, wordToGuess[index] );
-                      return char === letter && wordToGuess[index] === letter
+                    var m = Array.from(guess).find((char, i) => {
+                      // .log("TESTING ", char, letter, wordToGuess[index] );
+                      return char === letter && wordToGuess[i] === letter
                     })
                     return m;
                   });
-                  props.className += isMatch ? " rightLetterRightSpot" : " rightLetterWrongSpot";
-                  // console.log(" MATCH? ",  props.className, letter, wordToGuess);
+                  className += isMatch ? " rightLetterRightSpot" : " rightLetterWrongSpot";
+                  // console.log(" MATCH? ",  className, letter, wordToGuess);
                 } else {
-                  props.className += " wrongLetter";
+                  className += " wrongLetter";
                 }
               }
             }
             // push the new keyboard key
             keys.push(
-              React.createElement(
-                'div',
-                props,
-                letter.toUpperCase())
-            );
-          })
+              <div
+                key={index}
+                className={className}
+              >
+                {letter.toUpperCase()}
+              </div>
+            )
+          });
           // push the new keyboard row
           rows.push(
-            React.createElement(
-              'div',
-              {
-                key: rowNum,
-                className: 'keyboard-row',
-                id: `keyboard-row-${rowNum}`
-              },
-              keys
-            )
-          );
-        })
-         // Return keyboard with it's nested rows
-         return React.createElement('div', {id: 'keyboard'}, rows);
+            <div
+              key={rowNum}
+              className={'keyboard-row'}
+              id={`keyboard-row-${rowNum}`}
+            >
+             {keys}
+            </div>
+          )
+        });
+        // Return keyboard with it's nested rows
+        return (
+          <div id="keyboard">
+            {rows}
+          </div>
+        )
        }
 
        // ----------------------------
