@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DGMD E-28 Testing</title>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style type="text/css">
+    h1#main {
+      font-size:2rem;
+      color: #377D5B;
+    }
+  </style>
+</head>
+<body>
+  <div id="myapp">
+  </div>
+  <script type="text/babel">
+    var name = "Harry";
+    var message1 = "Four score";
+    var message2 = "and 7 years ago";
+    var speech = (
+      <div>
+        <h1 id="main"> My Speech</h1>
+        <div>
+          {message1}
+        </div>
+        <div>
+          {message2}
+        </div>
+      </div>
+    );
+    ReactDOM.render(speech, myapp);
+  </script>
+</body>
+</html>

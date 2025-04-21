@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DGMD E-28 Testing</title>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style type="text/css">
+    h1#main {
+      font-size:2rem;
+      color: #377D5B;
+    }
+  </style>
+</head>
+<body>
+  <div id="myapp">
+  </div>
+  <script type="text/babel">
+    function PageTitle(props) {
+      const {tag, children} = props;
+      return (
+        <>
+          <tag>
+            {children}
+          </tag>
+        </>
+      )
+    }
+
+    const myPage = (
+      <PageTitle
+        tag="h1"
+      >
+      hi all yay
+      </PageTitle>
+    );
+
+    ReactDOM.render(myPage, myapp);
+  </script>
+</body>
+</html>
