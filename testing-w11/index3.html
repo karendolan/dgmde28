@@ -18,42 +18,30 @@
   <div id="myapp">
   </div>
   <script type="text/babel">
-    function PageTitle(props) {
-      const {tag, children} = props;
-      return (
-        <>
-          <tag>
-            {children}
-          </tag>
-        </>
-      )
-    }
 
-    function MyButton1() {
-      const speak=()=> alert("hey");
-      return <button onClick={speak}>Press Me</button>
-    }
+    // Fortunes
+    var fortunes = [
+      "Stay healthy. Walk a mile.",
+      "Sing everyday and chase the mean blues away.",
+      "Goodness is the only investment that never fails."
+    ];
 
-    function MyButton2() {
-      const speak=(name, e)=> {
-        alert(`Hi ${name} the button was: ${e.type}`)
+    function MyButton({label}) {
+      const randomFortune = () => {
+        var num = Math.floor(Math.random() * fortunes.length);
+        var fortune = fortunes[num];
+        alert(fortune);
       }
-      return <button onClick={(e) => speak("Fran", e)}>Press Me</button>
+      return <button onClick={randomFortune}>{label}</button>
     }
 
-    const button = <MyButton2 />;
+    const button = <MyButton label="Fortune Cookie" />;
 
     const myPage = (
-      <PageTitle
-        tag="h1"
-      >
-      hi all yay
       <div>
         {button}
       </div>
-      </PageTitle>
     );
-
     ReactDOM.render(myPage, myapp);
   </script>
 </body>
