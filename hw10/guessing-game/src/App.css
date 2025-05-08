@@ -1,0 +1,93 @@
+/* Some setting recommended in Class */
+
+html {
+  height: 100%;
+}
+
+body {
+  display: block;
+  place-items: normal;
+  min-width: auto;
+  min-height: auto;
+  height: 100%;
+  margin: auto;
+  background-color:#6A8C69;
+  font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+}
+
+.Game-guess-input, input {
+  margin-left: 1rem;
+  margin-bottom: 1rem;
+}
+
+
+#main-nav a {
+  padding: .4rem;
+  text-decoration: none;
+  color: black;
+}
+
+#main-nav a:hover {
+  color: #53736A;
+}
+
+.bold, span.bold a {
+  font-weight: bold;
+  color: #A8B545 !important;
+}
+
+
+#root, #root > div {
+  height: 100%;
+}
+
+.gameName {
+  color: #F28C28;
+  text-wrap: nowrap;
+  font-weight: bold;
+}
+
+.gameName.title {
+  color: #FF5F1F;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.page {
+  margin: auto;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  max-width: 600px;
+  padding-left: 2rem;
+  padding-right: 2rem;
+  color: #024554;
+  background-color: #e0dfd2; /* #C2C0A6; */
+}
+
+.headElem {
+  padding: 1rem;
+}
+
+.Game-guess-input {
+  height: 1.3rem;
+  width: 4rem;
+}
+
+.center {
+  margin-left: auto;
+  margin-right: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.inputForm {
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+}
