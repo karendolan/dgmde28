@@ -1,0 +1,75 @@
+html {
+  height: 100%;
+}
+
+body {
+  display: block;
+  place-items: normal;
+  min-width: auto;
+  min-height: auto;
+  height: 100%;
+  margin: auto;
+  color: white;
+  background-color:#6A8C69;
+  font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+}
+
+#root {
+  max-width: 800px;
+  height: 100%;
+  margin: 0 auto;
+  padding-left: 2rem;
+  padding-right: 2rem;
+  text-align: center;
+  background-color: #53736A;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.center {
+  margin-left: auto;
+  margin-right: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.inputForm {
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Green Theme */
+.green1 {
+  background-color: #024554;
+}
+
+.green2 {
+    background-color: #53736A;
+}
+
+.green2 {
+    background-color: #6A8C69;
+}
+
+.green2 {
+    background-color: #A8B545;
+}
+
+.green2 {
+    background-color: #C2C0A6;
+}
+
+.orange {
+  background-color: #F28C28;;
+}
+
+.bold, span.bold a {
+  font-weight: bold;
+  color: #A8B545 !important;
+}
