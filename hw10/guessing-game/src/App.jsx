@@ -17,9 +17,9 @@ function MyRouteApp() {
   return (
     <div>
       <Routes>
-        <Route path="./" element={<Game />} />
-        <Route path="./stats" element={<Stats />} />
-        <Route path="./settings" element={<Settings />} />
+        <Route path="/" element={<Game />} />
+        <Route path="/stats" element={<Stats />} />
+        <Route path="/settings" element={<Settings />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </div>
@@ -33,13 +33,13 @@ function Nav(props) {
   return (
     <div id='main-nav'>
       <span className={curPage === 'Game' ? 'bold' : ''}>
-        <Link to="./">Game</Link>
+        <Link to="/">Game</Link>
       </span>
       <span className={curPage === 'Stats' ? 'bold' : ''}>
-        <Link to="./stats">Stats</Link>
+        <Link to="/stats">Stats</Link>
       </span>
       <span className={curPage === 'Settings' ? 'bold' : ''}>
-        <Link to="./settings">Settings</Link>
+        <Link to="/settings">Settings</Link>
       </span>
     </div>
   );
