@@ -20,6 +20,8 @@ function MyRouteApp() {
         <Route path="/" element={<Game />} />
         <Route path="/stats" element={<Stats />} />
         <Route path="/settings" element={<Settings />} />
+        <Route path="dist" element={<Game />} />
+        <Route path="dist/" element={<Game />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </div>
