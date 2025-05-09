@@ -1,6 +1,6 @@
 {
   "name": "guessing-game",
-  "homepage": "https://karendolan.github.io/dgmde28/hw10/guessing-game/",
+  "homepage": "https://karendolan.github.io/dgmde28/hw10/guessing-game/dist/",
   "private": true,
   "version": "0.0.0",
   "type": "module",
