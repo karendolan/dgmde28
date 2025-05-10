@@ -26,48 +26,48 @@ export default function Choose() {
 
   // currently select row
   console.log("moveItem", moveItem?.id, moveItem);
-  const rowMoveId = moveItem ? `row-opt-${moveItem['id']}` : undefined;
+  const rowMoveId = moveItem ? moveItem.id : undefined;
+
 
   // Track when item is moving
   useEffect(() => {
     // On move event
     const moving = (e) => {
-      console.log('IN MOVE');
+      console.log('IN MOVE: ', e);
       e.preventDefault();
-      console.log('Moving ', e.clientX, e.clientY, moveItem.style, moveItem.style['x'], moveItem.style['y']  );
-      moveItem.style['x'] = e.clientX;
-      moveItem.style['y'] = e.clientY;
-      setMovePos({
-        x: e.clientX,
-        y: e.clientY
-      })
+      if (movePos) {
+        setMovePos({
+          top: movePos.top - e.pageX,
+          left: movePos.left - e.pageY
+        })
+      }
     };
 
     // Adding event listeners
     if (moveItem) {
-      const position = moveItem.getBoundingClientRect();
-      console.log('Initial div position is ', position)
-      setMovePos({
-        x: position.x,
-        y: position.y,
-      })
       console.log('ADDING EVENT LISTENER to ', moveItem)
       moveItem.addEventListener('mousemove', moving);
     }
-    // Remove when done
+    // Remove before remove item is removed
     return () => {
       if (moveItem) {
         console.log('Removing EVENT LISTENER from ', moveItem)
         moveItem.removeEventListener('mousemove', moving);
       }
     };
-  }, [moveItem]);
+  }, [moveItem, movePos]);
 
   function moveStart(e) {
     e.preventDefault();
     const item = e.target.closest('.Choose-option-component');
     console.log('Touching!!!!', item, e.target, e.type, e.movementX, e.movementY);
     item.classList.add('moving');
+    const position = item.getBoundingClientRect();
+    console.log('Start Position', position);
+    setMovePos({
+        top: position.y,
+        left: position.x,
+    })
     setMoveItem(item);
   }
 
@@ -76,7 +76,7 @@ export default function Choose() {
     console.log('Ending move!!!!', moveItem, e.type, e.movementX, e.movementY);
     moveItem.classList.remove('moving');
     // remove item
-    setMoveItem();
+    setMoveItem(undefined);
   }
 
   // Make a JSX collection of choices
@@ -94,8 +94,9 @@ export default function Choose() {
           className="Choose-option-component"
           onMouseDown={moveStart}
           onMouseUp={moveEnd}
-          style={rowMoveId === rowId ? {position: 'absolute', top: movePos.x, right: movePos.y} : undefined}
+          style={rowMoveId === rowId && movePos ? {position: 'absolute', top: movePos.top, left: movePos.left} : undefined}
         >
+          Position is {movePos ? `left = ${movePos.left} top = ${movePos.top}`: ''}
           <ChoiceComponent
             topic = {currTopic}
             subtopic = {subtopic}
@@ -106,7 +107,6 @@ export default function Choose() {
             life_span = {life_span}
             wikipedia_url =  {wikipedia_url}
           />
-          Row id is {rowId}, selected Id is {rowMoveId}
           <div className="Choose-notes">
             <label>Notes:
               <textarea type="textarea" onChange={((e) => c.addNote(e.target.value))}>
