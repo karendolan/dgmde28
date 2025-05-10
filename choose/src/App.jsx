@@ -35,7 +35,7 @@ function App() {
 
   function getOptions(topic) {
     console.log('catOptionData: ', catOptionData)
-    const options = catOptionData.map((o) => {
+    const options = catOptionData.map((o, i) => {
       const {id, name, description, image, temperament, origin, life_span, wikipedia_url} = o;
       return new OptionObject ({
         id,
@@ -43,10 +43,11 @@ function App() {
         subtopic: name,
         description,
         image,
-        attribute: {temperament},
+        attribute: temperament,
         origin,
         life_span,
         wikipedia_url,
+        position: i + 1
       });
     })
     console.log('Objects ', options);

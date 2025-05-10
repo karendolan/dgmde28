@@ -10,10 +10,7 @@
   background-color: black;
   cursor: grab;
   position: 'absolute';
-  x: 0;
-  y: 0;
 }
-
 
 .move-indicator {
   height: 1rem;

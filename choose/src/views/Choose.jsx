@@ -65,7 +65,7 @@ export default function Choose() {
     const position = item.getBoundingClientRect();
     console.log('Start Position', position);
     setMovePos({
-        top: position.y,
+        top: position.y + window.scrollY,
         left: position.x,
     })
     setMoveItem(item);
@@ -74,28 +74,75 @@ export default function Choose() {
   function moveEnd(e) {
     e.preventDefault();
     console.log('Ending move!!!!', moveItem, e.type, e.movementX, e.movementY);
+    // remove moving class designation
     moveItem.classList.remove('moving');
+
+    const option = choiceOptions.find(o => moveItem.id == `row-opt-${o.id}`);
+    const top = option.getBoundingClientRect + window.scrollY;
+    // Update option position
+
+    const optionElems = document.getElementsByClassName('Choose-option-component');
+    console.log('optionElems: ', optionElems);
+    let lowerElemId;
+    for (e of optionElems) {
+      if (e.id !== rowMoveId) {
+        const eTop = e.getBoundingClientRect + window.scrollY;
+        if (eTop > top) {
+          lowerElemId = e.id;
+        }
+      }
+    }
+    if (!lowerElemId) {
+      choiceOptions.forEach(o => {
+        o.position += o.position;
+      });
+      option.setPosition(1);
+    }
+    else {
+      const lowerOpt = choiceOptions.find((o) => {
+         return lowerElemId === `row-opt-${o.id}`
+      })
+      if (lowerOpt) {
+        const lowerPos = lowerOpt.position;
+        choiceOptions.forEach(o => {
+          if (lowerPos >= o.position) {
+            o.position += o.position;
+          }
+        });
+        option.setPosition(lowerPos);
+      }
+    }
+
     // remove item
     setMoveItem(undefined);
   }
+
+
+  console.log("Before sort ", choiceOptions);
+  // sort
+  choiceOptions.sort((a, b) => {
+    return a.position - b.position;
+  })
+
+  console.log("AFTER sort ", choiceOptions);
 
   // Make a JSX collection of choices
   console.log('Rerendering list: ');
   const choices = choiceOptions.map((c) => {
     console.log('IN RENDER for ', c.id);
-    const {id, subtopic, temperament, origin, description, life_span, wikipedia_url, image, note, order} = c;
+    const {id, subtopic, temperament, origin, description, life_span, wikipedia_url, image, note, position} = c;
     const rowId = `row-opt-${id}`;
     return (
       <div key={id}>
         <div className="move-indicator" />
         <div
           id={rowId}
-          className="Choose-option-component"
+          className={`Choose-option-component position-${position}`}
           onMouseDown={moveStart}
           onMouseUp={moveEnd}
           style={rowMoveId === rowId && movePos ? {position: 'absolute', top: movePos.top, left: movePos.left} : undefined}
         >
-          Position is {movePos ? `left = ${movePos.left} top = ${movePos.top}`: ''}
+          {position}
           <ChoiceComponent
             topic = {currTopic}
             subtopic = {subtopic}
@@ -105,6 +152,7 @@ export default function Choose() {
             origin = {origin}
             life_span = {life_span}
             wikipedia_url =  {wikipedia_url}
+            position = {position}
           />
           <div className="Choose-notes">
             <label>Notes:
@@ -112,11 +160,6 @@ export default function Choose() {
                 {note}
               </textarea>
             </label>
-            {order && (
-              <div>
-                Preference ({order})
-              </div>
-            )}
           </div>
         </div>
       </div>
