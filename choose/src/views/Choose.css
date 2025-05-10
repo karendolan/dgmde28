@@ -4,12 +4,19 @@
   touch-action: none;
   border-radius: 2rem;
   padding: 1rem;
+  transition: background-color 1s ease-out;
+}
+
+.Choose {
+  max-width: 900px;
+  height: 100%;
 }
 
 .moving {
   background-color: black;
   cursor: grab;
   position: 'absolute';
+  max-width: 850px;
 }
 
 .move-indicator {
@@ -23,8 +30,20 @@
 
 .Choose-option-component .move-indicator:hover {
   height: 1rem;
-  width: 100%;
   background-color: yellow;
   transition: background-color 1s linear;
   animation-duration: 1s;
+  transition: background-color 1000ms linear;
+
+}
+
+.Choose-notes-textarea {
+  border: 2px solid;
+  border-radius: 4px;
+  box-sizing: border-box;
+  font-family:Arial, Helvetica, sans-serif;
+}
+
+.Choose-notes-textarea.noted {
+  background-color: #C2C0A6;
 }

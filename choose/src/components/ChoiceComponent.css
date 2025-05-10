@@ -16,3 +16,8 @@
 .ChoiceComponent-image {
   border-radius: 2.5rem;
 }
+
+.ChoiceComponent-wikipedia {
+  align-self: end;
+  float: right;
+}

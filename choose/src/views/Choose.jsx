@@ -60,10 +60,8 @@ export default function Choose() {
   function moveStart(e) {
     e.preventDefault();
     const item = e.target.closest('.Choose-option-component');
-    console.log('Touching!!!!', item, e.target, e.type, e.movementX, e.movementY);
     item.classList.add('moving');
     const position = item.getBoundingClientRect();
-    console.log('Start Position', position);
     setMovePos({
         top: position.y + window.scrollY,
         left: position.x,
@@ -73,10 +71,8 @@ export default function Choose() {
 
   function moveEnd(e) {
     e.preventDefault();
-    console.log('Ending move!!!!', moveItem, e.type, e.movementX, e.movementY);
     // remove moving class designation
     moveItem.classList.remove('moving');
-
     const option = choiceOptions.find(o => moveItem.id == `row-opt-${o.id}`);
     const top = moveItem.getBoundingClientRect().y + window.scrollY;
     const optionElems = document.getElementsByClassName('Choose-option-component');
@@ -84,7 +80,6 @@ export default function Choose() {
     for (e of optionElems) {
       if (e.id !== rowMoveId) {
         const eTop = e.getBoundingClientRect().y + window.scrollY;
-        console.log('KAREN --- Element id ', e.id, 'moved item id ', rowMoveId, ' Elem top: ', eTop, ' moved top', top);
         if (eTop > top) {
           lowerElemId = e.id;
           break;
@@ -113,11 +108,9 @@ export default function Choose() {
       const lowerOpt = choiceOptions.find((o) => {
          return lowerElemId === `row-opt-${o.id}`
       })
-      console.log("Lower Option: ", lowerOpt.subtopic)
       if (lowerOpt) {
         let isMoveUpdated = false;
         const lowerPos = lowerOpt.position;
-        console.log("Lower Option: ", lowerOpt.subtopic, ' pos ', lowerPos)
         // With the assumption that these are in order, except for the moved item
         choiceOptions.forEach(o => {
           // Bump all lower options down a notch
@@ -130,7 +123,6 @@ export default function Choose() {
           }
           if (o.id !== option.id) {
             o.setPosition(count++);
-            console.log("SSS Set option ", o.subtopic, o.position);
           }
         });
         // Set this option to lower position
@@ -179,9 +171,19 @@ export default function Choose() {
             wikipedia_url =  {wikipedia_url}
             position = {position}
           />
-          <div className="Choose-notes">
+          <div className="Choose-notes" onMouseDown={((e) => {
+            e.stopPropagation();
+          })}
+          onMouseUp={((e) => {
+            e.stopPropagation();
+          })}
+          >
             <label>Notes:
-              <textarea type="textarea" onChange={((e) => c.addNote(e.target.value))}>
+              <textarea
+                className={`Choose-notes-textarea ${note ? 'noted' : ''}`}
+                rows="9" type="textarea"
+                onChange={((e) => c.addNote(e.target.value))}
+              >
                 {note}
               </textarea>
             </label>
@@ -197,7 +199,7 @@ export default function Choose() {
       <Header
         title="Choose"
       />
-      <div className='center'>
+      <div className='Choose center'>
         {choices}
       </div>
     </div>
