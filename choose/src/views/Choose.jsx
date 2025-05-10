@@ -4,7 +4,7 @@ import { useContext } from 'react';
 import ChooseContext from '../objects/ChooseContext';
 // Import component
 import Header from '../components/Header';
-import ChoiceItem from '../components/ChoiceItem';
+import ChoiceComponent from '../components/ChoiceComponent';
 
 // Import the style
 import './Choose.css';
@@ -26,7 +26,7 @@ export default function Choose() {
     const {name, temperament, origin, description, life_span, wikipedeia_url, image, note} = c;
     return (
       <div className="Choose-option" key={name} >
-        <ChoiceItem
+        <ChoiceComponent
           topic = {currTopic}
           subtopic = {name}
           description = {description}
@@ -37,8 +37,7 @@ export default function Choose() {
           wikipedeia_url =  {wikipedeia_url}
         />
         <label>Notes:
-          <textarea type="textarea" onChange={((e) => c.addNote(e.target.value))}
-          >
+          <textarea type="textarea" onChange={((e) => c.addNote(e.target.value))}>
             {note}
           </textarea>
         </label>

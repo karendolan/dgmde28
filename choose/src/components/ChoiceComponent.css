@@ -1,18 +1,18 @@
-.ChoiceItem-container {
+.ChoiceComponent-container {
   display: flex;
   margin-top: 1rem;
 }
 
-.ChoiceItem-image-block {
+.ChoiceComponent-image-block {
   flex-grow: 1;
   min-width: 180px;
 }
 
-.ChoiceItem-desc-block {
+.ChoiceComponent-desc-block {
   text-align: start;
   margin: 1rem;
 }
 
-.ChoiceItem-image {
+.ChoiceComponent-image {
   border-radius: 2.5rem;
 }
