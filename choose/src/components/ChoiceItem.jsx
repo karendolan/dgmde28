@@ -22,7 +22,7 @@ export default function ChoiceItem(props) {
   return (
     <div className='ChoiceItem-container'>
       <div className='ChoiceItem-image-block'>
-        <img height={100} src={image.url}/>
+        <img className='ChoiceItem-image' height={100} src={image.url}/>
         <div>{subtopic}</div>
         <div>{origin}</div>
         <div>Lives {life_span} yrs</div>

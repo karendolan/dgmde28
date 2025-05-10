@@ -5,6 +5,9 @@
 import { useState } from 'react'
 import { BrowserRouter as Router } from 'react-router-dom';
 
+// Import objects
+import OptionObject from './objects/OptionObject';
+
 // Import functions
 import ChooseRouter from './components/ChooseRouter';
 import ChooseContext from './objects/ChooseContext';
@@ -18,15 +21,36 @@ import './App.css'
 // ----------------------------------
 // The main App entry point
 function App() {
+
+  const initialTopic = 'cats';
   // Set defaults in the initial context
   var [context, setContext] = useState({
     // The Option objects to choose from
-    choiceOptions: catOptionData,
+    choiceOptions: getOptions(initialTopic),
     // Stock main topic options
-    topicOptions: ['cats', 'dogs', 'cars', 'trees', 'fruit'],
+    topicOptions: [initialTopic, 'dogs', 'cars', 'trees', 'fruit'],
     // The initial topic associated to the subtopics
-    currTopic: 'cats',
+    currTopic: initialTopic,
   });
+
+  function getOptions(topic) {
+    console.log('catOptionData: ', catOptionData)
+    const options = catOptionData.map((o) => {
+      const {name, description, image, temperament, origin, life_span, wikipedeia_url} = o;
+      return new OptionObject ({
+        topic,
+        subtopic: name,
+        description,
+        image,
+        attribute: {temperament},
+        origin,
+        life_span,
+        wikipedeia_url,
+      });
+    })
+    console.log('Objects ', options);
+    return options;
+  }
 
   function handleUpdate(newContext) {
     setContext(newContext);

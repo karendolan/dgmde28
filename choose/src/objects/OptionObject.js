@@ -2,9 +2,9 @@
  * The Option class holds each subtopic option
  * The user can order this subtopic and add a note about it
  */
-export default class Option {
+export default class OptionObject {
   // Constructor contains the 2 main components of the option
-  constructor(topic, subtopic, attribute, origin, description, life_span, wikipedeia_url, image) {
+  constructor({topic, subtopic, attribute, origin, description, life_span, wikipedeia_url, image}) {
     this.topic = topic;
     this.subtopic = subtopic;
     this.description = description;
@@ -16,10 +16,12 @@ export default class Option {
   }
   // User adds  comment about this option
   addNote(note) {
+    console.log('Updating note to ', note);
     this.note = note;
   }
   // Set preferred ordering scale 1-5
   setOrder(order){
+    console.log('Updating order to ', order);
     this.order = order;
   }
 }

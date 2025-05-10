@@ -1,27 +1,17 @@
-html {
-  height: 100%;
-}
-
 body {
-  display: block;
-  place-items: normal;
-  min-width: auto;
-  min-height: auto;
-  height: 100%;
-  margin: auto;
+  place-items: top;
   color: white;
-  background-color:#6A8C69;
+  background-color:#C2C0A6;
   font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
 }
 
 #root {
-  max-width: 600px;
-  height: 100%;
   margin: 0 auto;
   padding-left: 2rem;
   padding-right: 2rem;
+  vertical-align: top;
   text-align: center;
-  background-color: #53736A;
+  background-color: #024554;
 }
 
 .header {

@@ -12,3 +12,7 @@
   text-align: start;
   margin: 1rem;
 }
+
+.ChoiceItem-image {
+  border-radius: 2.5rem;
+}
