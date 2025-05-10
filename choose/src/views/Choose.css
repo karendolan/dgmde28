@@ -4,6 +4,12 @@
   touch-action: none;
 }
 
+.moving {
+  position: 'absolute';
+  background-color: black;
+  cursor: 'grab';
+}
+
 
 .move-indicator {
   height: 1rem;

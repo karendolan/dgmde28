@@ -40,30 +40,30 @@ export default function Choose() {
     };
   }, [moveItem]);
 
-
   function moveStart(e) {
     e.preventDefault();
-    console.log('Touching!!!!', e.target, e.type, e.movementX, e.movementY);
-    setMoveItem(e.target);
-
+    const item = e.target.closest('.Choose-option-component');
+    console.log('Touching!!!!', item, e.target, e.type, e.movementX, e.movementY);
+    item.classList.add('moving');
+    setMoveItem(item);
   }
 
   function moveEnd(e) {
     e.preventDefault();
-    console.log('Ending move!!!!', e.type, e.movementX, e.movementY);
+    console.log('Ending move!!!!', moveItem, e.type, e.movementX, e.movementY);
+    moveItem.classList.remove('moving');
     setMoveItem();
   }
 
   // Make a JSX collection of choices
+  console.log('Rerendering list: ', choiceOptions);
   const choices = choiceOptions.map((c) => {
     const {id, subtopic, temperament, origin, description, life_span, wikipedia_url, image, note, order} = c;
-    console.log('Rerendering list: subtopic: ', c, subtopic, id);
     return (
-      <div>
+      <div key={id}>
       <div className="move-indicator" />
       <div
         className="Choose-option-component"
-        key={id}
         onMouseDown={moveStart}
         onMouseUp={moveEnd}
       >
