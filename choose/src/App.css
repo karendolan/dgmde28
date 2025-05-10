@@ -1,11 +1,10 @@
 body {
-  place-items: top;
-  color: white;
-  background-color:#C2C0A6;
   font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
 }
 
 #root {
+  color: white;
+  background-color: #024554;
   margin: 0 auto;
   padding-left: 2rem;
   padding-right: 2rem;

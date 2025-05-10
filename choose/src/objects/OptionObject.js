@@ -24,7 +24,7 @@ export default class OptionObject {
   }
   // Set position within the other options
   setPosition(position){
-    console.log('Updating position to ', position);
+    console.log('Updating position of ', this.subtopic ,' to ', position);
     this.position = position;
   }
   // Set preferred ordering scale 1-5

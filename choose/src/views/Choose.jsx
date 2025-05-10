@@ -79,12 +79,7 @@ export default function Choose() {
 
     const option = choiceOptions.find(o => moveItem.id == `row-opt-${o.id}`);
     const top = moveItem.getBoundingClientRect().y + window.scrollY;
-    // -----------
-    console.log("top boundig box ", top )
-    // Update option position
-
     const optionElems = document.getElementsByClassName('Choose-option-component');
-    console.log('optionElems: ', optionElems);
     let lowerElemId;
     for (e of optionElems) {
       if (e.id !== rowMoveId) {
@@ -97,32 +92,51 @@ export default function Choose() {
       }
     }
     console.log('lowerElemId: ', lowerElemId, option.id);
+    // Move the item to the bottom of the list
     if (!lowerElemId) {
-      let count = 2;
+      let count = 1;
       choiceOptions.forEach(o => {
-        // This item is count 1
         console.log('Comparing ids ', o.id, option.id);
         if (o.id === option.id) {
-          o.position = 1;
+          o.setPosition(choiceOptions.length);
+        } else {
+          // all others increment as usual
+          o.setPosition(count++);
         }
-        // all others increment from 2
-        o.position = count++;
+        console.log("TTTTop Set option ", o.subtopic, o.position);
       });
     }
+    // Move the item within the list
     else {
+      let count = 1;
       // Find lower option from the lower element id
       const lowerOpt = choiceOptions.find((o) => {
          return lowerElemId === `row-opt-${o.id}`
       })
-      console.log("Lower Option: ", lowerOpt)
+      console.log("Lower Option: ", lowerOpt.subtopic)
       if (lowerOpt) {
+        let isMoveUpdated = false;
         const lowerPos = lowerOpt.position;
+        console.log("Lower Option: ", lowerOpt.subtopic, ' pos ', lowerPos)
+        // With the assumption that these are in order, except for the moved item
         choiceOptions.forEach(o => {
-          if (lowerPos >= o.position) {
-            o.position = o.position + 1;
+          // Bump all lower options down a notch
+          if (lowerPos <= o.position) {
+            if (!isMoveUpdated) {
+              option.setPosition(count++);
+              isMoveUpdated = true;
+              console.log("SSS Set option ", option.subtopic, option.position);
+            }
+          }
+          if (o.id !== option.id) {
+            o.setPosition(count++);
+            console.log("SSS Set option ", o.subtopic, o.position);
           }
         });
+        // Set this option to lower position
         option.setPosition(lowerPos);
+      } else {
+        console.log('ERROR, should be a lower object for ', lowerElemId);
       }
     }
     // remove item
