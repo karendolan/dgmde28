@@ -1,7 +1,7 @@
 // Import component
 import Header from '../components/Header';
 // Import useContext to use the global context
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 // Import the global context
 import ChooseContext from '../objects/ChooseContext';
 
@@ -14,16 +14,20 @@ export default function Topic() {
   const { context, handleUpdate } = useContext(ChooseContext);
   // Destructure the context
   const { currTopic, topicOptions } = context;
+  // Set state
+   var [topic, setTopic] = useState(currTopic);
 
   function onChange(e){
-    console.log("event ", e);
-      handleUpdate({
-        ...context,
-        currTopic: e,
-      });
+    console.log("event ", e, e.target.value);
+    setTopic(e.target.value);
   }
 
-  console.log('topicOptions', topicOptions);
+  function submitTopicChoice(){
+      handleUpdate({
+        ...context,
+        currTopic: topic,
+      });
+  }
 
   // Return the JSX
   return (
@@ -35,19 +39,25 @@ export default function Topic() {
         <h2>
           Choose a topic
         </h2>
-        <div onChange={onChange}>
-          blah
-          {topicOptions}
-          {topicOptions && topicOptions.map((opt) => {
-            <div>
-              {opt}
-              <label>
-                bla
-                <input key={opt} type="radio" id="opt" name="topic" value="opt" selected={currTopic === opt ? 'selected' : ''}/>
-                {opt}
-              </label>
-            </div>
+        {currTopic && (
+          <div>
+            Current topic is {currTopic}
+          </div>
+        )}
+        <div>
+          {topicOptions.map((opt) => {
+            return (
+              <div key={opt} >
+                <label>
+                  <input onChange={onChange} type="radio" id={opt} name="topic" value={opt} selected={currTopic === opt ? 'selected' : ''}/>
+                  {opt}
+                </label>
+              </div>
+            )
           })}
+          <button onClick={submitTopicChoice}>
+            Submit new topic
+          </button>
         </div>
       </div>
     </div>
