@@ -1,21 +1,37 @@
+// Import the style
+import './ChoiceItem.css';
+
+
 /**
  * The Choice Item Card
- * @param {title: String} props
+ * @param {item: Option} props
  * @returns the jsx of the choice item
  */
-export default function Header(props) {
-  // Receive title of the page as a prop, with fun fallback
+export default function ChoiceItem(props) {
+  // Destruct the item
   const {
-    title = "Good Day!",
+    subtopic,
+    attribute,
+    origin,
+    description,
+    life_span,
+    wikipedeia_url,
+    image,
   } = props;
-
+  // Return the item JSX
   return (
-    <div className='header'>
-      <div className='title'>Subtopic Choice</div>
-      <h1 className='page-title'>{title}</h1>
-      <Nav
-        curPage={title}
-      />
+    <div className='ChoiceItem-container'>
+      <div className='ChoiceItem-image-block'>
+        <img height={100} src={image.url}/>
+        <div>{subtopic}</div>
+        <div>{origin}</div>
+        <div>Lives {life_span} yrs</div>
+      </div>
+      <div className='ChoiceItem-desc-block'>
+        <div>{attribute}</div>
+        <div>{description}</div>
+      </div>
+      <a href={wikipedeia_url}>wikipedeia reference</a>
     </div>
   )
 }

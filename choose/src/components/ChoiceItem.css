@@ -1,0 +1,14 @@
+.ChoiceItem-container {
+  display: flex;
+  margin-top: 1rem;
+}
+
+.ChoiceItem-image-block {
+  flex-grow: 1;
+  min-width: 180px;
+}
+
+.ChoiceItem-desc-block {
+  text-align: start;
+  margin: 1rem;
+}

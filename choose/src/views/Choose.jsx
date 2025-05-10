@@ -4,6 +4,7 @@ import { useContext } from 'react';
 import ChooseContext from '../objects/ChooseContext';
 // Import component
 import Header from '../components/Header';
+import ChoiceItem from '../components/ChoiceItem';
 
 /**
  * The choose from the options page
@@ -14,21 +15,23 @@ export default function Choose() {
   // Retrieve context
   const { context } = useContext(ChooseContext);
   // Destructure the context
-  const { choiceOptions } = context;
+  const { choiceOptions, currTopic } = context;
   // Make a JSX collection of choices
-  const choices = choiceOptions.map((c,i) => {
+  const choices = choiceOptions.map((c) => {
     console.log("choice: ", c);
     const {name, temperament, origin, description, life_span, wikipedeia_url, image} = c;
     return (
-      <div className="choice-item" key={i}>
-        <div>{name}</div>
-        <div>{temperament}</div>
-        <div>{origin}</div>
-        <div>{description}</div>
-        <div>{life_span}</div>
-        <img height={100} src={image.url}/>
-        <a href={wikipedeia_url}>wikipedeia</a>
-      </div>
+      <ChoiceItem
+        key={name}
+        topic = {currTopic}
+        subtopic = {name}
+        description = {description}
+        image = {image}
+        attribute = {temperament}
+        origin = {origin}
+        life_span = {life_span}
+        wikipedeia_url =  {wikipedeia_url}
+      />
     )
   })
   // return the JSX

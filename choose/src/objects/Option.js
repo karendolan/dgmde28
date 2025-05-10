@@ -2,7 +2,7 @@
  * The Option class holds each subtopic option
  * The user can order this subtopic and add a note about it
  */
-class Option {
+export default class Option {
   // Constructor contains the 2 main components of the option
   constructor(topic, subtopic, attribute, origin, description, life_span, wikipedeia_url, image) {
     this.topic = topic;
