@@ -4,7 +4,7 @@ import { Routes, Route } from 'react-router-dom';
 // Import components
 import Choose from '../views/Choose';
 import Home from '../views/Home';
-import Topic from './Topic';
+import Topic from '../views/Topic';
 import Report from '../views/Report';
 import NotFound from '../views/NotFound'
 

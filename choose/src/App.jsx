@@ -9,6 +9,9 @@ import { BrowserRouter as Router } from 'react-router-dom';
 import ChooseRouter from './components/ChooseRouter';
 import ChooseContext from './objects/ChooseContext';
 
+// Import test data
+import catOptionData from './data/cats';
+
 // Import the style
 import './App.css'
 
@@ -18,7 +21,7 @@ function App() {
   // Set defaults in the initial context
   var [context, setContext] = useState({
     // The Option objects to choose from
-    choiceOptions: ['long hair'],
+    choiceOptions: catOptionData,
     // Stock main topic options
     topicOptions: ['cats', 'dogs', 'cars', 'trees', 'fruit'],
     // The initial topic associated to the subtopics

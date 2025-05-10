@@ -17,12 +17,17 @@ export default function Choose() {
   const { choiceOptions } = context;
   // Make a JSX collection of choices
   const choices = choiceOptions.map((c,i) => {
+    console.log("choice: ", c);
+    const {name, temperament, origin, description, life_span, wikipedeia_url, image} = c;
     return (
       <div className="choice-item" key={i}>
-        <div>{c.topic}</div>
-        <div>{c.subTopic}</div>
-        <div>{c.description}</div>
-        <image src={c.image}></image>
+        <div>{name}</div>
+        <div>{temperament}</div>
+        <div>{origin}</div>
+        <div>{description}</div>
+        <div>{life_span}</div>
+        <img height={100} src={image.url}/>
+        <a href={wikipedeia_url}>wikipedeia</a>
       </div>
     )
   })
