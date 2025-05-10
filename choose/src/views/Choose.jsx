@@ -78,7 +78,9 @@ export default function Choose() {
     moveItem.classList.remove('moving');
 
     const option = choiceOptions.find(o => moveItem.id == `row-opt-${o.id}`);
-    const top = option.getBoundingClientRect + window.scrollY;
+    const top = moveItem.getBoundingClientRect().y + window.scrollY;
+    // -----------
+    console.log("top boundig box ", top )
     // Update option position
 
     const optionElems = document.getElementsByClassName('Choose-option-component');
@@ -86,37 +88,46 @@ export default function Choose() {
     let lowerElemId;
     for (e of optionElems) {
       if (e.id !== rowMoveId) {
-        const eTop = e.getBoundingClientRect + window.scrollY;
+        const eTop = e.getBoundingClientRect().y + window.scrollY;
+        console.log('KAREN --- Element id ', e.id, 'moved item id ', rowMoveId, ' Elem top: ', eTop, ' moved top', top);
         if (eTop > top) {
           lowerElemId = e.id;
+          break;
         }
       }
     }
+    console.log('lowerElemId: ', lowerElemId, option.id);
     if (!lowerElemId) {
+      let count = 2;
       choiceOptions.forEach(o => {
-        o.position += o.position;
+        // This item is count 1
+        console.log('Comparing ids ', o.id, option.id);
+        if (o.id === option.id) {
+          o.position = 1;
+        }
+        // all others increment from 2
+        o.position = count++;
       });
-      option.setPosition(1);
     }
     else {
+      // Find lower option from the lower element id
       const lowerOpt = choiceOptions.find((o) => {
          return lowerElemId === `row-opt-${o.id}`
       })
+      console.log("Lower Option: ", lowerOpt)
       if (lowerOpt) {
         const lowerPos = lowerOpt.position;
         choiceOptions.forEach(o => {
           if (lowerPos >= o.position) {
-            o.position += o.position;
+            o.position = o.position + 1;
           }
         });
         option.setPosition(lowerPos);
       }
     }
-
     // remove item
     setMoveItem(undefined);
   }
-
 
   console.log("Before sort ", choiceOptions);
   // sort
