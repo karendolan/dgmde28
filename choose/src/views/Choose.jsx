@@ -25,7 +25,7 @@ export default function Choose() {
   const [movePos, setMovePos] = useState();
 
   // currently select row
-  console.log("moveItem", moveItem?.id, moveItem);
+  console.log("moveItem ???? " , moveItem?.id, movePos);
   const rowMoveId = moveItem ? moveItem.id : undefined;
 
 
@@ -33,12 +33,12 @@ export default function Choose() {
   useEffect(() => {
     // On move event
     const moving = (e) => {
-      console.log('IN MOVE: ', e);
+      console.log('---- IN MOVE: ', e, setMovePos, moveItem.style );
       e.preventDefault();
       if (movePos) {
         setMovePos({
-          top: movePos.top - e.pageX,
-          left: movePos.left - e.pageY
+          top: movePos.top + e.movementY,
+          left: movePos.left + e.movementX,
         })
       }
     };
@@ -83,7 +83,6 @@ export default function Choose() {
   console.log('Rerendering list: ');
   const choices = choiceOptions.map((c) => {
     console.log('IN RENDER for ', c.id);
-    // const styleElem = {position: 'absolute', top: movePos.x, right: movePos.y}
     const {id, subtopic, temperament, origin, description, life_span, wikipedia_url, image, note, order} = c;
     const rowId = `row-opt-${id}`;
     return (
