@@ -21,20 +21,43 @@ export default function Choose() {
   const { choiceOptions, currTopic } = context;
   // Use State
   const [moveItem, setMoveItem] = useState();
+  // Use State
+  const [movePos, setMovePos] = useState();
 
+  // currently select row
+  console.log("moveItem", moveItem?.id, moveItem);
+  const rowMoveId = moveItem ? `row-opt-${moveItem['id']}` : undefined;
+
+  // Track when item is moving
   useEffect(() => {
+    // On move event
     const moving = (e) => {
+      console.log('IN MOVE');
       e.preventDefault();
-      console.log('Moving!!!!', e.type, e.movementX, e.movementY);
-      console.log('moving', e);
+      console.log('Moving ', e.clientX, e.clientY, moveItem.style, moveItem.style['x'], moveItem.style['y']  );
+      moveItem.style['x'] = e.clientX;
+      moveItem.style['y'] = e.clientY;
+      setMovePos({
+        x: e.clientX,
+        y: e.clientY
+      })
     };
 
+    // Adding event listeners
     if (moveItem) {
+      const position = moveItem.getBoundingClientRect();
+      console.log('Initial div position is ', position)
+      setMovePos({
+        x: position.x,
+        y: position.y,
+      })
+      console.log('ADDING EVENT LISTENER to ', moveItem)
       moveItem.addEventListener('mousemove', moving);
     }
-
+    // Remove when done
     return () => {
       if (moveItem) {
+        console.log('Removing EVENT LISTENER from ', moveItem)
         moveItem.removeEventListener('mousemove', moving);
       }
     };
@@ -52,44 +75,51 @@ export default function Choose() {
     e.preventDefault();
     console.log('Ending move!!!!', moveItem, e.type, e.movementX, e.movementY);
     moveItem.classList.remove('moving');
+    // remove item
     setMoveItem();
   }
 
   // Make a JSX collection of choices
-  console.log('Rerendering list: ', choiceOptions);
+  console.log('Rerendering list: ');
   const choices = choiceOptions.map((c) => {
+    console.log('IN RENDER for ', c.id);
+    // const styleElem = {position: 'absolute', top: movePos.x, right: movePos.y}
     const {id, subtopic, temperament, origin, description, life_span, wikipedia_url, image, note, order} = c;
+    const rowId = `row-opt-${id}`;
     return (
       <div key={id}>
-      <div className="move-indicator" />
-      <div
-        className="Choose-option-component"
-        onMouseDown={moveStart}
-        onMouseUp={moveEnd}
-      >
-        <ChoiceComponent
-          topic = {currTopic}
-          subtopic = {subtopic}
-          description = {description}
-          image = {image}
-          attribute = {temperament}
-          origin = {origin}
-          life_span = {life_span}
-          wikipedia_url =  {wikipedia_url}
-        />
-        <div className="Choose-notes">
-          <label>Notes:
-            <textarea type="textarea" onChange={((e) => c.addNote(e.target.value))}>
-              {note}
-            </textarea>
-          </label>
-          {order && (
-            <div>
-              Preference ({order})
-            </div>
-          )}
+        <div className="move-indicator" />
+        <div
+          id={rowId}
+          className="Choose-option-component"
+          onMouseDown={moveStart}
+          onMouseUp={moveEnd}
+          style={rowMoveId === rowId ? {position: 'absolute', top: movePos.x, right: movePos.y} : undefined}
+        >
+          <ChoiceComponent
+            topic = {currTopic}
+            subtopic = {subtopic}
+            description = {description}
+            image = {image}
+            attribute = {temperament}
+            origin = {origin}
+            life_span = {life_span}
+            wikipedia_url =  {wikipedia_url}
+          />
+          Row id is {rowId}, selected Id is {rowMoveId}
+          <div className="Choose-notes">
+            <label>Notes:
+              <textarea type="textarea" onChange={((e) => c.addNote(e.target.value))}>
+                {note}
+              </textarea>
+            </label>
+            {order && (
+              <div>
+                Preference ({order})
+              </div>
+            )}
+          </div>
         </div>
-      </div>
       </div>
     )
   })
