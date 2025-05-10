@@ -36,8 +36,9 @@ function App() {
   function getOptions(topic) {
     console.log('catOptionData: ', catOptionData)
     const options = catOptionData.map((o) => {
-      const {name, description, image, temperament, origin, life_span, wikipedeia_url} = o;
+      const {id, name, description, image, temperament, origin, life_span, wikipedia_url} = o;
       return new OptionObject ({
+        id,
         topic,
         subtopic: name,
         description,
@@ -45,7 +46,7 @@ function App() {
         attribute: {temperament},
         origin,
         life_span,
-        wikipedeia_url,
+        wikipedia_url,
       });
     })
     console.log('Objects ', options);

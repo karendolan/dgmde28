@@ -4,7 +4,9 @@
  */
 export default class OptionObject {
   // Constructor contains the 2 main components of the option
-  constructor({topic, subtopic, attribute, origin, description, life_span, wikipedeia_url, image}) {
+  constructor({id, topic, subtopic, attribute, origin, description, life_span, wikipedia_url, image}) {
+    console.log('setting id to ', id);
+    this.id = id;
     this.topic = topic;
     this.subtopic = subtopic;
     this.description = description;
@@ -12,7 +14,7 @@ export default class OptionObject {
     this.attribute = attribute;
     this.origin = origin
     this.life_span = life_span;
-    this.wikipedeia_url = wikipedeia_url;
+    this.wikipedia_url = wikipedia_url;
   }
   // User adds  comment about this option
   addNote(note) {

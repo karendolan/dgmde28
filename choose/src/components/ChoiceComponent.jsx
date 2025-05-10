@@ -14,7 +14,7 @@ export default function ChoiceComponent(props) {
     origin,
     description,
     life_span,
-    wikipedeia_url,
+    wikipedia_url,
     image,
   } = props;
   // Return the item JSX
@@ -30,7 +30,7 @@ export default function ChoiceComponent(props) {
         <div>{attribute}</div>
         <div>{description}</div>
       </div>
-      <a href={wikipedeia_url}>wikipedeia</a>
+      <a href={wikipedia_url}>wikipedia</a>
     </div>
   )
 }
