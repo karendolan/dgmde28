@@ -12,9 +12,13 @@ export default function Home() {
         title="Home"
       />
       <div className='center'>
-        <div>
-          Please go <a href="/">Home</a>!
-        </div>
+        <p>
+          Choose a topic and decide among the options!
+          <br/>
+          Leave notes for each option.
+          <br />
+          Then view your summary.
+        </p>
       </div>
     </div>
   )

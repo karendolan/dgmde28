@@ -1,0 +1,28 @@
+.Report-listItem {
+  display: flex;
+  align-items: start;
+  vertical-align: top;
+  text-align: start;
+  justify-content: space-between;
+}
+
+.Report-note{
+  min-width: 6rem;
+  background-color: #53736A;
+  min-height: 6rem;
+  margin-left: 2rem;
+}
+
+.Report-listItem-pos {
+  color: #A8B545;
+}
+
+.Report-listItem-desc {
+  margin: 2rem;
+}
+
+.Report-listItem-image {
+  min-width: auto;
+  align-items: center;
+  align-content: center;
+}

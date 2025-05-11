@@ -28,7 +28,6 @@ export default function Choose() {
   console.log("moveItem ???? " , moveItem?.id, movePos);
   const rowMoveId = moveItem ? moveItem.id : undefined;
 
-
   // Track when item is moving
   useEffect(() => {
     // On move event

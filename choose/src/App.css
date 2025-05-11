@@ -9,7 +9,7 @@ body {
 }
 
 #root {
-  max-width: 600px;
+  width: 600px;
   color: white;
   background-color: #024554;
   margin: 0 auto;

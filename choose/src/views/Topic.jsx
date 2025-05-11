@@ -46,10 +46,11 @@ export default function Topic() {
         )}
         <div>
           {topicOptions.map((opt) => {
+            const selected = currTopic == opt ? 'selected' : '';
             return (
               <div key={opt} >
                 <label>
-                  <input onChange={onChange} type="radio" id={opt} name="topic" value={opt} selected={currTopic === opt ? 'selected' : ''}/>
+                  <input onChange={onChange} type="radio" id={opt} name="topic" value={opt} checked={!!selected}/>
                   {opt}
                 </label>
               </div>

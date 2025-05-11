@@ -1,6 +1,8 @@
 .ChoiceComponent-container {
   display: flex;
   margin-top: 1rem;
+  align-items: start;
+  justify-content: flex-start;
 }
 
 .ChoiceComponent-image-block {
