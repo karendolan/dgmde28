@@ -2,9 +2,10 @@
 import { useContext, useState, useEffect, useRef } from 'react';
 // Import the global context
 import ChooseContext from '../objects/ChooseContext';
-// Import component
+// Import components
 import Header from '../components/Header';
 import ChoiceComponent from '../components/ChoiceComponent';
+import OptionNoteComponent from '../components/OptionNoteComponent';
 
 // Import the style
 import './Choose.css';
@@ -273,23 +274,20 @@ export default function Choose() {
             position = {position}
           />
           <div className="Choose-notes" onMouseDown={((e) => {
+            // Prevent click into notes from activating option position drag activity
             e.stopPropagation();
           })}
           onMouseUp={((e) => {
+            // Prevent mouse up from activating position drag activity
             e.stopPropagation();
           })}
           >
-            <label>Notes
-              <textarea
-                className={`Choose-notes-textarea ${note ? 'noted' : ''}`}
-                rows="9" type="textarea"
-                onChange={((e) => {
-                  c.addNote(e.target.value);
-                  setCurNote(e.target.value);
-                })}
-                value={note}
-              />
-            </label>
+            <OptionNoteComponent
+              existingNote={note}
+              option={c}
+              callback={setCurNote}
+              label={'Notes'}
+            />
             <label>
               Position
               {' '}

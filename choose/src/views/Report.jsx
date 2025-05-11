@@ -2,8 +2,10 @@
 import { useContext, useState, useEffect } from 'react';
 // Import the global context
 import ChooseContext from '../objects/ChooseContext';
-// Import component
+// Import components
 import Header from '../components/Header';
+import OptionNoteComponent from '../components/OptionNoteComponent';
+
 
 // Import the style
 import './Report.css';
@@ -46,9 +48,12 @@ export default function Report() {
           <div>{subtopic}</div>
           <div>{origin}</div>
         </div>
-        <div className={`Report-note ${note ? 'noted' : ''}`}>
-          {note}
-        </div>
+        <OptionNoteComponent
+          label={''}
+          existingNote={note}
+          option={o}
+          callback={setCurNote}
+        />
       </div>
     )
   })
