@@ -16,7 +16,7 @@ import './Choose.css';
  */
 export default function Choose() {
   // Retrieve context
-  const { context } = useContext(ChooseContext);
+  const { context, handleUpdate } = useContext(ChooseContext);
   // Destructure the context
   const { choiceOptions, currTopic } = context;
   // Use State
@@ -42,7 +42,6 @@ export default function Choose() {
         })
       }
     };
-
     // Adding event listeners
     if (moveItem) {
       console.log('ADDING EVENT LISTENER to ', moveItem)
@@ -135,6 +134,38 @@ export default function Choose() {
     setMoveItem(undefined);
   }
 
+  function changePosition(option, position) {
+    const prevPos = option.position;
+    option.setPosition(position);
+    // No work needed if at same position
+    if (prevPos == position) return;
+    const isUp = prevPos > position;
+    if (isUp) {
+      let count = position + 1;
+      choiceOptions.forEach((o) => {
+        if (o.id !== option.id && o.position >= position) {
+          o.setPosition(count++)
+        }
+      });
+      option.setPosition(position);
+    } else {
+      let count = prevPos;
+      choiceOptions.forEach((o) => {
+        if ( o.id !== option.id
+          && o.position > prevPos
+          && o.position <= position
+        ) {
+          o.setPosition(count++)
+        }
+      });
+      option.setPosition(position);
+    }
+    // Update the context
+    handleUpdate({
+      choiceOptions,
+    })
+  }
+
   console.log("Before sort ", choiceOptions);
   // sort
   choiceOptions.sort((a, b) => {
@@ -150,7 +181,7 @@ export default function Choose() {
     const {id, subtopic, temperament, origin, description, life_span, wikipedia_url, image, note, position} = c;
     const rowId = `row-opt-${id}`;
     return (
-      <div key={id}>
+      <div className="Option-choice-block" key={id} id={`choice-${id}`}>
         <div className="move-indicator" />
         <div
           id={rowId}
@@ -178,14 +209,24 @@ export default function Choose() {
             e.stopPropagation();
           })}
           >
-            <label>Notes:
+            <label>Notes
               <textarea
                 className={`Choose-notes-textarea ${note ? 'noted' : ''}`}
                 rows="9" type="textarea"
                 onChange={((e) => c.addNote(e.target.value))}
-              >
-                {note}
-              </textarea>
+                value={note}
+              />
+            </label>
+            <label>
+              Position
+              {' '}
+              <input
+                id="Option-position-input"
+                type="number"
+                value={position}
+                min={1} max={choiceOptions.length}
+                onChange={(e) => changePosition(c, Number.parseInt(e.target.value))}
+              />
             </label>
           </div>
         </div>
