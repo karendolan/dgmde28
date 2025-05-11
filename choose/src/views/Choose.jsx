@@ -1,5 +1,5 @@
 // Import useContext to use the global context
-import { useContext, useState, useEffect } from 'react';
+import { useContext, useState, useEffect, useRef } from 'react';
 // Import the global context
 import ChooseContext from '../objects/ChooseContext';
 // Import component
@@ -23,54 +23,101 @@ export default function Choose() {
   const [moveItem, setMoveItem] = useState();
   // Use State
   const [movePos, setMovePos] = useState();
+  // UseRef is required to save the exact reference to the document cursor move handler
+  const cursorMoveHandler = useRef(undefined);
 
   // currently select row
-  console.log("moveItem ???? " , moveItem?.id, movePos);
+  console.log("CHOOSE START - moveItem ???? " , moveItem?.id, movePos);
   const rowMoveId = moveItem ? moveItem.id : undefined;
 
-  // Track when item is moving
-  useEffect(() => {
-    // On move event
-    const moving = (e) => {
-      console.log('---- IN MOVE: ', e, setMovePos, moveItem.style );
-      e.preventDefault();
-      if (movePos) {
-        setMovePos({
-          top: movePos.top + e.movementY,
-          left: movePos.left + e.movementX,
-        })
-      }
-    };
-    // Adding event listeners
-    if (moveItem) {
-      console.log('ADDING EVENT LISTENER to ', moveItem)
-      moveItem.addEventListener('mousemove', moving);
-    }
-    // Remove before remove item is removed
-    return () => {
-      if (moveItem) {
-        console.log('Removing EVENT LISTENER from ', moveItem)
-        moveItem.removeEventListener('mousemove', moving);
-      }
-    };
-  }, [moveItem, movePos]);
+  // 1. have a moving item - add listener to mouse move: document.addEventListener('mousemove', (event) => {
+  // --- sets initial position
+  // --- when no longer moving item - movePos is removed
+  // 2. have a movePos change - sets new move position
 
-  function moveStart(e) {
-    e.preventDefault();
-    const item = e.target.closest('.Choose-option-component');
-    item.classList.add('moving');
-    const position = item.getBoundingClientRect();
-    setMovePos({
-        top: position.y + window.scrollY,
-        left: position.x,
-    })
-    setMoveItem(item);
+  // -------------------------------------------------
+  // Start of module useEffect hooks
+  // -------------------------------------------------
+
+  // On mount useEffect
+  useEffect(() => {
+    // Set the persistent cursorMoveHandler function
+    cursorMoveHandler.current = (e) => {
+      console.log("Mouse move event ", e)
+      setMovePos({
+        moveY: e.movementY,
+        moveX: e.movementX,
+      })
+    }
+  }, []);
+
+  // // Called when an option is manually changing order through a drag action by user
+  // useEffect(() => {
+  //   console.log('IN useEffect Moveitem', moveItem);
+  //   // Adding event listener to track item moving
+  //   if (moveItem) {
+  //     // Add moving style to the element
+  //     moveItem.classList.add('moving');
+  //     // Set initial cursor position to initialize the first movPos
+  //     const position = moveItem.getBoundingClientRect();
+  //     setMovePos({
+  //       top: position.y + window.scrollY,
+  //       left: position.x,
+  //     })
+  //   }
+  // }, [moveItem]);
+
+  // -------------------------------------------------
+  // End of module hooks, start of internal function
+  // -------------------------------------------------
+
+  /**
+   * Calculate the style position attribute of the move item
+   * @returns
+   */
+  const getPositionStyle = () => {
+    let style = ''
+    if (movePos && moveItem) {
+      const position = moveItem.getBoundingClientRect();
+      const top = position.y + window.scrollY + movePos.moveY;
+      const left = position.x + movePos.moveX;
+      style = {
+        position: 'absolute',
+        top: Number.parseInt(top),
+        left: Number.parseInt(left)
+      };
+    }
+    return style;
   }
 
+  /**
+   * Handler called when an option is being grabbed for dragging to change position
+   * @param {e} the event
+   */
+  function moveStart(e) {
+    e.preventDefault();
+    console.log('STARTING cursor EVENT LISTENER');
+    // Save the item being moved to state
+    const item = e.target.closest('.Choose-option-component');
+    // Add moving style to the element
+    moveItem.classList.add('moving');
+    // Set the move item in the state
+    setMoveItem(item);
+    // Start an event handler on the mouse move
+    document.addEventListener('mousemove', cursorMoveHandler.current);
+  }
+
+  /**
+   * Handler called during mouse up after an option position is dragged
+   * This handler updates the position of the options if a change was made
+   * @param {e} the mouse up event
+   */
   function moveEnd(e) {
     e.preventDefault();
-    // remove moving class designation
-    moveItem.classList.remove('moving');
+    console.log('Removing cursor EVENT LISTENER ---------------');
+    // Remove the cursor listener
+    document.removeEventListener('mousemove', cursorMoveHandler.current);
+    // Determine the new ordering of the options, if any
     const option = choiceOptions.find(o => moveItem.id == `row-opt-${o.id}`);
     const top = moveItem.getBoundingClientRect().y + window.scrollY;
     const optionElems = document.getElementsByClassName('Choose-option-component');
@@ -129,11 +176,23 @@ export default function Choose() {
         console.log('ERROR, should be a lower object for ', lowerElemId);
       }
     }
+    console.log('UNSETTING movPos and moveItem');
+    // Remove moving class style designation
+    moveItem.classList.remove('moving');
+    // Unset movePos
+    setMovePos(undefined);
     // remove item
     setMoveItem(undefined);
   }
 
+  /**
+   * The manual change
+   * @param {*} option
+   * @param {*} position
+   * @returns
+   */
   function changePosition(option, position) {
+    console.log('STARTING Change position');
     const prevPos = option.position;
     option.setPosition(position);
     // No work needed if at same position
@@ -165,13 +224,14 @@ export default function Choose() {
       choiceOptions,
     })
   }
-
+  // -------------------------------------------------
+  // End of module functions, start of JSX rendering
+  // -------------------------------------------------
   console.log("Before sort ", choiceOptions);
-  // sort
+  // Sort the choiceOptions by option position
   choiceOptions.sort((a, b) => {
     return a.position - b.position;
   })
-
   console.log("AFTER sort ", choiceOptions);
 
   // Make a JSX collection of choices
@@ -188,7 +248,7 @@ export default function Choose() {
           className={`Choose-option-component position-${position}`}
           onMouseDown={moveStart}
           onMouseUp={moveEnd}
-          style={rowMoveId === rowId && movePos ? {position: 'absolute', top: movePos.top, left: movePos.left} : undefined}
+          style={rowMoveId === rowId && movePos ? getPositionStyle() : undefined}
         >
           {position}
           <ChoiceComponent
