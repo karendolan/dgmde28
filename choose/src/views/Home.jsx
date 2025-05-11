@@ -6,19 +6,29 @@ import Header from '../components/Header';
  * @returns the jsx for the home page
  */
 export default function Home() {
+
+  const instructionArray = [
+    "Choose a topic and decide among the options",
+    "Add an observational note for each option",
+    "Assess your notes in the Report summary",
+  ];
+
   return (
     <div className='page'>
       <Header
         title="Home"
       />
+      <h2>
+        Instructions
+      </h2>
       <div className='center'>
-        <p>
-          Choose a topic and decide among the options!
-          <br/>
-          Leave notes for each option.
-          <br />
-          Then view your summary.
-        </p>
+        <ol>
+          {instructionArray.map(inst => (
+            <li>
+              {inst}
+            </li>
+          ))}
+        </ol>
       </div>
     </div>
   )

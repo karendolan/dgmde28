@@ -29,7 +29,7 @@ export default function ChoiceComponent(props) {
       <div className='ChoiceComponent-desc-block'>
         <div>{attribute}</div>
         <div>{description}</div>
-        <a className='ChoiceComponent-wikipedia' href={wikipedia_url}>wikipedia</a>
+        <a className='ChoiceComponent-wikipedia' target='_blank' href={wikipedia_url}>wikipedia</a>
       </div>
     </div>
   )

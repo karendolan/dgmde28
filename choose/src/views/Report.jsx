@@ -1,5 +1,5 @@
 // Import useContext to use the global context
-import { useContext } from 'react';
+import { useContext, useState, useEffect } from 'react';
 // Import the global context
 import ChooseContext from '../objects/ChooseContext';
 // Import component
@@ -14,9 +14,23 @@ import './Report.css';
  */
 export default function Report() {
     // Retrieve context
-  const { context } = useContext(ChooseContext);
+  const { context, handleUpdate } = useContext(ChooseContext);
   // Destructure the context
-  const { choiceOptions, currTopic } = context;
+  const { choiceOptions, currTopic, choiceSummaryNote } = context;
+  // Use state
+  const [curNote, setCurNote] = useState(choiceSummaryNote);
+
+  useEffect(() => {
+    console.log('Updating summary note ', curNote);
+  }, [curNote]);
+
+  // Handler for summary note changes
+  function updateSummaryNote(update) {
+    handleUpdate({
+      ...context,
+      choiceSummaryNote: update
+    });
+  }
 
   const reportOptions = choiceOptions.map((o) => {
     const {id, subtopic, image, origin, note, position} = o;
@@ -32,7 +46,7 @@ export default function Report() {
           <div>{subtopic}</div>
           <div>{origin}</div>
         </div>
-        <div className='Report-note'>
+        <div className={`Report-note ${note ? 'noted' : ''}`}>
           {note}
         </div>
       </div>
@@ -45,9 +59,20 @@ export default function Report() {
         title="Report"
       />
       <div className='center'>
-        <div>
+        <h2>
           Topic {currTopic}
-        </div>
+        </h2>
+        <label>Summary note
+          <textarea
+            className={`Report-note summary ${choiceSummaryNote ? 'noted' : ''}`}
+            rows="3" type="textarea"
+            onChange={((e) => {
+              updateSummaryNote(e.target.value);
+              setCurNote(e.target.value);
+            })}
+            value={choiceSummaryNote}
+          />
+        </label>
         <div className='Report-list'>
          {reportOptions}
         </div>

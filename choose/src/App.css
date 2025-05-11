@@ -8,6 +8,10 @@ body {
   font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
 }
 
+h2 {
+  margin: 0;
+}
+
 #root {
   width: 600px;
   color: white;
@@ -17,7 +21,6 @@ body {
   padding-right: 2rem;
   vertical-align: top;
   text-align: center;
-  background-color: #024554;
 }
 
 .header {

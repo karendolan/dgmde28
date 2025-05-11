@@ -4,13 +4,27 @@
   vertical-align: top;
   text-align: start;
   justify-content: space-between;
+  margin: 1rem;
 }
 
-.Report-note{
-  min-width: 6rem;
-  background-color: #53736A;
+.Report-note {
+  width: 10rem;
+  padding: 5px;
+  color: #A8B545;
+  background-color: #346A76;
   min-height: 6rem;
   margin-left: 2rem;
+  border-radius: 1rem;
+  padding: .5rem;
+}
+
+.Report-note.noted {
+  color:#024554;
+  background-color: #C2C0A6;
+}
+
+.Report-note.summary {
+  width: 30rem;
 }
 
 .Report-listItem-pos {
@@ -22,7 +36,5 @@
 }
 
 .Report-listItem-image {
-  min-width: auto;
-  align-items: center;
-  align-content: center;
+  width: 7rem;
 }

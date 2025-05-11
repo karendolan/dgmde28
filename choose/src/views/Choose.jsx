@@ -23,6 +23,8 @@ export default function Choose() {
   const [moveItem, setMoveItem] = useState();
   // Use State
   const [movePos, setMovePos] = useState();
+  // Use State for current Note
+  const [curNote, setCurNote] = useState();
   // UseRef is required to save the exact reference to the document cursor move handler
   const cursorMoveHandler = useRef(undefined);
 
@@ -70,6 +72,10 @@ export default function Choose() {
       })
     }
   }, []);
+
+  useEffect(() => {
+    console.log('Updating note ', curNote);
+  }, [curNote]);
 
   // -------------------------------------------------
   // End of module hooks, start of internal function
@@ -277,7 +283,10 @@ export default function Choose() {
               <textarea
                 className={`Choose-notes-textarea ${note ? 'noted' : ''}`}
                 rows="9" type="textarea"
-                onChange={((e) => c.addNote(e.target.value))}
+                onChange={((e) => {
+                  c.addNote(e.target.value);
+                  setCurNote(e.target.value);
+                })}
                 value={note}
               />
             </label>
@@ -304,6 +313,9 @@ export default function Choose() {
       <Header
         title="Choose"
       />
+      <h2>
+        Topic {currTopic}
+      </h2>
       <div className='Choose center'>
         {choices}
       </div>

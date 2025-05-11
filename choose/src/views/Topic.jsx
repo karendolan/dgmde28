@@ -4,6 +4,9 @@ import Header from '../components/Header';
 import { useContext, useState } from 'react';
 // Import the global context
 import ChooseContext from '../objects/ChooseContext';
+// Navigate
+import { useNavigate } from 'react-router-dom';
+
 
 /**
  * Topic page
@@ -15,18 +18,30 @@ export default function Topic() {
   // Destructure the context
   const { currTopic, topicOptions } = context;
   // Set state
-   var [topic, setTopic] = useState(currTopic);
+  const [topic, setTopic] = useState(currTopic);
+  // Get a navigate
+  const navigate = useNavigate();
 
+  /**
+   * Update the topic choice locally, but not yet submitted
+   * @param {*} e
+   */
   function onChange(e){
-    console.log("event ", e, e.target.value);
     setTopic(e.target.value);
   }
 
+  /**
+   * Submit topic choice & moves to the choose panel
+   */
   function submitTopicChoice(){
-      handleUpdate({
-        ...context,
-        currTopic: topic,
-      });
+    handleUpdate({
+      ...context,
+      currTopic: topic,
+    });
+    // Move the page to choose
+    console.log('About to navigate to the choose page');
+    navigate('/choose');
+    console.log('Navigated????');
   }
 
   // Return the JSX
@@ -41,7 +56,7 @@ export default function Topic() {
         </h2>
         {topic && (
           <div>
-            Current topic is {topic}
+            Current topic is {currTopic}
           </div>
         )}
         <div>

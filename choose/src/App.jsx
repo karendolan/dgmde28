@@ -31,6 +31,8 @@ function App() {
     topicOptions: [initialTopic, 'dogs', 'cars', 'trees', 'fruit'],
     // The initial topic associated to the subtopics
     currTopic: initialTopic,
+    // Summary text
+    choiceSummaryNote: '',
   });
 
   function getOptions(topic) {
