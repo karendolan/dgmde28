@@ -39,33 +39,37 @@ export default function Choose() {
   // Start of module useEffect hooks
   // -------------------------------------------------
 
-  // On mount useEffect
+  // On mount useEffect create the handler that the document will use for mousemove
+  // when moving option Items up or down the list
   useEffect(() => {
     // Set the persistent cursorMoveHandler function
     cursorMoveHandler.current = (e) => {
       console.log("Mouse move event ", e)
+      const scrollBy = 10;
+      let moveY = e.movementY;
+      const moveX = e.movementX;
+      // Scroll window if necessary
+      const clientY = e.clientY;
+      const winHeight = window.innerHeight;
+      // Scroll if necessary when at top of screen
+      if (clientY < scrollBy) {
+        window.scrollBy(0,-scrollBy)
+        // decrement the moveY
+        moveY -=scrollBy;
+      }
+      // Scroll if necessary at bottom of screen
+      else if (clientY >  Math.abs(winHeight - scrollBy)) {
+        window.scrollBy(0, scrollBy);
+        // increment the moveY
+        moveY +=scrollBy;
+      }
+      // Update the new mouse move position in the state
       setMovePos({
-        moveY: e.movementY,
-        moveX: e.movementX,
+        moveY,
+        moveX,
       })
     }
   }, []);
-
-  // // Called when an option is manually changing order through a drag action by user
-  // useEffect(() => {
-  //   console.log('IN useEffect Moveitem', moveItem);
-  //   // Adding event listener to track item moving
-  //   if (moveItem) {
-  //     // Add moving style to the element
-  //     moveItem.classList.add('moving');
-  //     // Set initial cursor position to initialize the first movPos
-  //     const position = moveItem.getBoundingClientRect();
-  //     setMovePos({
-  //       top: position.y + window.scrollY,
-  //       left: position.x,
-  //     })
-  //   }
-  // }, [moveItem]);
 
   // -------------------------------------------------
   // End of module hooks, start of internal function
@@ -100,7 +104,7 @@ export default function Choose() {
     // Save the item being moved to state
     const item = e.target.closest('.Choose-option-component');
     // Add moving style to the element
-    moveItem.classList.add('moving');
+    item.classList.add('moving');
     // Set the move item in the state
     setMoveItem(item);
     // Start an event handler on the mouse move
