@@ -13,7 +13,7 @@ export default function Header(props) {
 
   return (
     <div className='header'>
-      <h1 className='title'>Subtopic Choice</h1>
+      <h1 className='title'>Subtopic Choose</h1>
       <Nav
         curPage={title}
       />
