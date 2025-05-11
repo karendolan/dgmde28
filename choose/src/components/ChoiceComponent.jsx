@@ -27,9 +27,11 @@ export default function ChoiceComponent(props) {
         <div>Lives {life_span} yrs</div>
       </div>
       <div className='ChoiceComponent-desc-block'>
-        <div>{attribute}</div>
         <div>{description}</div>
-        <a className='ChoiceComponent-wikipedia' target='_blank' href={wikipedia_url}>wikipedia</a>
+        <div>* {attribute}</div>
+        {wikipedia_url && (
+          <a className='ChoiceComponent-wikipedia' target='_blank' href={wikipedia_url}>wikipedia</a>
+        )}
       </div>
     </div>
   )

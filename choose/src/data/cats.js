@@ -1,6 +1,6 @@
 /**
  * Default Cat test data from
- * https://developers.thecatapi.com/view-account/ylX4blBYT9FaoVd6OhvR?report=aZyiLrsCh#tag/Breeds/paths/~1breeds~1%7Bbreed_id%7D/get
+ * https://api.thecatapi.com/v1/breeds
  */
 const catOptionData = [
   {

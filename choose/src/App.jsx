@@ -15,6 +15,7 @@ import { saveLocalStorage, getLocalStorage } from './functions/LocalStorage';
 
 // Import test data
 import catOptionData from './data/cats';
+import dogOptionData from './data/dogs';
 
 // Import the style
 import './App.css'
@@ -33,7 +34,7 @@ function App() {
       // The Option objects to choose from
       choiceOptions: getOptions(topic),
       // Stock main topic options
-      topicOptions: ['cats', 'dogs', 'cars', 'trees', 'fruit'],
+      topicOptions: ['cats', 'dogs'],
       // The initial topic associated to the subtopics
       currTopic: topic,
       // Summary text
@@ -41,6 +42,7 @@ function App() {
     }
     return freshContext;
   }
+
   // Default initial topic for the app
   const initialTopic = 'cats';
   // Update the context with saved context from local storage
@@ -66,17 +68,42 @@ function App() {
   // Set defaults in the initial context
   const [context, setContext] = useState(initialContext);
 
+  /**
+   * Helper to instantiate a collection of Option Objects
+   * @param {string} topic
+   * @param {object} topicData
+   * @returns
+   */
   function getOptions(topic, topicData) {
-    const optionInput = topicData || catOptionData;
+    // inbound existing topic data for storage has first priority
+    // TODO: if API exists, use that to retrieve new data from the catapi or thedog api
+    // For now, use stock data from file & save and retrieve from local storage
+    let optionInput = topicData;
+    // Otherwise, get stock data
+    if (!optionInput) {
+      switch (topic) {
+        case 'cats': {
+           optionInput = catOptionData;
+           break;
+        }
+        case 'dogs': {
+           optionInput = dogOptionData;
+           break;
+        }
+        default: {
+          console.log('Unsupported topic!');
+        }
+      }
+    }
     const options = optionInput.map((o, i) => {
-      const {id, name, description, image, temperament, origin, life_span, wikipedia_url, position, note} = o;
+      const {id, name, subtopic, description, image, temperament, attribute, breed_group, origin, life_span, wikipedia_url, position, note} = o;
       return new OptionObject ({
         id,
         topic,
-        subtopic: name,
-        description,
+        subtopic: name || subtopic ,
+        description: description || breed_group,
         image,
-        attribute: temperament,
+        attribute: temperament || attribute,
         origin,
         life_span,
         wikipedia_url,

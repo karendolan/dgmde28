@@ -254,7 +254,7 @@ export default function Choose() {
   console.log('Rerendering list: ');
   const choices = choiceOptions.map((c) => {
     console.log('IN RENDER for ', c.id);
-    const {id, subtopic, temperament, origin, description, life_span, wikipedia_url, image, note, position} = c;
+    const {id, subtopic, attribute, origin, description, life_span, wikipedia_url, image, note, position} = c;
     const rowId = `row-opt-${id}`;
     return (
       <div className="Option-choice-block" key={id} id={`choice-${id}`}>
@@ -272,7 +272,7 @@ export default function Choose() {
             subtopic = {subtopic}
             description = {description}
             image = {image}
-            attribute = {temperament}
+            attribute = {attribute}
             origin = {origin}
             life_span = {life_span}
             wikipedia_url =  {wikipedia_url}
