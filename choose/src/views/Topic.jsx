@@ -39,14 +39,14 @@ export default function Topic() {
         <h2>
           Choose a topic
         </h2>
-        {currTopic && (
+        {topic && (
           <div>
-            Current topic is {currTopic}
+            Current topic is {topic}
           </div>
         )}
         <div>
           {topicOptions.map((opt) => {
-            const selected = currTopic == opt ? 'selected' : '';
+            const selected = topic == opt ? 'selected' : '';
             return (
               <div key={opt} >
                 <label>

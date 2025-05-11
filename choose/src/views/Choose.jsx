@@ -161,6 +161,7 @@ export default function Choose() {
     }
     // Update the context
     handleUpdate({
+      ...context,
       choiceOptions,
     })
   }
