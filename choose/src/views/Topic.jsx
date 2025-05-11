@@ -38,10 +38,8 @@ export default function Topic() {
       ...context,
       currTopic: topic,
     });
-    // Move the page to choose
-    console.log('About to navigate to the choose page');
+    // Move the page to the choose page
     navigate('/choose');
-    console.log('Navigated????');
   }
 
   // Return the JSX

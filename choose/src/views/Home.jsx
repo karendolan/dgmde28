@@ -23,8 +23,8 @@ export default function Home() {
       </h2>
       <div className='center'>
         <ol>
-          {instructionArray.map(inst => (
-            <li>
+          {instructionArray.map((inst, i) => (
+            <li key={i}>
               {inst}
             </li>
           ))}

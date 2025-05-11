@@ -24,8 +24,6 @@ export default function Choose() {
   const [moveItem, setMoveItem] = useState();
   // Use State
   const [movePos, setMovePos] = useState();
-  // Use State for current Note
-  const [curNote, setCurNote] = useState();
   // UseRef is required to save the exact reference to the document cursor move handler
   const cursorMoveHandler = useRef(undefined);
 
@@ -73,10 +71,6 @@ export default function Choose() {
       })
     }
   }, []);
-
-  useEffect(() => {
-    console.log('Updating note ', curNote);
-  }, [curNote]);
 
   // -------------------------------------------------
   // End of module hooks, start of internal function
@@ -235,6 +229,17 @@ export default function Choose() {
       choiceOptions,
     })
   }
+  /**
+   * Update note changes to the global context
+   */
+  function updateNote(){
+    // Update the context
+    handleUpdate({
+      ...context,
+      choiceOptions,
+    })
+  }
+
   // -------------------------------------------------
   // End of module functions, start of JSX rendering
   // -------------------------------------------------
@@ -285,7 +290,7 @@ export default function Choose() {
             <OptionNoteComponent
               existingNote={note}
               option={c}
-              callback={setCurNote}
+              callback={updateNote}
               label={'Notes'}
             />
             <label>

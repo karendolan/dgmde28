@@ -4,7 +4,7 @@
  */
 export default class OptionObject {
   // Constructor contains the 2 main components of the option
-  constructor({id, topic, subtopic, attribute, origin, description, life_span, wikipedia_url, image, position}) {
+  constructor({id, topic, subtopic, attribute, origin, description, life_span, wikipedia_url, image, position, note}) {
     console.log('setting id to ', id);
     this.id = id;
     this.topic = topic;
@@ -16,6 +16,7 @@ export default class OptionObject {
     this.life_span = life_span;
     this.wikipedia_url = wikipedia_url;
     this.position = position;
+    this.note = note;
   }
   // User adds  comment about this option
   addNote(note) {
@@ -26,10 +27,5 @@ export default class OptionObject {
   setPosition(position){
     console.log('Updating position of ', this.subtopic ,' to ', position);
     this.position = position;
-  }
-  // Set preferred ordering scale 1-5
-  setOrder(order){
-    console.log('Updating order to ', order);
-    this.order = order;
   }
 }
