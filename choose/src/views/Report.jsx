@@ -70,7 +70,7 @@ export default function Report() {
         </h2>
         <label>Summary note
           <textarea
-            className={`Report-note summary ${choiceSummaryNote ? 'noted' : ''}`}
+            className={`Choose-notes-textarea Report-note summary ${choiceSummaryNote ? 'noted' : ''}`}
             rows="3" type="textarea"
             onChange={((e) => {
               updateSummaryNote(e.target.value);

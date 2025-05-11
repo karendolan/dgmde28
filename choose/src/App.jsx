@@ -11,7 +11,12 @@ import OptionObject from './objects/OptionObject';
 // Import functions
 import ChooseRouter from './components/ChooseRouter';
 import ChooseContext from './objects/ChooseContext';
-import { saveLocalStorage, getLocalStorage } from './functions/LocalStorage';
+import {
+  saveLocalStorageContext,
+  getLocalStorageContext,
+  saveLocalStorageTopic,
+  getLocalStorageTopic
+} from './functions/LocalStorage';
 
 // Import test data
 import catOptionData from './data/cats';
@@ -44,10 +49,11 @@ function App() {
   }
 
   // Default initial topic for the app
-  const initialTopic = 'cats';
+  const defaultTopic = 'cats';
   // Update the context with saved context from local storage
   let initialContext;
-  const savedContext = getLocalStorage(initialTopic);
+  let initialTopic = getLocalStorageTopic() || defaultTopic;
+  const savedContext = getLocalStorageContext(initialTopic);
   if (savedContext && savedContext.currTopic === initialTopic) {
     const {choiceOptions, topicOptions, currTopic, choiceSummaryNote} = savedContext;
     initialContext = {
@@ -120,7 +126,8 @@ function App() {
     // check for topic change
     let changedContextData;
     if (currTopic !== context.currTopic) {
-      changedContextData = getLocalStorage(currTopic);
+      saveLocalStorageTopic(currTopic);
+      changedContextData = getLocalStorageContext(currTopic);
       if (changedContextData && changedContextData.currTopic === currTopic) {
         // Set the changed topic with existing saved data
         setContext(changedContextData);
@@ -129,7 +136,7 @@ function App() {
       }
     } else {
       // Save current context update to local storage
-      saveLocalStorage(context.currTopic, newContext);
+      saveLocalStorageContext(context.currTopic, newContext);
       // Save update to app context
       setContext(newContext);
     }

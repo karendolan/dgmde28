@@ -10,12 +10,12 @@
 .Report-note {
   width: 10rem;
   padding: 5px;
-  color: #A8B545;
   background-color: #346A76;
   min-height: 6rem;
   margin-left: 2rem;
   border-radius: 1rem;
   padding: .5rem;
+  font-size: 1.1rem;
 }
 
 .Report-note.noted {

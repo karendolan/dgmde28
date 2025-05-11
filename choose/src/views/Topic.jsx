@@ -7,6 +7,8 @@ import ChooseContext from '../objects/ChooseContext';
 // Navigate
 import { useNavigate } from 'react-router-dom';
 
+// Import the style
+import './Topic.css'
 
 /**
  * Topic page
@@ -52,12 +54,7 @@ export default function Topic() {
         <h2>
           Choose a topic
         </h2>
-        {topic && (
-          <div>
-            Current topic is {currTopic}
-          </div>
-        )}
-        <div>
+        <div className='Topic-choices'>
           {topicOptions.map((opt) => {
             const selected = topic == opt ? 'selected' : '';
             return (
@@ -69,10 +66,17 @@ export default function Topic() {
               </div>
             )
           })}
+        </div>
+        <div>
           <button onClick={submitTopicChoice}>
             Submit new topic
           </button>
         </div>
+        {topic && (
+          <div>
+            Current topic is {currTopic}
+          </div>
+        )}
       </div>
     </div>
   )
