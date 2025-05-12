@@ -229,8 +229,8 @@ export default function Choose() {
             // skip over the newPos when it's hit
             if (isUpMove && o.position == newPos) {
               console.log('KAREN found matching position to move down at ', newPos, o.id, o.subtopic)
-              // Fix the count based on the movement up or down
-              count = newPos - 1;
+              // Move the count down one to push items down in position
+              count = newPos + 1;
             } else if (isUpMove && count >= oldPos ) {
               // No more work needed, lower items keep their existing position
               return;
