@@ -16,7 +16,7 @@ export default function OptionNoteComponent(props) {
         {label}
         <textarea
           className={`Choose-notes-textarea ${existingNote ? 'noted' : ''}`}
-          rows="9" type="textarea"
+          rows="5" type="textarea"
           onChange={((e) => {
             option.addNote(e.target.value);
             callback(e.target.value);

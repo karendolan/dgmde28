@@ -68,7 +68,7 @@ export default function Report() {
         <h2>
           Topic {currTopic}
         </h2>
-        <label>Summary note
+        <label className="center">Summary note
           <textarea
             className={`Choose-notes-textarea Report-note summary ${choiceSummaryNote ? 'noted' : ''}`}
             rows="3" type="textarea"
