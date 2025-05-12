@@ -122,23 +122,55 @@ export default function Choose() {
     console.log('Removing cursor EVENT LISTENER ---------------');
     // Remove the cursor listener
     document.removeEventListener('mousemove', cursorMoveHandler.current);
+    // update positions
+    updateDragPositions(e);
+    console.log('UNSETTING movPos and moveItem');
+    // Remove moving class style designation
+    moveItem.classList.remove('moving');
+    // Unset movePos
+    setMovePos(undefined);
+    // remove item
+    setMoveItem(undefined);
+  }
+
+  /**
+   * Isolate the crazy logic to reorder the items
+   * @param {Evemt} e
+   * @returns
+   */
+  function updateDragPositions(e) {
     // Determine the new ordering of the options, if any
+    // Retrieve the move option Object
     const option = choiceOptions.find(o => moveItem.id == `row-opt-${o.id}`);
+    // Retrieve the move element's current location on the page
     const top = moveItem.getBoundingClientRect().y + window.scrollY;
+    // Get all the option elements
     const optionElems = document.getElementsByClassName('Choose-option-component');
+    // 1. look for and element that falls below the moved element
     let lowerElemId;
+    let upperElemId;
     for (e of optionElems) {
+      // Get the bounding box of each element that is not the move element
       if (e.id !== rowMoveId) {
         const eTop = e.getBoundingClientRect().y + window.scrollY;
         if (eTop > top) {
+          console.log('KAREN Found lower element ', eTop, top, e, option);
+          // Get the first item below this one that is found
           lowerElemId = e.id;
           break;
+        } else {
+          // Otherwise, the element is above the move element
+          upperElemId = e.id;
+          // Keep going to get the lowest one above this element
         }
       }
     }
-    console.log('lowerElemId: ', lowerElemId, option.id);
-    // Move the item to the bottom of the list
+    // console.log('lowerElemId: ', lowerElemId, option.id);
+    // Move item is at the bottom, whe nothing is lower that the move element
     if (!lowerElemId) {
+      // Already in correct position at the end
+      if (option.position == optionElems.length) return;
+      // Otherwise continue to reposition
       let count = 1;
       choiceOptions.forEach(o => {
         console.log('Comparing ids ', o.id, option.id);
@@ -151,7 +183,25 @@ export default function Choose() {
         console.log("TTTTop Set option ", o.subtopic, o.position);
       });
     }
-    // Move the item within the list
+    // Move item is at the top, if there are elements below it but none above it
+    else if (!upperElemId) {
+      // Already in correct position at the start
+      if (option.position == 1) return;
+      // Otherwise continue to reposition
+      // start the count below the top
+      let count = 2;
+      choiceOptions.forEach(o => {
+        if (o.id === option.id) {
+          // The move item goes to the top
+          o.setPosition(1);
+        } else {
+          // all others increment as usual
+          o.setPosition(count++);
+        }
+        console.log("TTTTop Set option ", o.subtopic, o.position);
+      });
+    }
+    // Move falls within the list
     else {
       let count = 1;
       // Find lower option from the lower element id
@@ -159,35 +209,47 @@ export default function Choose() {
          return lowerElemId === `row-opt-${o.id}`
       })
       if (lowerOpt) {
-        let isMoveUpdated = false;
         const lowerPos = lowerOpt.position;
+        const oldPos = option.position;
+        // Already in correct position above the lower position
+        if (oldPos + 1 == lowerPos) return;
+        // Otherwise continue to reposition
+        // If moved up, it gets the lower Pos number. If it moved down, it gets lowerPos number - 1
+        const isUpMove = lowerPos < oldPos;
+        const newPos = isUpMove ? lowerPos : lowerPos - 1 ;
+        console.log('KAREN before, movement is ', isUpMove ? 'up' : 'down', ', lower position is ', lowerPos, option.position);
         // With the assumption that these are in order, except for the moved item
+        console.log('KAREN -------------- new position is ', newPos);
         choiceOptions.forEach(o => {
-          // Bump all lower options down a notch
-          if (lowerPos <= o.position) {
-            if (!isMoveUpdated) {
-              option.setPosition(count++);
-              isMoveUpdated = true;
-              console.log("SSS Set option ", option.subtopic, option.position);
+          if (o.id === option.id) {
+            // The move item gets the calculate position
+            o.setPosition(newPos);
+            console.log('KAREN updating move item to pos ', newPos, o.id, option.id, option.subtopic);
+          } else {
+            // skip over the newPos when it's hit
+            if (isUpMove && o.position == newPos) {
+              console.log('KAREN found matching position to move down at ', newPos, o.id, o.subtopic)
+              // Fix the count based on the movement up or down
+              count = newPos - 1;
+            } else if (isUpMove && count >= oldPos ) {
+              // No more work needed, lower items keep their existing position
+              return;
+            } else if (!isUpMove &&  o.position - 1 == oldPos) {
+              // This is the item that used to be under the element, now goes up
+              count = oldPos;
+            } else if (!isUpMove && count >= newPos ) {
+              // No more work needed, lower items keep their existing position
+              return;
             }
-          }
-          if (o.id !== option.id) {
+            console.log('KAREN setting next item to pos ', count, o.id, o.subtopic);
             o.setPosition(count++);
           }
         });
-        // Set this option to lower position
-        option.setPosition(lowerPos);
       } else {
         console.log('ERROR, should be a lower object for ', lowerElemId);
       }
     }
-    console.log('UNSETTING movPos and moveItem');
-    // Remove moving class style designation
-    moveItem.classList.remove('moving');
-    // Unset movePos
-    setMovePos(undefined);
-    // remove item
-    setMoveItem(undefined);
+
   }
 
   /**
