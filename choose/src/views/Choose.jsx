@@ -125,6 +125,8 @@ export default function Choose() {
     setMovePos(undefined);
     // remove item
     setMoveItem(undefined);
+    // Update context
+    handleUpdate(context)
   }
 
   /**
@@ -209,6 +211,7 @@ export default function Choose() {
         // With the assumption that these are in order, except for the moved item
         choiceOptions.forEach(o => {
           if (o.id === option.id) {
+            // console.log("About to set position on ", o);
             // The move item gets the calculate position
             o.setPosition(newPos);
           } else {
@@ -305,8 +308,7 @@ export default function Choose() {
     const {id, subtopic, attribute, origin, description, life_span, wikipedia_url, image, note, position} = c;
     const rowId = `row-opt-${id}`;
     return (
-      <div className="Option-choice-block" key={id} id={`choice-${id}`}>
-        <div className="move-indicator" />
+      <div className="Choose-option-block" key={id} id={`choice-${id}`}>
         <div
           id={rowId}
           className={`Choose-option-component position-${position}`}
@@ -314,18 +316,19 @@ export default function Choose() {
           onMouseUp={moveEnd}
           style={rowMoveId === rowId && movePos ? getPositionStyle() : undefined}
         >
-          {position}
-          <ChoiceComponent
-            topic = {currTopic}
-            subtopic = {subtopic}
-            description = {description}
-            image = {image}
-            attribute = {attribute}
-            origin = {origin}
-            life_span = {life_span}
-            wikipedia_url =  {wikipedia_url}
-            position = {position}
-          />
+          <div>
+            <ChoiceComponent
+              topic = {currTopic}
+              subtopic = {subtopic}
+              description = {description}
+              image = {image}
+              attribute = {attribute}
+              origin = {origin}
+              life_span = {life_span}
+              wikipedia_url =  {wikipedia_url}
+              position = {position}
+            />
+          </div>
           <div className="Choose-notes" onMouseDown={((e) => {
             // Prevent click into notes from activating option position drag activity
             e.stopPropagation();

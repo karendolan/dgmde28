@@ -37,7 +37,7 @@ function App() {
   function getFreshTopicContext(topic) {
     const freshContext = {
       // The Option objects to choose from
-      choiceOptions: getOptions(topic),
+      choiceOptions: getOptionObjects(topic),
       // Stock main topic options
       topicOptions: ['cats', 'dogs'],
       // The initial topic associated to the subtopics
@@ -58,7 +58,7 @@ function App() {
     const {choiceOptions, topicOptions, currTopic, choiceSummaryNote} = savedContext;
     initialContext = {
       // The Option objects to choose from, will build from the data saved to local storage
-      choiceOptions: getOptions(initialTopic, choiceOptions),
+      choiceOptions: getOptionObjects(initialTopic, choiceOptions),
       // Stock main topic options
       topicOptions: topicOptions,
       // This is the same as initialTopic
@@ -80,9 +80,8 @@ function App() {
    * @param {object} topicData
    * @returns
    */
-  function getOptions(topic, topicData) {
+  function getOptionObjects(topic, topicData) {
     // inbound existing topic data for storage has first priority
-    // TODO: if API exists, use that to retrieve new data from the catapi or thedog api
     // For now, use stock data from file & save and retrieve from local storage
     let optionInput = topicData;
     // Otherwise, get stock data
@@ -113,7 +112,7 @@ function App() {
         origin,
         life_span,
         wikipedia_url,
-        position: position ? position : i + 1,
+        position: position ? Number.parseInt(position) : i + 1,
         note,
       });
     })
@@ -121,6 +120,10 @@ function App() {
     return options;
   }
 
+  /**
+   * Handler to update the App context
+   * @param {*} newContext
+   */
   function handleUpdate(newContext) {
     const { currTopic } = newContext;
     // check for topic change
@@ -130,6 +133,9 @@ function App() {
       changedContextData = getLocalStorageContext(currTopic);
       if (changedContextData && changedContextData.currTopic === currTopic) {
         // Set the changed topic with existing saved data
+        // after reconverting back into objects
+        const jsonObjects = changedContextData.choiceOptions;
+        changedContextData.choiceOptions = getOptionObjects(currTopic, jsonObjects);
         setContext(changedContextData);
       } else {
          setContext(getFreshTopicContext(currTopic))

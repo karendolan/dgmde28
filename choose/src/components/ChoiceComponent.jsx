@@ -16,10 +16,14 @@ export default function ChoiceComponent(props) {
     life_span,
     wikipedia_url,
     image,
+    position,
   } = props;
   // Return the item JSX
   return (
     <div className='ChoiceComponent-container'>
+      <div>
+        {position}
+      </div>
       <div className='ChoiceComponent-image-block'>
         <img className='ChoiceComponent-image' height={100} src={image.url}/>
         <div>{subtopic}</div>

@@ -13,7 +13,6 @@ h2 {
 }
 
 #root {
-  width: 600px;
   color: white;
   background-color: #024554;
   margin: 0 auto;
@@ -36,6 +35,7 @@ h2 {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: space-between;
 }
 
 #main-nav span {
@@ -77,4 +77,23 @@ h2 {
   font-weight: bold;
   font-size: 2rem;
   color: #A8B545 !important;
+}
+
+
+@media (width <= 600px) {
+  #root {
+    width: auto;
+  }
+}
+
+@media (width > 600px) {
+  #root {
+    width: 600px;
+  }
+}
+
+@media (width > 900px) {
+  #root {
+    width: 900px;
+  }
 }

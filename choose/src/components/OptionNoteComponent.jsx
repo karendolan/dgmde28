@@ -12,7 +12,8 @@ export default function OptionNoteComponent(props) {
   } = props;
 
   return (
-      <label>{label}
+      <label className="center">
+        {label}
         <textarea
           className={`Choose-notes-textarea ${existingNote ? 'noted' : ''}`}
           rows="9" type="textarea"

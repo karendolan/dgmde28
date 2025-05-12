@@ -5,6 +5,14 @@
   border-radius: 2rem;
   padding: 1rem;
   transition: background-color 1s ease-out;
+  justify-content: space-between;
+}
+
+.Choose-option-block {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
 }
 
 .Choose {
@@ -16,16 +24,6 @@
   background-color: black;
   cursor: grab;
   position: 'absolute';
-  max-width: 850px;
-}
-
-.move-indicator {
-  height: 1rem;
-  width: 100%;
-  background-color: inherit;
-  border-radius: 2rem;
-  transition: background-color 1s linear;
-  animation-duration: 1s;
 }
 
 .Choose-option-component .move-indicator:hover {
@@ -34,10 +32,6 @@
   transition: background-color 1s linear;
   animation-duration: 1s;
   transition: background-color 1000ms linear;
-}
-
-.Opppption-choice-block {
-  transition: all 0.5s ease;
 }
 
 .Choose-notes-textarea {

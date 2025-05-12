@@ -5,6 +5,11 @@
   justify-content: flex-start;
 }
 
+.ChoiceComponent-container div {
+  margin-right: 1rem;
+
+}
+
 .ChoiceComponent-image-block {
   flex-grow: 1;
   min-width: 180px;
