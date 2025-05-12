@@ -36,7 +36,7 @@ export default function Report() {
 
   const reportOptions = choiceOptions.map((o) => {
     const {id, subtopic, image, origin, note, position} = o;
-    console.log("CAT ", o);
+    // console.log("CAT ", o);
     return (
       <div key={id} className='Report-listItem'>
         <div className="Report-listItem-pos">

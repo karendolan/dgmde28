@@ -117,7 +117,7 @@ function App() {
         note,
       });
     })
-    console.log('Objects ', options);
+    // console.log('Objects ', options);
     return options;
   }
 

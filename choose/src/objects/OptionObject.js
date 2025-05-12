@@ -5,7 +5,7 @@
 export default class OptionObject {
   // Constructor contains the 2 main components of the option
   constructor({id, topic, subtopic, attribute, origin, description, life_span, wikipedia_url, image, position, note}) {
-    console.log('setting id to ', id);
+    // console.log('setting id to ', id);
     this.id = id;
     this.topic = topic;
     this.subtopic = subtopic;
@@ -20,12 +20,12 @@ export default class OptionObject {
   }
   // User adds  comment about this option
   addNote(note) {
-    console.log('Updating note to ', note);
+    // console.log('Updating note to ', note);
     this.note = note;
   }
   // Set position within the other options
   setPosition(position){
-    console.log('Updating position of ', this.subtopic ,' to ', position);
+    // console.log('Updating position of ', this.subtopic ,' to ', position);
     this.position = position;
   }
 }

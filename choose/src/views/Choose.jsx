@@ -12,8 +12,6 @@ import './Choose.css';
 
 /**
  * The choose from the options page
- * TODO: sort by preference or random to start
- * TODO: something else for key - subtopic?
  */
 export default function Choose() {
   // Retrieve context
@@ -28,7 +26,7 @@ export default function Choose() {
   const cursorMoveHandler = useRef(undefined);
 
   // currently select row
-  console.log("CHOOSE START - moveItem ???? " , moveItem?.id, movePos);
+  // console.log("CHOOSE START - moveItem ???? " , moveItem?.id, movePos);
   const rowMoveId = moveItem ? moveItem.id : undefined;
 
   // 1. have a moving item - add listener to mouse move: document.addEventListener('mousemove', (event) => {
@@ -45,7 +43,6 @@ export default function Choose() {
   useEffect(() => {
     // Set the persistent cursorMoveHandler function
     cursorMoveHandler.current = (e) => {
-      console.log("Mouse move event ", e)
       const scrollBy = 10;
       let moveY = e.movementY;
       const moveX = e.movementX;
@@ -101,7 +98,6 @@ export default function Choose() {
    */
   function moveStart(e) {
     e.preventDefault();
-    console.log('STARTING cursor EVENT LISTENER');
     // Save the item being moved to state
     const item = e.target.closest('.Choose-option-component');
     // Add moving style to the element
@@ -119,12 +115,10 @@ export default function Choose() {
    */
   function moveEnd(e) {
     e.preventDefault();
-    console.log('Removing cursor EVENT LISTENER ---------------');
     // Remove the cursor listener
     document.removeEventListener('mousemove', cursorMoveHandler.current);
     // update positions
     updateDragPositions(e);
-    console.log('UNSETTING movPos and moveItem');
     // Remove moving class style designation
     moveItem.classList.remove('moving');
     // Unset movePos
@@ -154,7 +148,6 @@ export default function Choose() {
       if (e.id !== rowMoveId) {
         const eTop = e.getBoundingClientRect().y + window.scrollY;
         if (eTop > top) {
-          console.log('KAREN Found lower element ', eTop, top, e, option);
           // Get the first item below this one that is found
           lowerElemId = e.id;
           break;
@@ -165,7 +158,6 @@ export default function Choose() {
         }
       }
     }
-    // console.log('lowerElemId: ', lowerElemId, option.id);
     // Move item is at the bottom, whe nothing is lower that the move element
     if (!lowerElemId) {
       // Already in correct position at the end
@@ -173,14 +165,12 @@ export default function Choose() {
       // Otherwise continue to reposition
       let count = 1;
       choiceOptions.forEach(o => {
-        console.log('Comparing ids ', o.id, option.id);
         if (o.id === option.id) {
           o.setPosition(choiceOptions.length);
         } else {
           // all others increment as usual
           o.setPosition(count++);
         }
-        console.log("TTTTop Set option ", o.subtopic, o.position);
       });
     }
     // Move item is at the top, if there are elements below it but none above it
@@ -198,7 +188,6 @@ export default function Choose() {
           // all others increment as usual
           o.setPosition(count++);
         }
-        console.log("TTTTop Set option ", o.subtopic, o.position);
       });
     }
     // Move falls within the list
@@ -217,18 +206,14 @@ export default function Choose() {
         // If moved up, it gets the lower Pos number. If it moved down, it gets lowerPos number - 1
         const isUpMove = lowerPos < oldPos;
         const newPos = isUpMove ? lowerPos : lowerPos - 1 ;
-        console.log('KAREN before, movement is ', isUpMove ? 'up' : 'down', ', lower position is ', lowerPos, option.position);
         // With the assumption that these are in order, except for the moved item
-        console.log('KAREN -------------- new position is ', newPos);
         choiceOptions.forEach(o => {
           if (o.id === option.id) {
             // The move item gets the calculate position
             o.setPosition(newPos);
-            console.log('KAREN updating move item to pos ', newPos, o.id, option.id, option.subtopic);
           } else {
             // skip over the newPos when it's hit
             if (isUpMove && o.position == newPos) {
-              console.log('KAREN found matching position to move down at ', newPos, o.id, o.subtopic)
               // Move the count down one to push items down in position
               count = newPos + 1;
             } else if (isUpMove && count >= oldPos ) {
@@ -241,7 +226,6 @@ export default function Choose() {
               // No more work needed, lower items keep their existing position
               return;
             }
-            console.log('KAREN setting next item to pos ', count, o.id, o.subtopic);
             o.setPosition(count++);
           }
         });
@@ -254,12 +238,14 @@ export default function Choose() {
 
   /**
    * The manual change
+   * For some reason this is easier than
+   * calculating the drag and drop order
    * @param {*} option
    * @param {*} position
    * @returns
    */
   function changePosition(option, position) {
-    console.log('STARTING Change position');
+    // console.log('STARTING Change position');
     const prevPos = option.position;
     option.setPosition(position);
     // No work needed if at same position
@@ -305,17 +291,17 @@ export default function Choose() {
   // -------------------------------------------------
   // End of module functions, start of JSX rendering
   // -------------------------------------------------
-  console.log("Before sort ", choiceOptions);
+  // console.log("Before sort ", choiceOptions);
   // Sort the choiceOptions by option position
   choiceOptions.sort((a, b) => {
     return a.position - b.position;
   })
-  console.log("AFTER sort ", choiceOptions);
+  // console.log("AFTER sort ", choiceOptions);
 
   // Make a JSX collection of choices
-  console.log('Rerendering list: ');
+  // console.log('Rerendering list: ');
   const choices = choiceOptions.map((c) => {
-    console.log('IN RENDER for ', c.id);
+    // console.log('IN RENDER for ', c.id);
     const {id, subtopic, attribute, origin, description, life_span, wikipedia_url, image, note, position} = c;
     const rowId = `row-opt-${id}`;
     return (
